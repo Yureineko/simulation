@@ -13,12 +13,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	//フォント確定
 	ChangeFontType(DX_FONTTYPE_ANTIALIASING_EDGE);
 
+	//ここにステージの
+
+
 	while (1)
 	{
 		//aaaa
 
 
-
+		//if()
 
 
 

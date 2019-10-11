@@ -9,15 +9,21 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	//ウィンドウ名設定
 	SetMainWindowText("SimulatioN GamE");
 	//ゲームウインドウサイズ
-	SetGraphMode(800, 600, 32);
+	SetGraphMode(832, 448, 32);
 	//フォント確定
 	ChangeFontType(DX_FONTTYPE_ANTIALIASING_EDGE);
+
+	bool KeyFlag = false;
 
 	//ここにステージの
 
 
 	//画像int変換関数
 	//int img = LoadGraph("画像名");
+
+	//背景の画像表示	
+	LoadGraphScreen(0, 0, "image\\BackGround.png", TRUE);
+	LoadGraphScreen(192, 64, "image\\King.png", TRUE);
 
 	//音声int変換関数
 	//int bgm = LoadSoundMem("音楽名");
@@ -34,7 +40,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 
 		//if()
-
 
 
 		//文字列表示

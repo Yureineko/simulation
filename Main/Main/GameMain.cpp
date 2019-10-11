@@ -52,16 +52,23 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 	//‰æ‘œint•ÏŠ·ŠÖ”
 	//int img = LoadGraph("‰æ‘œ–¼");
-	int map;//”Õ‚Ì‰æ‘œ“o˜^
+	
 
 	int t_chara;//‰¼ƒLƒƒƒ‰ƒNƒ^[‚Ì•\¦@1‘Ì–Ú
 	int t_chara2;//‰¼ƒLƒƒƒ‰ƒNƒ^[‚Ì•\¦@2‘Ì–Ú
 
-	 //MainMap[1]=LoadGraph("image\\");//‚±‚±‚É•ºm‚Ì‰æ‘œ
-	 //MainMap[2]=LoadGraph("image\\");//‚±‚±‚É–‚“±m‚Ì‰æ‘œ
-	 //MainMap[3]=LoadGraph("image\\");//‚±‚±‚É’³•ñˆõ‚Ì‰æ‘œ
-	 //MainMap[4]=LoadGraph("image\\");//‚±‚±‚É‹Rm‚Ì‰æ‘œ
-	 //MainMap[5]=LoadGraph("image\\");//‚±‚±‚É‰¤‚Ì‰æ‘œ
+	 int Soldier=LoadGraph("image\\");//‚±‚±‚É•ºm‚Ì‰æ‘œ
+	 int Sorcerer=LoadGraph("image\\");//‚±‚±‚É–‚“±m‚Ì‰æ‘œ
+	 int Espionage =LoadGraph("image\\");//‚±‚±‚É’³•ñˆõ‚Ì‰æ‘œ
+	 int Knight =LoadGraph("image\\");//‚±‚±‚É‹Rm‚Ì‰æ‘œ
+	 int King =LoadGraph("image\\");//‚±‚±‚É‰¤‚Ì‰æ‘œ
+
+	 int SoldX = 1, SoldY = 1;//•ºm‚ÌˆÊ’uX,Y
+	 int SorcX = 2, SorcY = 2;//–‚“±m‚ÌˆÊ’uX,Y
+	 int EspiX = 3, EspiY = 3;//’³•ñˆõ‚ÌˆÊ’uX,Y
+	 int KnigX = 4, KnigY = 4;//‹Rm‚ÌˆÊ’uX,Y
+	 int KingX = 5, KingY = 5;//‰¤‚ÌˆÊ’uX,Y
+
 
 
 
@@ -105,7 +112,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 		};
 
 
+		//©•ª‚Ì‹î‚ª‘Šè‚Ì‹î‚Éd‚È‚Á‚½‚Ìˆ—
+		/*if (MainMap[][])
+		{
 
+		}*/
 
 //----------“o˜^‚µ‚½‹î‚ÌˆÚ“®•`‰æ-----------
 
@@ -121,23 +132,23 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 					break;
 
 				case 1://•ºm
-					//DrawGraphF(x*64,y*64,)//•ºm‚Ì•`‰æ
+					DrawGraphF(x * 64, y * 64, Soldier, TRUE);//•ºm‚Ì•`‰æ
 					break;
 
 				case 2://–‚“±m
-					//DrawGraphF(x*64,y*64,)//–‚“±m‚Ì‰æ‘œ
+					DrawGraphF(x * 64, y * 64, Sorcerer, TRUE);//–‚“±m‚Ì‰æ‘œ
 					break;
 
 				case 3://’³•ñˆõ
-					//DrawGraphF(x*64,y*64,)//’³•ñˆõ‚Ì‰æ‘œ
+					DrawGraphF(x * 64, y * 64, Espionage, TRUE);//’³•ñˆõ‚Ì‰æ‘œ
 					break;
 
 				case 4://‹Rm
-					//DrawGraphF(x*64,y*64,)//‹Rm‚Ì‰æ‘œ
+					DrawGraphF(x * 64, y * 64, Knight, TRUE);//‹Rm‚Ì‰æ‘œ
 					break;
 
 				case 5://‰¤
-					//DrawGraphF(x*64,y*64)//‰¤‚Ì‰æ‘œ
+					DrawGraphF(x * 64, y * 64, King, TRUE);//‰¤‚Ì‰æ‘œ
 					break;
 				}
 			}

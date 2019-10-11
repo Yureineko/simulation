@@ -9,7 +9,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	//ウィンドウ名設定
 	SetMainWindowText("SimulatioN GamE");
 	//ゲームウインドウサイズ
-	SetGraphMode(800, 600, 32);
+	SetGraphMode(832, 448, 32);
 	//フォント確定
 	ChangeFontType(DX_FONTTYPE_ANTIALIASING_EDGE);
 
@@ -74,6 +74,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 	 t_chara = LoadGraph("image\\201401231944448d7.png");
 	 t_chara2 = LoadGraph("image\\p-wakana-24.png");
+
+	//背景の画像表示	
+	LoadGraphScreen(0, 0, "image\\BackGround.png", TRUE);
+	LoadGraphScreen(192, 64, "image\\King.png", TRUE);
 
 	//音声int変換関数
 	//int bgm = LoadSoundMem("音楽名");
@@ -153,7 +157,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 				}
 			}
 		}
-
 
 
 

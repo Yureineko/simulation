@@ -126,7 +126,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Espionage.cpp" />
     <ClCompile Include="GameMain.cpp" />
+    <ClCompile Include="King.cpp" />
+    <ClCompile Include="Knight.cpp" />
+    <ClCompile Include="Soldier.cpp" />
+    <ClCompile Include="Sorcerer.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Piece.h" />
+    <ClInclude Include="Player1.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

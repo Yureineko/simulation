@@ -36,7 +36,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 
 	//ここに移動させる駒を選択させるMapを生成
-	int SubMap[7][7]
+	/*int SubMap[7][7]
 	{
 		{ 2,3,4,5,4,3,2 },
 		{ 1,1,1,1,1,1,1 },
@@ -45,7 +45,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 		{ 0,0,0,0,0,0,0 },
 		{ 1,1,1,1,1,1,1 },
 		{ 2,3,4,5,4,3,2 },
-	};
+	};*/
 
 
 
@@ -63,6 +63,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	 int Knight =LoadGraph("image\\");//ここに騎士の画像
 	 int King =LoadGraph("image\\");//ここに王の画像
 
+	 //一旦ここで位置移動する。後で消すかも。
 	 int SoldX = 1, SoldY = 1;//兵士の位置X,Y
 	 int SorcX = 2, SorcY = 2;//魔導士の位置X,Y
 	 int EspiX = 3, EspiY = 3;//諜報員の位置X,Y
@@ -81,6 +82,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 	//音声int変換関数
 	//int bgm = LoadSoundMem("音楽名");
+
+	//ゲームメインの音楽再生
+	int  Mainbgm = LoadSoundMem("sound\\");
 
 	 DrawGraph(164, 0, t_chara, TRUE);//プレイヤー1の描画
 
@@ -102,8 +106,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	}
 
 	//
-	//
-
+	//ここでゲームのメイン部分構築
 	while (1)
 	{
 		
@@ -115,6 +118,22 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			//if (MainMap[0][1] )
 		};
 
+		if (CheckHitKey(KEY_INPUT_DOWN))
+		{
+			//キーを押して下に選択肢移動
+			//if(MainMap[0][2])
+		};
+
+		if (CheckHitKey(KEY_INPUT_RIGHT))
+		{
+			//キーを押して右に選択肢移動
+		};
+
+		if (CheckHitKey(KEY_INPUT_LEFT))
+		{
+			//キーを押して左に選択肢移動
+
+		};
 
 		//自分の駒が相手の駒に重なった時の処理
 		/*if (MainMap[][])

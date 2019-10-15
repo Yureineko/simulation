@@ -36,7 +36,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 
 	//ここに移動させる駒を選択させるMapを生成
-	int SubMap[7][7]
+	/*int SubMap[7][7]
 	{
 		{ 2,3,4,5,4,3,2 },
 		{ 1,1,1,1,1,1,1 },
@@ -45,7 +45,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 		{ 0,0,0,0,0,0,0 },
 		{ 1,1,1,1,1,1,1 },
 		{ 2,3,4,5,4,3,2 },
-	};
+	};*/
 
 
 
@@ -79,7 +79,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	//音声int変換関数
 	//int bgm = LoadSoundMem("音楽名");
 
-	//DrawGraph(384, 0, King, TRUE);//王の描画
+	//ゲームメインの音楽再生
+	int  Mainbgm = LoadSoundMem("sound\\");
+
+	 DrawGraph(164, 0, t_chara, TRUE);//プレイヤー1の描画
+	DrawGraph(384, 0, King, TRUE);//王の描画
 
 	DrawGraph(0, 0, t_chara, TRUE);//プレイヤー1の描画
 	DrawGraph(640, 0, t_chara2, TRUE);//プレイヤー2の描画
@@ -100,8 +104,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	}
 
 	//
-	//
-
+	//ここでゲームのメイン部分構築
 	while (1)
 	{
 		
@@ -114,6 +117,22 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			KingX++;
 		};
 
+		if (CheckHitKey(KEY_INPUT_DOWN))
+		{
+			//キーを押して下に選択肢移動
+			//if(MainMap[0][2])
+		};
+
+		if (CheckHitKey(KEY_INPUT_RIGHT))
+		{
+			//キーを押して右に選択肢移動
+		};
+
+		if (CheckHitKey(KEY_INPUT_LEFT))
+		{
+			//キーを押して左に選択肢移動
+
+		};
 
 		//自分の駒が相手の駒に重なった時の処理
 		/*if (MainMap[][])

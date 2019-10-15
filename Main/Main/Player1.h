@@ -21,8 +21,21 @@ class PLAYER2
 
 private:
 
-	void Anim();//二人目のプレイヤーのアニメ処理
+	//void Anim();//二人目のプレイヤーのアニメ処理
 	int x,y;//二人目のプレイヤーの描画位置
 
 	
+};
+
+class PLAYER3
+{
+public:
+
+	void Skill();
+
+private:
+
+	
+	int x, y;//三人目のプレイヤーの描画位置
+
 };

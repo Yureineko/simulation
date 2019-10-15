@@ -57,20 +57,18 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	int t_chara;//仮キャラクターの表示　1体目
 	int t_chara2;//仮キャラクターの表示　2体目
 
-	 int Soldier=LoadGraph("image\\");//ここに兵士の画像
-	 int Sorcerer=LoadGraph("image\\");//ここに魔導士の画像
-	 int Espionage =LoadGraph("image\\");//ここに諜報員の画像
-	 int Knight =LoadGraph("image\\");//ここに騎士の画像
-	 int King =LoadGraph("image\\");//ここに王の画像
+	int Soldier=LoadGraph("image\\");//ここに兵士の画像
+	int Sorcerer=LoadGraph("image\\");//ここに魔導士の画像
+	int Espionage =LoadGraph("image\\");//ここに諜報員の画像
+	int Knight =LoadGraph("image\\");//ここに騎士の画像
+	int King = LoadGraph("image\\King.png");//ここに王の画像
+	
+	int SoldX = 1, SoldY = 1;//兵士の位置X,Y
+	int SorcX = 2, SorcY = 2;//魔導士の位置X,Y
+	int EspiX = 3, EspiY = 3;//諜報員の位置X,Y
+	int KnigX = 4, KnigY = 4;//騎士の位置X,Y
+	int KingX = 5, KingY = 5;//王の位置X,Y
 
-	 int SoldX = 1, SoldY = 1;//兵士の位置X,Y
-	 int SorcX = 2, SorcY = 2;//魔導士の位置X,Y
-	 int EspiX = 3, EspiY = 3;//諜報員の位置X,Y
-	 int KnigX = 4, KnigY = 4;//騎士の位置X,Y
-	 int KingX = 5, KingY = 5;//王の位置X,Y
-
-
-	King = LoadGraph("image\\King.png");
 
 	t_chara = LoadGraph("image\\キャラ1(仮).png");
 	t_chara2 = LoadGraph("image\\キャラ2(仮).png");
@@ -81,7 +79,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	//音声int変換関数
 	//int bgm = LoadSoundMem("音楽名");
 
-	DrawGraph(384, 0, King, TRUE);//王の描画
+	//DrawGraph(384, 0, King, TRUE);//王の描画
 
 	DrawGraph(0, 0, t_chara, TRUE);//プレイヤー1の描画
 	DrawGraph(640, 0, t_chara2, TRUE);//プレイヤー2の描画
@@ -92,7 +90,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	
 
 	//バックバッファに描画
-	SetDrawScreen(DX_SCREEN_BACK);
+	SetDrawScreen(DX_SCREEN_FRONT);
 
 	//DXライブラリを初期化
 	if (DxLib_Init() == -1)
@@ -113,6 +111,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 		{
 			//キーを押して上に選択肢移動
 			//if (MainMap[0][1] )
+			KingX++;
 		};
 
 
@@ -125,35 +124,45 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 //----------登録した駒の移動描画-----------
 
 		//Swich文でmapの描画と更新を行う
-		for (int y = 0; y< 7; y++)
+		for (int y = 0; y < 7; y++)
 		{
-			for (int x=0;x<7;x++)
+			for (int x = 0; x < 7; x++)
 			{
 				switch (MainMap[y][x])
 				{
-				
+
 				case 0://何もない場所
 					break;
 
 				case 1://兵士
-					DrawGraphF(x * 64, y * 64, Soldier, TRUE);//兵士の描画
+				{
+					DrawGraphF(x * 64 + 192, y * 64, Soldier, TRUE);//兵士の描画
 					break;
+				}
 
 				case 2://魔導士
-					DrawGraphF(x * 64, y * 64, Sorcerer, TRUE);//魔導士の画像
+				{
+					DrawGraphF(x * 64 + 192, y * 64, Sorcerer, TRUE);//魔導士の画像
 					break;
+				}
 
 				case 3://諜報員
-					DrawGraphF(x * 64, y * 64, Espionage, TRUE);//諜報員の画像
+				{
+					DrawGraphF(x * 64 + 192, y * 64, Espionage, TRUE);//諜報員の画像
 					break;
+				}
 
 				case 4://騎士
-					DrawGraphF(x * 64, y * 64, Knight, TRUE);//騎士の画像
+				{
+					DrawGraphF(x * 64 + 192, y * 64, Knight, TRUE);//騎士の画像
 					break;
+				}
 
 				case 5://王
-					DrawGraphF(x * 64, y * 64, King, TRUE);//王の画像
+				{
+					DrawGraphF(x * 64 + 192, y * 64, King, TRUE);//王の画像
 					break;
+				}
 				}
 			}
 		}

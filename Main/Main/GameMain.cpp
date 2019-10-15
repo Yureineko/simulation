@@ -52,37 +52,38 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 	//画像int変換関数
 	//int img = LoadGraph("画像名");
-	int map;//盤の画像登録
+
+	int King;
 
 	int t_chara;//仮キャラクターの表示　1体目
 	int t_chara2;//仮キャラクターの表示　2体目
 
-	 //MainMap[1]=LoadGraph("image\\");//ここに兵士の画像
-	 //MainMap[2]=LoadGraph("image\\");//ここに魔導士の画像
-	 //MainMap[3]=LoadGraph("image\\");//ここに諜報員の画像
-	 //MainMap[4]=LoadGraph("image\\");//ここに騎士の画像
-	 //MainMap[5]=LoadGraph("image\\");//ここに王の画像
+	//MainMap[1]=LoadGraph("image\\");//ここに兵士の画像
+	//MainMap[2]=LoadGraph("image\\");//ここに魔導士の画像
+	//MainMap[3]=LoadGraph("image\\");//ここに諜報員の画像
+	//MainMap[4]=LoadGraph("image\\");//ここに騎士の画像
+	//MainMap[5]=LoadGraph("image\\King.png");//ここに王の画像
 
+	King = LoadGraph("image\\King.png");
 
-
-	 t_chara = LoadGraph("image\\201401231944448d7.png");
-	 t_chara2 = LoadGraph("image\\p-wakana-24.png");
+	t_chara = LoadGraph("image\\キャラ1(仮).png");
+	t_chara2 = LoadGraph("image\\キャラ2(仮).png");
 
 	//背景の画像表示	
 	LoadGraphScreen(0, 0, "image\\BackGround.png", TRUE);
-	LoadGraphScreen(192, 64, "image\\King.png", TRUE);
 
 	//音声int変換関数
 	//int bgm = LoadSoundMem("音楽名");
 
-	 DrawGraph(164, 0, t_chara, TRUE);//プレイヤー1の描画
+	DrawGraph(384, 0, King, TRUE);//王の描画
 
-	 DrawGraph(0, 0, t_chara2, TRUE);//プレイヤー2の描画
+	DrawGraph(0, 0, t_chara, TRUE);//プレイヤー1の描画
+	DrawGraph(640, 0, t_chara2, TRUE);//プレイヤー2の描画
 
 
-	 int turn=0;//ターン変数....0:自分のターン　1:相手のターン
-	 int movepointX;//駒の移動の変数(MainMapと照らし合わせて使用する。)
-
+	int turn=0;//ターン変数....0:自分のターン　1:相手のターン
+	int movepointX;//駒の移動の変数(MainMapと照らし合わせて使用する。)
+	
 
 	//バックバッファに描画
 	SetDrawScreen(DX_SCREEN_BACK);

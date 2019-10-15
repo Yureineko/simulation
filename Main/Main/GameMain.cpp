@@ -69,6 +69,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	 int EspiX = 3, EspiY = 3;//’³•ñˆõ‚ÌˆÊ’uX,Y
 	 int KnigX = 4, KnigY = 4;//‹Rm‚ÌˆÊ’uX,Y
 	 int KingX = 5, KingY = 5;//‰¤‚ÌˆÊ’uX,Y
+	int Soldier=LoadGraph("image\\");//‚±‚±‚É•ºm‚Ì‰æ‘œ
+	int Sorcerer=LoadGraph("image\\");//‚±‚±‚É–‚“±m‚Ì‰æ‘œ
+	int Espionage =LoadGraph("image\\");//‚±‚±‚É’³•ñˆõ‚Ì‰æ‘œ
+	int Knight =LoadGraph("image\\");//‚±‚±‚É‹Rm‚Ì‰æ‘œ
+	int King = LoadGraph("image\\King.png");//‚±‚±‚É‰¤‚Ì‰æ‘œ
+	
+	int SoldX = 1, SoldY = 1;//•ºm‚ÌˆÊ’uX,Y
+	int SorcX = 2, SorcY = 2;//–‚“±m‚ÌˆÊ’uX,Y
+	int EspiX = 3, EspiY = 3;//’³•ñˆõ‚ÌˆÊ’uX,Y
+	int KnigX = 4, KnigY = 4;//‹Rm‚ÌˆÊ’uX,Y
+	int KingX = 5, KingY = 5;//‰¤‚ÌˆÊ’uX,Y
 
 
 	//int King = LoadGraph("image\\King.png");
@@ -153,7 +164,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 		{
 			//ƒL[‚ğ‰Ÿ‚µ‚Äã‚É‘I‘ğˆˆÚ“®
 			//if (MainMap[0][1] )
-
+			KingX++;
 		};
 
 		if (CheckHitKey(KEY_INPUT_DOWN))
@@ -200,9 +211,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 //----------“o˜^‚µ‚½‹î‚ÌˆÚ“®•`‰æ-----------
 
 		//Swich•¶‚Åmap‚Ì•`‰æ‚ÆXV‚ğs‚¤
-		for (int y = 0; y< 7; y++)
+		for (int y = 0; y < 7; y++)
 		{
-			for (int x=0;x<7;x++)
+			for (int x = 0; x < 7; x++)
 			{
 				switch (MainMap[y][x])
 				{

@@ -1,5 +1,10 @@
 #include "DxLib.h"
 
+#define SCREEN_PIXWIDTH		640
+#define SCREEN_PIXHEIGHT	480
+#define POPUP_X 64
+#define POPUP_Y 64
+
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine, int nCmdShow)
 {
 	//windowモードで起動
@@ -69,17 +74,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	 int EspiX = 3, EspiY = 3;//諜報員の位置X,Y
 	 int KnigX = 4, KnigY = 4;//騎士の位置X,Y
 	 int KingX = 5, KingY = 5;//王の位置X,Y
-	int Soldier=LoadGraph("image\\");//ここに兵士の画像
-	int Sorcerer=LoadGraph("image\\");//ここに魔導士の画像
-	int Espionage =LoadGraph("image\\");//ここに諜報員の画像
-	int Knight =LoadGraph("image\\");//ここに騎士の画像
-	int King = LoadGraph("image\\King.png");//ここに王の画像
 	
-	int SoldX = 1, SoldY = 1;//兵士の位置X,Y
-	int SorcX = 2, SorcY = 2;//魔導士の位置X,Y
-	int EspiX = 3, EspiY = 3;//諜報員の位置X,Y
-	int KnigX = 4, KnigY = 4;//騎士の位置X,Y
-	int KingX = 5, KingY = 5;//王の位置X,Y
 
 
 	//int King = LoadGraph("image\\King.png");
@@ -99,7 +94,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 
 	//test用サウンド
-	int se=LoadSoundMem("sound\\");
+	int se=LoadSoundMem("sound\\test.mp3");
 
 	
 	//DrawGraph(384, 0, King, TRUE);//王の描画
@@ -116,6 +111,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	int win_flag = false;//勝った時のフラグ
 	int lose_flag = false;//負けた時のフラグ
 
+
+
+	//---------マウス操作の変数--------
+	int Mx, My, Mbutton;//マウス位置X,Y マウスを押したときのボタン
+
+	 GetMousePoint(&Mx,&My);//マウスの現在位置取得
 
 	//マウスをwindow上に表示させる。
 	//SetMouseDispFlag(TRUE);
@@ -147,24 +148,39 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 			//マウスの左クリックが押されているか
 			//マウスが押されていないとき
-			if ((GetMouseInput()&MOUSE_INPUT_LEFT) != 0)
+			if (Mx < SCREEN_PIXWIDTH / 2)//
 			{
-				//押されている
-				PlaySoundMem(se, DX_PLAYTYPE_BACK);
+				int x, y;
+
+				//マウスを押したときの処理
+				if ((GetMouseInputLog(&Mbutton, &Mx, &My, 1) == 0))
+				{
+					if ((GetMouseInput()&&MOUSE_INPUT_LEFT) != 0)
+					{
+					//押されている
+					PlaySoundMem(se, DX_PLAYTYPE_BACK);
+					
+
+					}
+
+
+					}
+					else
+					{
+						//押されていない
+						
+
+					}
+
 			}
-			else
-			{
-				//押されていない
 
-
-			}
-
+			DrawBox(0,0, SCREEN_PIXWIDTH / 2, SCREEN_PIXHEIGHT, GetColor(255, 255, 255), 1);
 	//選択肢の移動	
 		if (CheckHitKey(KEY_INPUT_UP))
 		{
 			//キーを押して上に選択肢移動
 			//if (MainMap[0][1] )
-			KingX++;
+			//KingX++;
 		};
 
 		if (CheckHitKey(KEY_INPUT_DOWN))
@@ -185,7 +201,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 		};
 
 		//自分の駒が相手の駒に重なった時の処理
-		/*if (MainMap[][])
+		/*if (MainMap[kx][ky])
 		{
 
 		}*/

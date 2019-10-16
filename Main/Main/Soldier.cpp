@@ -5,18 +5,18 @@
 
 
 
-void SOLDIER::soldier_move()
-{
-
-
-
-
-}
-
-
-void SOLDIER::soldier_Animation()
-{
-
-
-
-}
+//void SOLDIER::soldier_move()
+//{
+//
+//
+//
+//
+//}
+//
+//
+//void SOLDIER::soldier_Animation()
+//{
+//
+//
+//
+//}

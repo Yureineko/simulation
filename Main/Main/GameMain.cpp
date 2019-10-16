@@ -1,5 +1,7 @@
 #include "DxLib.h"
 
+#define PI	3.1415926535897932384626433832795f
+
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine, int nCmdShow)
 {
 	//windowモードで起動
@@ -20,7 +22,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	//駒の種類は最大5種類
 	int MainMap[7][7]
 	{
-		{ 2,3,4,5,4,3,2 },
+		{ 2,3,4,6,4,3,2 },
 		{ 1,1,1,1,1,1,1 },
 		{ 0,0,0,0,0,0,0 },
 		{ 0,0,0,0,0,0,0 },
@@ -33,6 +35,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	//3.諜報員(チェス:ナイト)
 	//4.騎士(飛車)
 	//5.王
+	//6.相手の王
 
 
 	//ここに移動させる駒を選択させるMapを生成
@@ -62,12 +65,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	int Espionage =LoadGraph("image\\");//ここに諜報員の画像
 	int Knight =LoadGraph("image\\");//ここに騎士の画像
 	int King = LoadGraph("image\\King.png");//ここに王の画像
+	int EKing = LoadGraph("image\\King.png");//ここに王の画像
 	
 	int SoldX = 1, SoldY = 1;//兵士の位置X,Y
 	int SorcX = 2, SorcY = 2;//魔導士の位置X,Y
 	int EspiX = 3, EspiY = 3;//諜報員の位置X,Y
 	int KnigX = 4, KnigY = 4;//騎士の位置X,Y
 	int KingX = 5, KingY = 5;//王の位置X,Y
+	int EKingX = 6, EKingY = 6;//王の位置X,Y
 
 
 	t_chara = LoadGraph("image\\キャラ1(仮).png");
@@ -82,8 +87,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	//ゲームメインの音楽再生
 	int  Mainbgm = LoadSoundMem("sound\\");
 
-	 DrawGraph(164, 0, t_chara, TRUE);//プレイヤー1の描画
-	DrawGraph(384, 0, King, TRUE);//王の描画
+	//DrawGraph(384, 0, King, TRUE);//王の描画
 
 	DrawGraph(0, 0, t_chara, TRUE);//プレイヤー1の描画
 	DrawGraph(640, 0, t_chara2, TRUE);//プレイヤー2の描画
@@ -94,7 +98,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	
 
 	//バックバッファに描画
-	SetDrawScreen(DX_SCREEN_FRONT);
+	//SetDrawScreen(DX_SCREEN_FRONT);
 
 	//DXライブラリを初期化
 	if (DxLib_Init() == -1)
@@ -179,15 +183,20 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 				case 5://王
 				{
-					DrawGraphF(x * 64 + 192, y * 64, King, TRUE);//王の画像
+					DrawGraphF(x * 64 + 192, y * 64, King, TRUE);//騎士の画像
+					break;
+				}
+
+				case 6://相手の王
+				{
+					DrawRotaGraph3(x*64+256,y*64+64,0,0, 1.0f, 1.0f, PI, EKing, TRUE);//王の画像
 					break;
 				}
 				}
 			}
 		}
 
-
-
+		
 
 		//文字列表示
 		//DrawString(x, y, 表示する文字列(*char), 表示する際の文字の色(GetColor(r,g,b)));

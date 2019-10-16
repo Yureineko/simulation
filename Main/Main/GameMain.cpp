@@ -20,7 +20,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 	//ここに盤上を設定
 	//駒の種類は最大5種類
-	int MainMap[7][7]
+	int MainMap[7][7]=
 	{
 		{ 2,3,4,6,4,3,2 },
 		{ 1,1,1,1,1,1,1 },
@@ -60,6 +60,18 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	int t_chara;//仮キャラクターの表示　1体目
 	int t_chara2;//仮キャラクターの表示　2体目
 
+	 int Soldier=LoadGraph("image\\");//ここに兵士の画像
+	 int Sorcerer=LoadGraph("image\\");//ここに魔導士の画像
+	 int Espionage =LoadGraph("image\\");//ここに諜報員の画像
+	 int Knight =LoadGraph("image\\");//ここに騎士の画像
+	 int King =LoadGraph("image\\King.png");//ここに王の画像
+
+	 //一旦ここで位置移動する。後で消すかも。
+	 int SoldX = 1, SoldY = 1;//兵士の位置X,Y
+	 int SorcX = 2, SorcY = 2;//魔導士の位置X,Y
+	 int EspiX = 3, EspiY = 3;//諜報員の位置X,Y
+	 int KnigX = 4, KnigY = 4;//騎士の位置X,Y
+	 int KingX = 5, KingY = 5;//王の位置X,Y
 	int Soldier=LoadGraph("image\\");//ここに兵士の画像
 	int Sorcerer=LoadGraph("image\\");//ここに魔導士の画像
 	int Espionage =LoadGraph("image\\");//ここに諜報員の画像
@@ -75,6 +87,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	int EKingX = 6, EKingY = 6;//王の位置X,Y
 
 
+	//int King = LoadGraph("image\\King.png");
+
 	t_chara = LoadGraph("image\\キャラ1(仮).png");
 	t_chara2 = LoadGraph("image\\キャラ2(仮).png");
 
@@ -87,18 +101,33 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	//ゲームメインの音楽再生
 	int  Mainbgm = LoadSoundMem("sound\\");
 
+
+
+	//test用サウンド
+	int se=LoadSoundMem("sound\\");
+
+	
 	//DrawGraph(384, 0, King, TRUE);//王の描画
 
 	DrawGraph(0, 0, t_chara, TRUE);//プレイヤー1の描画
 	DrawGraph(640, 0, t_chara2, TRUE);//プレイヤー2の描画
 
 
+
 	int turn=0;//ターン変数....0:自分のターン　1:相手のターン
 	int movepointX;//駒の移動の変数(MainMapと照らし合わせて使用する。)
 	
 
-	//バックバッファに描画
-	//SetDrawScreen(DX_SCREEN_FRONT);
+	int win_flag = false;//勝った時のフラグ
+	int lose_flag = false;//負けた時のフラグ
+
+
+	//マウスをwindow上に表示させる。
+	//SetMouseDispFlag(TRUE);
+
+
+	//ここで描画先を表画面にする。
+	SetDrawScreen(DX_SCREEN_FRONT);
 
 	//DXライブラリを初期化
 	if (DxLib_Init() == -1)
@@ -106,12 +135,34 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 		return -1;//エラーが出たら強制終了
 
 	}
+	
+
 
 	//
+
+
 	//ここでゲームのメイン部分構築
 	while (1)
 	{
-		
+		//自分のターン以外は操作を不可能にする
+		if (turn == 0)
+		{
+
+
+
+			//マウスの左クリックが押されているか
+			//マウスが押されていないとき
+			if ((GetMouseInput()&MOUSE_INPUT_LEFT) != 0)
+			{
+				//押されている
+				PlaySoundMem(se, DX_PLAYTYPE_BACK);
+			}
+			else
+			{
+				//押されていない
+
+
+			}
 
 	//選択肢の移動	
 		if (CheckHitKey(KEY_INPUT_UP))
@@ -143,6 +194,24 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 		{
 
 		}*/
+		}
+		else
+		{
+
+			turn = 1;//相手のターンを返して終了
+		};
+
+
+		//この辺り?で勝敗判定を行ってbreakでwhile文を抜ける。
+
+		//自分の王がとられた場合
+		if (MainMap[KingY][KingX]==0)
+		{
+			//勝敗判定
+			lose_flag = true;
+			break;
+
+		};
 
 //----------登録した駒の移動描画-----------
 
@@ -153,9 +222,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			{
 				switch (MainMap[y][x])
 				{
-
-				case 0://何もない場所
+				
+				case 0:
+				{
+					//何もない場所
 					break;
+				}
 
 				case 1://兵士
 				{
@@ -192,6 +264,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 					DrawRotaGraph3(x*64+256,y*64+64,0,0, 1.0f, 1.0f, PI, EKing, TRUE);//王の画像
 					break;
 				}
+
+
 				}
 			}
 		}
@@ -205,7 +279,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 		//DrawGraph(x, y, img画像(int型), TRUE);
 
 		
-		//この辺り?で勝敗判定を行ってbreakでwhile文を抜ける。
+		
 
 
 		//ゲームが終わるフラグが立っていたら閉じる

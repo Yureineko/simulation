@@ -81,10 +81,11 @@ private:
 class KING  //王のクラス
 {
 public:
-	void king_move(int x,int y);//王の移動
+	 KING(int x,int y);//王の移動
 	void king_Animation();//王のアニメーション
 
 private:
-	int king_image();//王の画像登録用変数 最後にこのクラスで絵を描画する。
+	int king_image;//王の画像登録用変数 最後にこのクラスで絵を描画する。
+	int x, y;//王の位置
 
 };

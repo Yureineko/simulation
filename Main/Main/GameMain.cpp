@@ -7,6 +7,9 @@
 
 #define PI	3.1415926535897932384626433832795f
 
+//クリックの領域をチェックする関数
+bool HitClick(int Cx, int Cy, int x1, int y1);
+
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine, int nCmdShow)
 {
 	//windowモードで起動
@@ -30,10 +33,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 		{ 2,3,4,6,4,3,2 },
 		{ 1,1,1,1,1,1,1 },
 		{ 0,0,0,0,0,0,0 },
+		{ 0,0,5,0,0,0,0 },
 		{ 0,0,0,0,0,0,0 },
-		{ 0,0,0,0,0,0,0 },
-		{ 1,1,1,1,1,1,1 },
-		{ 2,3,4,5,4,3,2 },
+		{ 1,1,1,0,1,1,1 },
+		{ 2,3,4,0,4,3,2 },
 	};
 	//1.兵士(歩)
 	//2.魔導士(角)
@@ -41,19 +44,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	//4.騎士(飛車)
 	//5.王
 	//6.相手の王
-
-
-	//ここに移動させる駒を選択させるMapを生成
-	/*int SubMap[7][7]
-	{
-		{ 2,3,4,5,4,3,2 },
-		{ 1,1,1,1,1,1,1 },
-		{ 0,0,0,0,0,0,0 },
-		{ 0,0,0,0,0,0,0 },
-		{ 0,0,0,0,0,0,0 },
-		{ 1,1,1,1,1,1,1 },
-		{ 2,3,4,5,4,3,2 },
-	};*/
 
 
 
@@ -70,12 +60,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	 int Espionage =LoadGraph("image\\");//ここに諜報員の画像
 	 int Knight =LoadGraph("image\\");//ここに騎士の画像
 	 int King =LoadGraph("image\\King.png");//ここに王の画像
+	 int EKing = LoadGraph("image\\King.png");//ここに敵の王の画像
 
 	 //一旦ここで位置移動する。後で消すかも。
 	 int SoldX = 1, SoldY = 1;//兵士の位置X,Y
 	 int SorcX = 2, SorcY = 2;//魔導士の位置X,Y
 	 int EspiX = 3, EspiY = 3;//諜報員の位置X,Y
-	 int KnigX = 4, KnigY = 4;//騎士の位置X,Y
+
+	 int KnightX = 4, KnightY = 4;//騎士の位置X,Y
+
 	 int KingX = 5, KingY = 5;//王の位置X,Y
 	
 	int EKingX = 6, EKingY = 6;//王の位置X,Y
@@ -118,9 +111,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 
 	//---------マウス操作の変数--------
-	int Mx, My, Mbutton;//マウス位置X,Y マウスを押したときのボタン
+	
+	
 
-	 GetMousePoint(&Mx,&My);//マウスの現在位置取得
+	 //GetMousePoint(&Mx,&My);//マウスの現在位置取得
 
 	//マウスをwindow上に表示させる。
 	//SetMouseDispFlag(TRUE);
@@ -128,6 +122,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 	//ここで描画先を表画面にする。
 	SetDrawScreen(DX_SCREEN_FRONT);
+
+	int cx, cy;
+	bool Click_flag = 0;
+
 
 	//DXライブラリを初期化
 	if (DxLib_Init() == -1)
@@ -147,38 +145,82 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 		//自分のターン以外は操作を不可能にする
 		if (turn == 0)
 		{
+			int Mx, My, 
+				
+			 Mbutton=false;//マウス位置X,Y マウスを押したときのボタン
 
 
+			GetMousePoint(&Mx, &My);
 
 			//マウスの左クリックが押されているか
 			//マウスが押されていないとき
-			if (Mx < SCREEN_PIXWIDTH / 2)//
-			{
-				int x, y;
+			//ここでクリックできる領域を設定
+			
+
+			//if (Mx <=MainMap[KingY][KingX])//
+			//{
+			//	//int x,y;
+
+			//	//マウスを押したときの処理
+			//	//左クリックしたときの処理
+			//		if (GetMouseInput() != 0&&MOUSE_INPUT_LEFT!=0)
+			//		{
+			//			Mbutton = TRUE;
+
+			//			if (Mbutton==TRUE)
+			//			{
+			//			
+			//				//押されている
+			//				PlaySoundMem(se, DX_PLAYTYPE_BACK);
+			//			}
+
+			//		}
+
+
+			//		
+			//		else
+			//		{
+			//			//押されていない
+			//			
+
+			//		}
+
+			//}
+
+			//クリックした先が0ならそこに描画
+			
 
 				//マウスを押したときの処理
-				if ((GetMouseInputLog(&Mbutton, &Mx, &My, 1) == 0))
+				//左クリックしたときの処理
+			while(GetMouseInput() != 0 & MOUSE_INPUT_LEFT != 0)
+			{
+				Mbutton = false;
+
+				if (MainMap[KingY][KingX+1]==0)
 				{
-					if ((GetMouseInput()&&MOUSE_INPUT_LEFT) != 0)
-					{
+
 					//押されている
 					PlaySoundMem(se, DX_PLAYTYPE_BACK);
-					
+					MainMap[KingY][KingX-1] = 5;
 
-					}
+					MainMap[KingY][KingX] = 0;
+					//Mbutton=true;
 
-
-					}
-					else
-					{
-						//押されていない
-						
-
-					}
-
+				}
 			}
 
-			DrawBox(0,0, SCREEN_PIXWIDTH / 2, SCREEN_PIXHEIGHT, GetColor(255, 255, 255), 1);
+				//
+				//{
+				//	//押されていない
+
+				//	//MainMap[KingY][KingX] = 5;
+				//	Mbutton = false;
+				//}
+
+			
+		
+
+
 	//選択肢の移動	
 		if (CheckHitKey(KEY_INPUT_UP))
 		{
@@ -210,11 +252,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 		}*/
 		}
-		else
-		{
+		//else
+		//{
 
-			turn = 1;//相手のターンを返して終了
-		};
+		//	turn = 1;//相手のターンを返して終了
+		//};
 
 
 		//この辺り?で勝敗判定を行ってbreakでwhile文を抜ける。
@@ -224,7 +266,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 		{
 			//勝敗判定
 			lose_flag = true;
-			break;
+			//break;
 
 		};
 
@@ -271,12 +313,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 				case 5://王
 				{
 					DrawGraphF(x * 64 + 192, y * 64, King, TRUE);//騎士の画像
+					KingX = x;
+					KingY = y;
 					break;
 				}
 
 				case 6://相手の王
 				{
 					DrawRotaGraph3(x*64+256,y*64+64,0,0, 1.0f, 1.0f, PI, EKing, TRUE);//王の画像
+					EKingX = x;
+					EKingY = y;
 					break;
 				}
 
@@ -306,4 +352,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	DxLib_End();
 
 	return 0;
+}
+
+//クリックする領域の判定
+bool HitClick(int Cx,int Cy,int x1,int y1)
+{
+	if (Cx < x1 + 64 && x1 < Cx + 64 && Cy < y1 + 64 && y1 < Cy + 64)
+	{
+		return TRUE;
+	}
+	return FALSE;
 }

@@ -4,7 +4,7 @@
 #include<stdio.h>
 
 //コンストラクタ
-
+//KING::
 
 
 

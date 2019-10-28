@@ -14,6 +14,15 @@ typedef struct PositionInfo
 	int posY;
 }Pos;
 
+//駒設定用
+typedef struct PieceInfo
+{
+	int type;
+	int posX;
+	int posY;
+	bool MeorEne;
+}Piece;
+
 //クリックの領域をチェックする関数
 bool HitClick(int Cx, int Cy, int x1, int y1);
 
@@ -58,9 +67,31 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	//5.王
 	//6.相手の王
 
+	//駒保存用
+	Piece piecetable[28];
+	for (int i = 0, count = 0; i < 7; i++)
+	{
+		for (int j = 0; j < 7; j++)
+		{
+			if (MainMap[i][j] >= 1)
+			{
+				piecetable[count].posX = j;
+				piecetable[count].posY = i;
+				piecetable[count].type = MainMap[i][j];
+				if (i < 4)
+				{
+					piecetable[count].MeorEne = false;
+				}
+				else
+				{
+					piecetable[count].MeorEne = true;
+				}
+				count++;
+			}
+		}
+	}
 
-
-
+	
 	//画像int変換関数
 	//int img = LoadGraph("画像名");
 	

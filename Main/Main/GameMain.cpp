@@ -145,14 +145,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 
 	//ここでゲームのメイン部分構築
-	while (1)
+	while (ProcessMessage() == -1)
 	{
 		//自分のターン以外は操作を不可能にする
 		if (turn == 0)
 		{
-			int Mx, My, 
-				
-			 Mbutton=false;//マウス位置X,Y マウスを押したときのボタン
+			int Mx, My,
+
+				Mbutton = false;//マウス位置X,Y マウスを押したときのボタン
 
 
 			GetMousePoint(&Mx, &My);
@@ -160,7 +160,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			//マウスの左クリックが押されているか
 			//マウスが押されていないとき
 			//ここでクリックできる領域を設定
-			
+
 
 			//if (Mx <=MainMap[KingY][KingX])//
 			//{
@@ -193,20 +193,20 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			//}
 
 			//クリックした先が0ならそこに描画
-			
+
 
 				//マウスを押したときの処理
 				//左クリックしたときの処理
-			while(GetMouseInput() != 0 & MOUSE_INPUT_LEFT != 0)
+			while (GetMouseInput() != 0 & MOUSE_INPUT_LEFT != 0)
 			{
 				Mbutton = false;
 
-				if (MainMap[KingY][KingX+1]==0)
+				if (MainMap[KingY][KingX + 1] == 0)
 				{
 
 					//押されている
 					PlaySoundMem(se, DX_PLAYTYPE_BACK);
-					MainMap[KingY][KingX-1] = 5;
+					MainMap[KingY][KingX - 1] = 5;
 
 					MainMap[KingY][KingX] = 0;
 					//Mbutton=true;
@@ -214,50 +214,50 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 				}
 			}
 
-				//
-				//{
-				//	//押されていない
+			//
+			//{
+			//	//押されていない
 
-				//	//MainMap[KingY][KingX] = 5;
-				//	Mbutton = false;
-				//}
+			//	//MainMap[KingY][KingX] = 5;
+			//	Mbutton = false;
+			//}
 
-			
-		
+
+
 
 
 			DrawBox(0, 0, 192, SCREEN_PIXHEIGHT, GetColor(0, 255, 255), 1);
 			DrawBox(640, 0, SCREEN_PIXWIDTH, SCREEN_PIXHEIGHT, GetColor(255, 0, 255), 1);
-	//選択肢の移動	
-		if (CheckHitKey(KEY_INPUT_UP))
-		{
-			//キーを押して上に選択肢移動
-			//if (MainMap[0][1] )
-			//KingX++;
-		};
+			//選択肢の移動	
+			if (CheckHitKey(KEY_INPUT_UP))
+			{
+				//キーを押して上に選択肢移動
+				//if (MainMap[0][1] )
+				//KingX++;
+			};
 
-		if (CheckHitKey(KEY_INPUT_DOWN))
-		{
-			//キーを押して下に選択肢移動
-			//if(MainMap[0][2])
-		};
+			if (CheckHitKey(KEY_INPUT_DOWN))
+			{
+				//キーを押して下に選択肢移動
+				//if(MainMap[0][2])
+			};
 
-		if (CheckHitKey(KEY_INPUT_RIGHT))
-		{
-			//キーを押して右に選択肢移動
-		};
+			if (CheckHitKey(KEY_INPUT_RIGHT))
+			{
+				//キーを押して右に選択肢移動
+			};
 
-		if (CheckHitKey(KEY_INPUT_LEFT))
-		{
-			//キーを押して左に選択肢移動
+			if (CheckHitKey(KEY_INPUT_LEFT))
+			{
+				//キーを押して左に選択肢移動
 
-		};
+			};
 
-		//自分の駒が相手の駒に重なった時の処理
-		/*if (MainMap[kx][ky])
-		{
+			//自分の駒が相手の駒に重なった時の処理
+			/*if (MainMap[kx][ky])
+			{
 
-		}*/
+			}*/
 		}
 		//else
 		//{
@@ -351,13 +351,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 		//画像表示
 		//DrawGraph(x, y, img画像(int型), TRUE);
 
-		
-		
-
-
-		//ゲームが終わるフラグが立っていたら閉じる
-		if (ProcessMessage() == -1)
-			break;
 	}
 
 	//Dxライブラリ終了処理

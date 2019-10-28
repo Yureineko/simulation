@@ -42,13 +42,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	//UDP通信用のソケットハンドルの設定
 	NetUDPHandle = MakeUDPSocket(40);
 
+
 	while (ProcessMessage() != -1)
 	{
+
 
 		//受信処理
 		if (CheckNetWorkRecvUDP(NetUDPHandle) == TRUE)
 		{
-
 			
 		}
 

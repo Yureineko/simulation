@@ -1,14 +1,22 @@
 #include "DxLib.h"
+#include"Piece.h"
 
 #define SCREEN_PIXWIDTH		832
 #define SCREEN_PIXHEIGHT	448
-#define POPUP_X 64
-#define POPUP_Y 64
+#define POPUP_X 192//左↑の点
+#define POPUP_Y 0
+#define POPDOWN_X 64
+#define POPDOWN_Y 64
 
 #define PI	3.1415926535897932384626433832795f
 
+
 //クリックの領域をチェックする関数
 bool HitClick(int Cx, int Cy, int x1, int y1);
+
+
+
+
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine, int nCmdShow)
 {
@@ -37,10 +45,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 		{ 2,3,4,6,4,3,2 },
 		{ 1,1,1,1,1,1,1 },
 		{ 0,0,0,0,0,0,0 },
-		{ 0,0,5,0,0,0,0 },
 		{ 0,0,0,0,0,0,0 },
-		{ 1,1,1,0,1,1,1 },
-		{ 2,3,4,0,4,3,2 },
+		{ 0,0,0,0,0,0,0 },
+		{ 1,1,1,1,1,1,1 },
+		{ 2,3,4,5,4,3,2 },
 	};
 	//1.兵士(歩)
 	//2.魔導士(角)
@@ -49,7 +57,20 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	//5.王
 	//6.相手の王
 
+	KING*king;//王の本体
+	enum VEC K_vec;//王の移動方向
 
+	SORCERER*sorcerer;//魔導士の本体
+	enum VEC Sor_vec;//魔導士の移動方向
+
+	ESPIONAGE*espionage;//諜報員の本体
+	enum VEC Es_Vec;//諜報員の移動方向
+
+	KNIGHT*knight;//騎士の本体
+	enum VEC Kn_vec;//騎士の移動方向
+
+	SOLDIER*soldier;//兵士の本体
+	enum VEC Sol_vec;//兵士の移動方向
 
 
 	//画像int変換関数
@@ -63,16 +84,26 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	int Sorcerer=LoadGraph("image\\");//ここに魔導士の画像
 	int Espionage =LoadGraph("image\\");//ここに諜報員の画像
 	int Knight =LoadGraph("image\\");//ここに騎士の画像
-	int King =LoadGraph("image\\King.png");//ここに王の画像
-	int EKing = LoadGraph("image\\King.png");//ここに王の画像
+	int King =LoadGraph("image\\King(64).png");//ここに王の画像
+	int EKing = LoadGraph("image\\King(64).png");//ここに王の画像
 
 	//一旦ここで位置移動する。後で消すかも。
 	int SoldX = 1, SoldY = 1;//兵士の位置X,Y
 	int SorcX = 2, SorcY = 2;//魔導士の位置X,Y
 	int EspiX = 3, EspiY = 3;//諜報員の位置X,Y
-	int KnigX = 4, KnigY = 4;//騎士の位置X,Y
+	int KnightX = 4, KnightY = 4;//騎士の位置X,Y
 	int KingX = 5, KingY = 5;//王の位置X,Y	
-	int EKingX = 6, EKingY = 6;//王の位置X,Y
+
+	//[][0]に駒の種類、[][1]に生存状況、[][2]にx座標、[][3]にy座標
+	int MyPieceInfo[14][4]
+	{
+		{1,1,1,1},{1,1,1,2}
+	};
+
+
+
+
+	int EKingX = 6, EKingY = 6;//敵の王の位置X,Y
 
 
 	//int King = LoadGraph("image\\King.png");
@@ -82,6 +113,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 	//背景の画像表示	
 	LoadGraphScreen(0, 0, "image\\BackGround.png", TRUE);
+
+	int sc = LoadGraph("image\\BackGround.png");
 
 	//音声int変換関数
 	//int bgm = LoadSoundMem("音楽名");
@@ -108,7 +141,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	
 	int turn=0;//ターン変数....0:自分のターン　1:相手のターン
 	int movepointX;//駒の移動の変数(MainMapと照らし合わせて使用する。)
-	
+	int Mx, My;//マウスの位置
+
+
+
 
 	int win_flag = false;//勝った時のフラグ
 	int lose_flag = false;//負けた時のフラグ
@@ -150,132 +186,78 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 		//自分のターン以外は操作を不可能にする
 		if (turn == 0)
 		{
-			int Mx, My, 
+			
 				
-			 Mbutton=false;//マウス位置X,Y マウスを押したときのボタン
-
+			
 
 			GetMousePoint(&Mx, &My);
 
 			//マウスの左クリックが押されているか
 			//マウスが押されていないとき
 			//ここでクリックできる領域を設定
-			
-
-			//if (Mx <=MainMap[KingY][KingX])//
-			//{
-			//	//int x,y;
-
-			//	//マウスを押したときの処理
-			//	//左クリックしたときの処理
-			//		if (GetMouseInput() != 0&&MOUSE_INPUT_LEFT!=0)
-			//		{
-			//			Mbutton = TRUE;
-
-			//			if (Mbutton==TRUE)
-			//			{
-			//			
-			//				//押されている
-			//				PlaySoundMem(se, DX_PLAYTYPE_BACK);
-			//			}
-
-			//		}
-
-
-			//		
-			//		else
-			//		{
-			//			//押されていない
-			//			
-
-			//		}
-
-			//}
-
 			//クリックした先が0ならそこに描画
-			
-
-				//マウスを押したときの処理
-				//左クリックしたときの処理
-			while(GetMouseInput() != 0 & MOUSE_INPUT_LEFT != 0)
+			for (int y = 0; y < 7; y++)
 			{
-				Mbutton = false;
-
-				if (MainMap[KingY][KingX+1]==0)
+				for (int x = 0; x < 7; x++)
 				{
+					switch (MainMap[y][x])
+					{
+					case 1:
+						//兵士の生成
+						soldier = new SOLDIER(x * 64, y * 64);
+						MainMap[y][x] = 1;
+						soldier->Draw();
+						break;
+					case 2:
+						//魔導士の生成
+						sorcerer = new SORCERER(x * 64, y * 64);
+						MainMap[y][x] = 2;
+						sorcerer->Draw();
+						break;
+					case 3:
+						//諜報員の生成
+						espionage = new ESPIONAGE(x * 64, y * 64);
+						MainMap[y][x] = 3;
+						espionage->Draw();
+						break;
 
-					//押されている
-					PlaySoundMem(se, DX_PLAYTYPE_BACK);
-					MainMap[KingY][KingX-1] = 5;
+					case 4:
+						//騎士の生成
+						knight = new KNIGHT(x * 64, y * 64);
+						MainMap[y][x] = 4;
+						knight->Draw();
+						break;
 
-					MainMap[KingY][KingX] = 0;
-					//Mbutton=true;
-
+					case 5:
+						   //王の生成
+						   king = new KING(x * 64, y * 64);
+						   MainMap[y][x] = 5;
+						   king->Draw();
+						break;
+					}
+					
 				}
 			}
 
-				//
-				//{
-				//	//押されていない
+			//king->Draw();
 
-				//	//MainMap[KingY][KingX] = 5;
-				//	Mbutton = false;
-				//}
+				//マウスを押したときの処理
+				//左クリックしたときの処理
+				while (GetMouseInput() != 0 & MOUSE_INPUT_LEFT != 0)
+				{
+				
 
+				}
 			
 		
 
 
-			DrawBox(0, 0, 192, SCREEN_PIXHEIGHT, GetColor(0, 255, 255), 1);
-			DrawBox(640, 0, SCREEN_PIXWIDTH, SCREEN_PIXHEIGHT, GetColor(255, 0, 255), 1);
-	//選択肢の移動	
-		if (CheckHitKey(KEY_INPUT_UP))
-		{
-			//キーを押して上に選択肢移動
-			//if (MainMap[0][1] )
-			//KingX++;
-		};
-
-		if (CheckHitKey(KEY_INPUT_DOWN))
-		{
-			//キーを押して下に選択肢移動
-			//if(MainMap[0][2])
-		};
-
-		if (CheckHitKey(KEY_INPUT_RIGHT))
-		{
-			//キーを押して右に選択肢移動
-		};
-
-		if (CheckHitKey(KEY_INPUT_LEFT))
-		{
-			//キーを押して左に選択肢移動
-
-		};
-
-		//自分の駒が相手の駒に重なった時の処理
-		/*if (MainMap[kx][ky])
-		{
-
-		}*/
+		
 		}
-		//else
-		//{
-
-		//	turn = 1;//相手のターンを返して終了
-		//};
-
-
+		
 		//この辺り?で勝敗判定を行ってbreakでwhile文を抜ける。
 
-		//自分の王がとられた場合
-		if (MainMap[KingY][KingX]==0)
-		{
-			//勝敗判定
-			lose_flag = true;
-			//break;
-
-		};
+		
 
 //----------登録した駒の移動描画-----------
 
@@ -290,6 +272,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 				case 0:
 				{
 					//何もない場所
+					//DrawGraphF(x * 64 + 192, y * 64, sc, TRUE);
 					break;
 				}
 
@@ -312,14 +295,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 				}
 
 				case 4://騎士
-				DrawGraphF(x * 64 + 192, y * 64, Knight, TRUE);//騎士の画像
 					{
+					DrawGraphF(x * 64 + 192, y * 64, Knight, TRUE);//騎士の画像
 					break;
 				}
-
 				case 5://王
 				{
-					DrawGraphF(x * 64 + 192, y * 64, King, TRUE);//騎士の画像
+					//DrawGraphF(x * 64 + 192, y * 64, King, TRUE);//騎士の画像
 					KingX = x;
 					KingY = y;
 					break;
@@ -327,7 +309,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 				case 6://相手の王
 				{
-					DrawRotaGraph3(x*64+256,y*64+64,0,0, 1.0f, 1.0f, PI, EKing, TRUE);//王の画像
+					DrawRotaGraph3(x*64+256,y*64+65,0,0, 1.0f, 1.0f, PI, EKing, TRUE);//王の画像
 					EKingX = x;
 					EKingY = y;
 					break;
@@ -374,4 +356,23 @@ bool HitClick(int Cx,int Cy,int x1,int y1)
 		return TRUE;
 	}
 	return FALSE;
+}
+//クリックしたところが何の駒の場所かを調べる。
+POS HitPos(int PosX, int PosY)
+{
+	for (int i = 0; i < 7; i++)
+	{
+		for (int j = 0; j < 7; j++)
+		{
+			if (HitClick(POPUP_X + POPDOWN_X * i, POPUP_Y + POPDOWN_Y * j, POPDOWN_X, POPDOWN_Y) == true)
+			{
+				POS pos;
+				pos.x = i;
+				pos.y = j;
+
+				return pos;
+			}
+		}
+	}
+	
 }

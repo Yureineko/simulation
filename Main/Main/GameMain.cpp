@@ -279,6 +279,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 				while (GetMouseInput() != 0 & MOUSE_INPUT_LEFT != 0)
 				{
 				
+					
 
 				}
 			

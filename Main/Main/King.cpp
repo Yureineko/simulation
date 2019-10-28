@@ -30,6 +30,11 @@ int KING::Action(VEC vec)
 	case 3:
 		y += 5;//‰º‚ÉˆÚ“®
 		break;
+	case 4:
+		x += 5;
+		y -= 5;//‰Eã‚ÉˆÚ“®
+		break;
+
 	
 	
 	}

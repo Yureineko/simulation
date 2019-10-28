@@ -63,8 +63,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	int Sorcerer=LoadGraph("image\\");//‚±‚±‚É–‚“±m‚Ì‰æ‘œ
 	int Espionage =LoadGraph("image\\");//‚±‚±‚É’³•ñˆõ‚Ì‰æ‘œ
 	int Knight =LoadGraph("image\\");//‚±‚±‚É‹Rm‚Ì‰æ‘œ
-	int King =LoadGraph("image\\King.png");//‚±‚±‚É‰¤‚Ì‰æ‘œ
-	int EKing = LoadGraph("image\\King.png");//‚±‚±‚É‰¤‚Ì‰æ‘œ
+	int King =LoadGraph("image\\King(64).png");//‚±‚±‚É‰¤‚Ì‰æ‘œ
+	int EKing = LoadGraph("image\\King(64).png");//‚±‚±‚É‰¤‚Ì‰æ‘œ
 
 	//ˆê’U‚±‚±‚ÅˆÊ’uˆÚ“®‚·‚éBŒã‚ÅÁ‚·‚©‚àB
 	int SoldX = 1, SoldY = 1;//•ºm‚ÌˆÊ’uX,Y
@@ -327,7 +327,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 				case 6://‘Šè‚Ì‰¤
 				{
-					DrawRotaGraph3(x*64+256,y*64+64,0,0, 1.0f, 1.0f, PI, EKing, TRUE);//‰¤‚Ì‰æ‘œ
+					DrawRotaGraph3(x*64+256,y*64+65,0,0, 1.0f, 1.0f, PI, EKing, TRUE);//‰¤‚Ì‰æ‘œ
 					EKingX = x;
 					EKingY = y;
 					break;

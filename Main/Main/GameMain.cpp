@@ -31,6 +31,8 @@ bool HitClick(int Cx, int Cy, int x1, int y1);
 
 bool CheckButton(Pos pushclick, Pos outclick, Pos button, int sizex, int sizey);
 
+POS HitPos(int PosX, int PosY);
+
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine, int nCmdShow)
 {
 	//windowモードで起動
@@ -93,6 +95,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			}
 		}
 	}
+
 	SORCERER*sorcerer;//魔導士の本体
 	enum VEC Sor_vec;//魔導士の移動方向
 
@@ -105,6 +108,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	SOLDIER*soldier;//兵士の本体
 	enum VEC Sol_vec;//兵士の移動方向
 
+	KING* king;
+	enum VEC Kin_nec;
 
 	//画像int変換関数
 	//int img = LoadGraph("画像名");
@@ -113,10 +118,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	int t_chara;//仮キャラクターの表示　1体目
 	int t_chara2;//仮キャラクターの表示　2体目
 
-	int Soldier=LoadGraph("image\\");//ここに兵士の画像
-	int Sorcerer=LoadGraph("image\\");//ここに魔導士の画像
-	int Espionage =LoadGraph("image\\");//ここに諜報員の画像
-	int Knight =LoadGraph("image\\");//ここに騎士の画像
+	int Soldier=LoadGraph("image\\Soldier(64).png");//ここに兵士の画像
+	int Sorcerer=LoadGraph("image\\Sorcerer(64).png");//ここに魔導士の画像
+	int Espionage =LoadGraph("image\\Espionage(64).png");//ここに諜報員の画像
+	int Knight =LoadGraph("image\\Knight(64).png");//ここに騎士の画像
 	int King =LoadGraph("image\\King(64).png");//ここに王の画像
 	int EKing = LoadGraph("image\\King(64).png");//ここに王の画像
 
@@ -131,30 +136,32 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	Pos clickpos;     //クリック位置保存用
 	Pos outclickpos;  //クリック離した位置保存用
 	bool saveclickflag;
+	bool clickflag;
 	clickpos.posX = -1;
 	clickpos.posY = -1;
 	outclickpos.posX = -1;
 	outclickpos.posY = -1;
 	saveclickflag = false;
+	clickflag = false;
 	//[][0]に駒の種類、[][1]に生存状況、[][2]にx座標、[][3]にy座標
 	int MyPieceInfo[14][4]
 	{
 		{1,1,1,1},{1,1,1,2}
 	};
 
-
-
+	POS movePos = {0,0};
+	int movepiece = 0;
+	bool moveflag = 0;
 
 	int EKingX = 6, EKingY = 6;//敵の王の位置X,Y
 
 
 	//int King = LoadGraph("image\\King.png");
 
+	
 	t_chara = LoadGraph("image\\キャラ1(仮).png");
 	t_chara2 = LoadGraph("image\\キャラ2(仮).png");
-
-	//背景の画像表示	
-	LoadGraphScreen(0, 0, "image\\BackGround.png", TRUE);
+	
 
 	int sc = LoadGraph("image\\BackGround.png");
 
@@ -178,8 +185,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	
 	//DrawGraph(384, 0, King, TRUE);//王の描画
 
-	DrawGraph(0, 0, t_chara, TRUE);//プレイヤー1の描画
-	DrawGraph(640, 0, t_chara2, TRUE);//プレイヤー2の描画
+	
 	
 	int turn=0;//ターン変数....0:自分のターン　1:相手のターン
 	int movepointX;//駒の移動の変数(MainMapと照らし合わせて使用する。)
@@ -202,9 +208,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	//マウスをwindow上に表示させる。
 	//SetMouseDispFlag(TRUE);
 
-
-	//ここで描画先を表画面にする。
-	SetDrawScreen(DX_SCREEN_FRONT);
+	//バックバッファに描画
+	SetDrawScreen(DX_SCREEN_BACK);
 
 	int cx, cy;
 	bool Click_flag = 0;
@@ -225,6 +230,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	//ここでゲームのメイン部分構築
 	while (ProcessMessage() != -1)
 	{
+		ScreenFlip();//画像のフリップ(切り替え)
+		ClearDrawScreen();//画像のクリア
+
 		//マウスの状態を確認する
 		if (GetMouseInput() & MOUSE_INPUT_LEFT)
 		{
@@ -248,16 +256,72 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 		//自分のターン以外は操作を不可能にする
 		if (turn == 0)
 		{
-			
-				
+			if (clickflag == false && saveclickflag == true)
+			{
+				if (moveflag == false)
+				{
+					clickflag = true;
+					POS SavePos = HitPos(clickpos.posX, clickpos.posY);
+					for (int i = 0; i < 28; i++)
+					{
+						if (SavePos.x == piecetable[i].posX && SavePos.y == piecetable[i].posY)
+						{
+							movepiece = i;
+							moveflag = true;
+						}
+					}
+				}
+				else
+				{
+					int latemove = -1;
+					movePos = HitPos(clickpos.posX, clickpos.posY);
+					for (int i = 0; i < 28; i++)
+					{
+						if (movePos.x == piecetable[i].posX && movePos.y == piecetable[i].posY && i != movepiece)
+						{
+							latemove = i;
+						}
+					}
+					if (latemove != -1)
+					{
+						if (piecetable[movepiece].MeorEne != piecetable[latemove].MeorEne || piecetable[latemove].type == 0)
+						{
+							piecetable[movepiece].posX = movePos.x;
+							piecetable[movepiece].posY = movePos.y;
+							piecetable[latemove].type = 0;
+						}
+					}
+					else
+					{
+						piecetable[movepiece].posX = movePos.x;
+						piecetable[movepiece].posY = movePos.y;
+					}
+					clickflag = true;
+					moveflag = false;
+					/*
+					if(piecetable[movepiece].MeorEne)
+							movepiece = i;
+							moveflag = true;
+					*/
+				}
+			}
+			else if (saveclickflag == false)
+			{
+				clickflag = false;
+			}
+
 			
 
 			GetMousePoint(&Mx, &My);
+
+
+
 
 			//マウスの左クリックが押されているか
 			//マウスが押されていないとき
 			//ここでクリックできる領域を設定
 			//クリックした先が0ならそこに描画
+			/*
 			for (int y = 0; y < 7; y++)
 			{
 				for (int x = 0; x < 7; x++)
@@ -299,17 +363,41 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 					}
 					
 				}
+			}*/
+			//背景の画像表示	
+			LoadGraphScreen(0, 0, "image\\BackGround.png", TRUE);
+			DrawGraph(0, 0, t_chara, TRUE);//プレイヤー1の描画
+			DrawGraph(640, 0, t_chara2, TRUE);//プレイヤー2の描画
+			for (int i = 0; i < 28; i++)
+			{
+				switch (piecetable[i].type)
+				{
+				case 1:
+					//兵士の生成
+					DrawGraphF(piecetable[i].posX * 64 + 192, piecetable[i].posY * 64, Soldier, TRUE);
+					break;
+				case 2:
+					//魔導士の生成
+					DrawGraphF(piecetable[i].posX * 64 + 192, piecetable[i].posY * 64, Sorcerer, TRUE);
+					break;
+				case 3:
+					//諜報員の生成
+					DrawGraphF(piecetable[i].posX * 64 + 192, piecetable[i].posY * 64, Espionage, TRUE);
+					break;
+
+				case 4:
+					//騎士の生成
+					DrawGraphF(piecetable[i].posX * 64 + 192, piecetable[i].posY * 64, Knight, TRUE);
+					break;
+
+				case 5:
+					//王の生成
+					DrawGraphF(piecetable[i].posX * 64 + 192, piecetable[i].posY * 64, King, TRUE);
+					break;
+				}
 			}
 
 			//king->Draw();
-
-				//マウスを押したときの処理
-				//左クリックしたときの処理
-				while (GetMouseInput() != 0 & MOUSE_INPUT_LEFT != 0)
-				{
-				
-
-				}
 			
 		
 
@@ -331,65 +419,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 		}
 
 //----------登録した駒の移動描画-----------
-
-		//Swich文でmapの描画と更新を行う
-		for (int y = 0; y < 7; y++)
-		{
-			for (int x = 0; x < 7; x++)
-			{
-				switch (MainMap[y][x])
-				{
-				
-				case 0:
-				{
-					//何もない場所
-					//DrawGraphF(x * 64 + 192, y * 64, sc, TRUE);
-					break;
-				}
-
-				case 1://兵士
-				{
-					DrawGraphF(x * 64 + 192, y * 64, Soldier, TRUE);//兵士の描画
-					break;
-				}
-
-				case 2://魔導士
-				{
-					DrawGraphF(x * 64 + 192, y * 64, Sorcerer, TRUE);//魔導士の画像
-					break;
-				}
-
-				case 3://諜報員
-				{
-					DrawGraphF(x * 64 + 192, y * 64, Espionage, TRUE);//諜報員の画像
-					break;
-				}
-
-				case 4://騎士
-					{
-					DrawGraphF(x * 64 + 192, y * 64, Knight, TRUE);//騎士の画像
-					break;
-				}
-				case 5://王
-				{
-					//DrawGraphF(x * 64 + 192, y * 64, King, TRUE);//騎士の画像
-					KingX = x;
-					KingY = y;
-					break;
-				}
-
-				case 6://相手の王
-				{
-					DrawRotaGraph3(x*64+256,y*64+65,0,0, 1.0f, 1.0f, PI, EKing, TRUE);//王の画像
-					EKingX = x;
-					EKingY = y;
-					break;
-				}
-
-
-				}
-			}
-		}
 
 		//アニメーション再生サンプル
 		/*while (ProcessMessage() == 0)
@@ -440,7 +469,7 @@ bool CheckButton(Pos pushclick, Pos outclick, Pos button, int sizex, int sizey)
 		return false;
 	}
 }
-}
+
 //クリックしたところが何の駒の場所かを調べる。
 POS HitPos(int PosX, int PosY)
 {
@@ -448,7 +477,7 @@ POS HitPos(int PosX, int PosY)
 	{
 		for (int j = 0; j < 7; j++)
 		{
-			if (HitClick(POPUP_X + POPDOWN_X * i, POPUP_Y + POPDOWN_Y * j, POPDOWN_X, POPDOWN_Y) == true)
+			if (HitClick(PosX, PosY, POPUP_X + POPDOWN_X * i, POPUP_Y + POPDOWN_Y * j) == true)
 			{
 				POS pos;
 				pos.x = i;
@@ -458,5 +487,7 @@ POS HitPos(int PosX, int PosY)
 			}
 		}
 	}
-	
+	POS nullpos = {-1,-1};
+
+	return nullpos;
 }

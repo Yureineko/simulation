@@ -10,13 +10,17 @@
 
 #define PI	3.1415926535897932384626433832795f
 
+//座標設定用
+typedef struct PositionInfo
+{
+	int posX;
+	int posY;
+}Pos;
 
 //クリックの領域をチェックする関数
 bool HitClick(int Cx, int Cy, int x1, int y1);
 
-
-
-
+bool CheckButton(Pos pushclick, Pos outclick, Pos button, int sizex, int sizey);
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine, int nCmdShow)
 {
@@ -94,6 +98,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	int KnightX = 4, KnightY = 4;//騎士の位置X,Y
 	int KingX = 5, KingY = 5;//王の位置X,Y	
 
+	//ボタン管理座標用
+	Pos clickpos;     //クリック位置保存用
+	Pos outclickpos;  //クリック離した位置保存用
+	bool saveclickflag;
+	clickpos.posX = -1;
+	clickpos.posY = -1;
+	outclickpos.posX = -1;
+	outclickpos.posY = -1;
+	saveclickflag = false;
 	//[][0]に駒の種類、[][1]に生存状況、[][2]にx座標、[][3]にy座標
 	int MyPieceInfo[14][4]
 	{
@@ -181,8 +194,28 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 
 	//ここでゲームのメイン部分構築
-	while (1)
+	while (ProcessMessage() != -1)
 	{
+		//マウスの状態を確認する
+		if (GetMouseInput() & MOUSE_INPUT_LEFT)
+		{
+			//左クリックが押されたとき、押した場所を確認する
+			if (saveclickflag == false)
+			{
+				saveclickflag = true;
+				GetMousePoint(&clickpos.posX, &clickpos.posY);
+			}
+		}
+		else
+		{
+			//左クリックが離されたとき、離した場所を確認する
+			if (saveclickflag == true)
+			{
+				saveclickflag = false;
+				GetMousePoint(&outclickpos.posX, &outclickpos.posY);
+			}
+		}
+
 		//自分のターン以外は操作を不可能にする
 		if (turn == 0)
 		{
@@ -259,6 +292,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 		
 
+		//outposが-1以外の場合数値を-1にする
+		if (outclickpos.posX != -1 && outclickpos.posY != -1)
+		{
+			clickpos.posX = -1;
+			clickpos.posY = -1;
+			outclickpos.posX = -1;
+			outclickpos.posY = -1;
+		}
+
 //----------登録した駒の移動描画-----------
 
 		//Swich文でmapの描画と更新を行う
@@ -333,13 +375,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 		//画像表示
 		//DrawGraph(x, y, img画像(int型), TRUE);
 
-		
-		
-
-
-		//ゲームが終わるフラグが立っていたら閉じる
-		if (ProcessMessage() == -1)
-			break;
 	}
 
 	//Dxライブラリ終了処理
@@ -356,6 +391,26 @@ bool HitClick(int Cx,int Cy,int x1,int y1)
 		return TRUE;
 	}
 	return FALSE;
+}
+
+//ボタンチェック用関数
+bool CheckButton(Pos pushclick, Pos outclick, Pos button, int sizex, int sizey)
+{
+	if (pushclick.posX >= button.posX && pushclick.posX <= button.posX + sizex &&
+		pushclick.posY >= button.posY && pushclick.posY <= button.posY + sizey &&
+		outclick.posX >= button.posX && outclick.posX <= button.posX + sizex &&
+		outclick.posY >= button.posY && outclick.posY <= button.posY + sizey)
+	{
+		//押した位置、左クリックを話した位置が共にボタン内であれば
+		//trueを返す
+		return true;
+	}
+	else
+	{
+		//そうでなければfalse
+		return false;
+	}
+}
 }
 //クリックしたところが何の駒の場所かを調べる。
 POS HitPos(int PosX, int PosY)

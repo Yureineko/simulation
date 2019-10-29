@@ -156,8 +156,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	SOLDIER*soldier;//•ºm‚Ì–{‘Ì
 	enum VEC Sol_vec;//•ºm‚ÌˆÚ“®•ûŒü
 
-	KING* king;
-	enum VEC Kin_nec;
+	KING* king;//‰¤‚Ì–{‘Ì
+	enum VEC Kin_vec;//‰¤‚ÌˆÚ“®•ûŒü
+
+	EnemyKING*enemyking;//“G‰¤‚Ì–{‘Ì
+	enum VEC EKin_vec;//“G‰¤‚ÌˆÚ“®•ûŒü
 
 	//‰æ‘œint•ÏŠ·ŠÖ”
 	//int img = LoadGraph("‰æ‘œ–¼");
@@ -452,6 +455,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 				case 5:
 					//‰¤‚Ì¶¬
 					DrawGraphF(piecetable[i].posX * 64 + 192, piecetable[i].posY * 64, King, TRUE);
+					break;
+
+				case 6:
+					//“G‰¤‚Ì¶¬
+					DrawRotaGraph(piecetable[i].posX * 64 + 224, piecetable[i].posY * 64+32,1.0f,PI, EKing, TRUE);
 					break;
 				}
 				if (i == movepiece)

@@ -2,27 +2,32 @@
 #include"DxLib.h"
 #include<string.h>//文字列を使うのでstringをinclude
 #include<string>
-#include<stdio.h>
 
 class PLAYER1
 {
 public:
 
 
-	void Skill();//PLAYER1のスキルの処理など
-};
-
-class PLAYER2
-{public:
-
-
-	void Skill();
 	
 
 private:
 
-	//void Anim();//二人目のプレイヤーのアニメ処理
-	int x,y;//二人目のプレイヤーの描画位置
+	void PL1_skill();//PLAYER1のスキルの処理
+	void Draw();//PLAYER1の描画
+};
+
+class PLAYER2
+{
+public:
+
+
+	void PL2_skill();//PLAYER2のスキル処理
+	
+
+private:
+
+	//void Anim();//PLAYER2のアニメ処理
+	int x,y;//PLAYER2の描画位置
 
 	
 };
@@ -36,6 +41,6 @@ public:
 private:
 
 	
-	int x, y;//三人目のプレイヤーの描画位置
+	void Draw();//三人目のプレイヤーの描画位置
 
 };

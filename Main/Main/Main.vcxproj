@@ -126,6 +126,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="EnemyKING.cpp" />
     <ClCompile Include="Espionage.cpp" />
     <ClCompile Include="GameMain.cpp" />
     <ClCompile Include="King.cpp" />

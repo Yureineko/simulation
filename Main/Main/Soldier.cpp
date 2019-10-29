@@ -1,8 +1,6 @@
 #include"DxLib.h"
 #include"Piece.h"
 
-
-
 //コンストラクタ
 SOLDIER::SOLDIER(int SolX, int SolY)
 {

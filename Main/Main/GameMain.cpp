@@ -77,7 +77,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 				{
 					piecetable[count].MeorEne = true;
 				}
-				count++;
 
 				if (MainMap[i][j] == 1)
 				{
@@ -140,6 +139,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 					piecetable[count].moverange[6][0] = 1;  piecetable[count].moverange[6][1] = 0;
 					piecetable[count].moverange[7][0] = 1;  piecetable[count].moverange[7][1] = -1;
 				}
+				count++;
 			}
 		}
 	}
@@ -318,19 +318,21 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 							movepiece = i;
 							moveflag = true;
 							clickflag = true;
-							/*for (int j = 0; j < piecetable[i].movelimit; j++)
+							for (int j = 0; j < piecetable[i].movelimit; j++)
 							{
-
-							}*/
+								if(SavePos.y + piecetable[i].moverange[j][1] >= 0 && SavePos.y + piecetable[i].moverange[j][1] < 7 &&
+									SavePos.x + piecetable[i].moverange[j][0] >= 0 && SavePos.x + piecetable[i].moverange[j][0] < 7)
+								CanMoveMap[SavePos.y + piecetable[i].moverange[j][1]][SavePos.x + piecetable[i].moverange[j][0]] = 1;
+							}
 						}
 					}
 				}
 				else
 				{
-					if (clickpos.posX >= POPUP_X && clickpos.posX <= POPUP_X + 64 * 7)
+					movePos = HitPos(clickpos.posX, clickpos.posY);
+					if (clickpos.posX >= POPUP_X && clickpos.posX <= POPUP_X + 64 * 7 && CanMoveMap[movePos.y][movePos.x] == 1)
 					{
 						int latemove = -1;
-						movePos = HitPos(clickpos.posX, clickpos.posY);
 						for (int i = 0; i < 28; i++)
 						{
 							if (movePos.x == piecetable[i].posX && movePos.y == piecetable[i].posY && i != movepiece)
@@ -356,6 +358,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 						}
 						clickflag = true;
 						moveflag = false;
+						for (int i = 0; i < 7; i++)
+						{
+							for (int j = 0; j < 7; j++)
+							{
+								CanMoveMap[i][j] = 0;
+							}
+						}
 						/*
 						if(piecetable[movepiece].MeorEne)
 								movepiece = i;
@@ -454,11 +463,22 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 					DrawGraphF(piecetable[i].posX * 64 + 192, piecetable[i].posY * 64, King, TRUE);
 					break;
 				}
-				if (i == movepiece)
+				if (CanMoveMap[piecetable[i].posY][piecetable[i].posX] == 1)
 				{
 					DrawGraphF(piecetable[i].posX * 64 + 192, piecetable[i].posY * 64, GreenFilter, TRUE);
 				}
 			}
+			for (int i = 0; i < 7; i++)
+			{
+				for (int j = 0; j < 7; j++)
+				{
+					if (CanMoveMap[i][j] == 1)
+					{
+						DrawGraphF(j * 64 + 192, i * 64, GreenFilter, TRUE);
+					}
+				}
+			}
+					
 
 			//king->Draw();
 			

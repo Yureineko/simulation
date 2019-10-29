@@ -56,7 +56,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	//4.‹RŽm(”òŽÔ)
 	//5.‰¤
 	//6.‘ŠŽè‚Ì‰¤
-	//int CanMoveMap[7][7] = {0};
+	int CanMoveMap[7][7] =
+	{
+		0
+	};
 
 	//‹î•Û‘¶—p
 	Piece piecetable[28];

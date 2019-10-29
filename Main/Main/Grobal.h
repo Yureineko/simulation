@@ -16,5 +16,18 @@ typedef struct PieceInfo
 	int posY;
 	bool MeorEne;
 	int movelimit;
-	int moverange[12][2];
+	int movefront;
+	int moveback;
+	int moveleft;
+	int moveright;
+	int dialu;
+	int diald;
+	int diaru;
+	int diard;
+	int spicialmoverange[8][2];
 }Piece;
+
+int CanMoveMap[7][7] =
+{
+	0
+};

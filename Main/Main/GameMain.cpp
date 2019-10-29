@@ -18,6 +18,8 @@ bool CheckButton(Pos pushclick, Pos outclick, Pos button, int sizex, int sizey);
 
 POS HitPos(int PosX, int PosY);
 
+void CheckMoveRange(Piece piece, Piece AllPiece[]);
+
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine, int nCmdShow)
 {
 	//windowモードで起動
@@ -40,7 +42,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 	//ここに盤上を設定
 	//駒の種類は最大5種類
-	int MainMap[7][7]=
+	int MainMap[7][7] =
 	{
 		{ 2,3,4,6,4,3,2 },
 		{ 1,1,1,1,1,1,1 },
@@ -56,22 +58,24 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	//4.騎士(飛車)
 	//5.王
 	//6.相手の王
-	int CanMoveMap[7][7] =
-	{
-		0
-	};
 
 	//駒保存用
+	//ここで駒の移動距離やクラスの初期化を行う
 	Piece piecetable[28];
+	//MainMapから値を取得し、その位置でその役職の情報を得る
 	for (int i = 0, count = 0; i < 7; i++)
 	{
 		for (int j = 0; j < 7; j++)
 		{
+			//0じゃない(そこに駒がある)場合
 			if (MainMap[i][j] >= 1)
 			{
+				//posX,posYにそれぞれ値を入れる
 				piecetable[count].posX = j;
 				piecetable[count].posY = i;
+				//マップナンバーから役職を特定する
 				piecetable[count].type = MainMap[i][j];
+				//半分より上なら敵駒、下なら自陣の駒という風に設定する
 				if (i < 4)
 				{
 					piecetable[count].MeorEne = false;
@@ -80,67 +84,79 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 				{
 					piecetable[count].MeorEne = true;
 				}
-
+				//役職をもとに移動設定を入れていく(クラス化予定あり)
+				//兵士
 				if (MainMap[i][j] == 1)
 				{
-					piecetable[count].movelimit = 1;
-					piecetable[count].moverange[0][0] = 0; piecetable[count].moverange[0][1] = -1;
+					piecetable[count].movelimit = 0;
+					piecetable[count].moveleft = 0;
+					piecetable[count].moveright = 0;
+					piecetable[count].movefront = 1;
+					piecetable[count].moveback = 0;
+					piecetable[count].dialu = 0;
+					piecetable[count].diald = 0;
+					piecetable[count].diaru = 0;
+					piecetable[count].diard = 0;
 				}
+				//魔導士
 				if (MainMap[i][j] == 2)
 				{
-					piecetable[count].movelimit = 12;
-					piecetable[count].moverange[0][0] = -3;  piecetable[count].moverange[0][1] = 3;
-					piecetable[count].moverange[1][0] = -3;  piecetable[count].moverange[1][1] = -3;
-					piecetable[count].moverange[2][0] = -2;  piecetable[count].moverange[2][1] = 2;
-					piecetable[count].moverange[3][0] = -2;  piecetable[count].moverange[3][1] = -2;
-					piecetable[count].moverange[4][0] = -1;  piecetable[count].moverange[4][1] = 1;
-					piecetable[count].moverange[5][0] = -1;  piecetable[count].moverange[5][1] = -1;
-					piecetable[count].moverange[6][0] = 1;   piecetable[count].moverange[6][1] = 1;
-					piecetable[count].moverange[7][0] = 1;   piecetable[count].moverange[7][1] = -1;
-					piecetable[count].moverange[8][0] = 2;   piecetable[count].moverange[8][1] = 2;
-					piecetable[count].moverange[9][0] = 2;   piecetable[count].moverange[9][1] = -2;
-					piecetable[count].moverange[10][0] = 3;  piecetable[count].moverange[10][1] = 3;
-					piecetable[count].moverange[11][0] = 3;  piecetable[count].moverange[11][1] = -3;
+					piecetable[count].movelimit = 0;
+					piecetable[count].moveleft = 0;
+					piecetable[count].moveright = 0;
+					piecetable[count].movefront = 0;
+					piecetable[count].moveback = 0;
+					piecetable[count].dialu = 3;
+					piecetable[count].diald = 3;
+					piecetable[count].diaru = 3;
+					piecetable[count].diard = 3;
 				}
+				//諜報員
 				if (MainMap[i][j] == 3)
 				{
 					piecetable[count].movelimit = 8;
-					piecetable[count].moverange[0][0] = -3; piecetable[count].moverange[0][1] = 1;
-					piecetable[count].moverange[1][0] = -3; piecetable[count].moverange[1][1] = -1;
-					piecetable[count].moverange[2][0] = -1; piecetable[count].moverange[2][1] = 3;
-					piecetable[count].moverange[3][0] = -1; piecetable[count].moverange[3][1] = -3;
-					piecetable[count].moverange[4][0] = 1;  piecetable[count].moverange[4][1] = 3;
-					piecetable[count].moverange[5][0] = 1;  piecetable[count].moverange[5][1] = -3;
-					piecetable[count].moverange[6][0] = 3;  piecetable[count].moverange[6][1] = 1;
-					piecetable[count].moverange[7][0] = 3;  piecetable[count].moverange[7][1] = -1;
+					piecetable[count].spicialmoverange[0][0] = -2; piecetable[count].spicialmoverange[0][1] = 1;
+					piecetable[count].spicialmoverange[1][0] = -2; piecetable[count].spicialmoverange[1][1] = -1;
+					piecetable[count].spicialmoverange[2][0] = -1; piecetable[count].spicialmoverange[2][1] = 2;
+					piecetable[count].spicialmoverange[3][0] = -1; piecetable[count].spicialmoverange[3][1] = -2;
+					piecetable[count].spicialmoverange[4][0] = 1;  piecetable[count].spicialmoverange[4][1] = 2;
+					piecetable[count].spicialmoverange[5][0] = 1;  piecetable[count].spicialmoverange[5][1] = -2;
+					piecetable[count].spicialmoverange[6][0] = 2;  piecetable[count].spicialmoverange[6][1] = 1;
+					piecetable[count].spicialmoverange[7][0] = 2;  piecetable[count].spicialmoverange[7][1] = -1;
+					piecetable[count].moveleft = 0;
+					piecetable[count].moveright = 0;
+					piecetable[count].movefront = 0;
+					piecetable[count].moveback = 0;
+					piecetable[count].dialu = 0;
+					piecetable[count].diald = 0;
+					piecetable[count].diaru = 0;
+					piecetable[count].diard = 0;
 				}
+				//騎士
 				if (MainMap[i][j] == 4)
 				{
-					piecetable[count].movelimit = 12;
-					piecetable[count].moverange[0][0] = -3;  piecetable[count].moverange[0][1] = 0;
-					piecetable[count].moverange[1][0] = -2;  piecetable[count].moverange[1][1] = 0;
-					piecetable[count].moverange[2][0] = -1;  piecetable[count].moverange[2][1] = 0;
-					piecetable[count].moverange[3][0] = 0;   piecetable[count].moverange[3][1] = 3;
-					piecetable[count].moverange[4][0] = 0;   piecetable[count].moverange[4][1] = 2;
-					piecetable[count].moverange[5][0] = 0;   piecetable[count].moverange[5][1] = 1;
-					piecetable[count].moverange[6][0] = 0;   piecetable[count].moverange[6][1] = -1;
-					piecetable[count].moverange[7][0] = 0;   piecetable[count].moverange[7][1] = -2;
-					piecetable[count].moverange[8][0] = 0;   piecetable[count].moverange[8][1] = -3;
-					piecetable[count].moverange[9][0] = 1;   piecetable[count].moverange[9][1] = 0;
-					piecetable[count].moverange[10][0] = 2;  piecetable[count].moverange[10][1] = 0;
-					piecetable[count].moverange[11][0] = 3;  piecetable[count].moverange[11][1] = 0;
+					piecetable[count].movelimit = 0;
+					piecetable[count].moveleft = 3;
+					piecetable[count].moveright = 3;
+					piecetable[count].movefront = 3;
+					piecetable[count].moveback = 3;
+					piecetable[count].dialu = 0;
+					piecetable[count].diald = 0;
+					piecetable[count].diaru = 0;
+					piecetable[count].diard = 0;
 				}
+				//自陣王
 				if (MainMap[i][j] == 5)
 				{
-					piecetable[count].movelimit = 8;
-					piecetable[count].moverange[0][0] = -1; piecetable[count].moverange[0][1] = 1;
-					piecetable[count].moverange[1][0] = -1; piecetable[count].moverange[1][1] = 0;
-					piecetable[count].moverange[2][0] = -1; piecetable[count].moverange[2][1] = -1;
-					piecetable[count].moverange[3][0] = 0;  piecetable[count].moverange[3][1] = 1;
-					piecetable[count].moverange[4][0] = 0;  piecetable[count].moverange[4][1] = -1;
-					piecetable[count].moverange[5][0] = 1;  piecetable[count].moverange[5][1] = 1;
-					piecetable[count].moverange[6][0] = 1;  piecetable[count].moverange[6][1] = 0;
-					piecetable[count].moverange[7][0] = 1;  piecetable[count].moverange[7][1] = -1;
+					piecetable[count].movelimit = 0;
+					piecetable[count].moveleft = 1;
+					piecetable[count].moveright = 1;
+					piecetable[count].movefront = 1;
+					piecetable[count].moveback = 1;
+					piecetable[count].dialu = 1;
+					piecetable[count].diald = 1;
+					piecetable[count].diaru = 1;
+					piecetable[count].diard = 1;
 				}
 				count++;
 			}
@@ -188,8 +204,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	//ボタン管理座標用
 	Pos clickpos;     //クリック位置保存用
 	Pos outclickpos;  //クリック離した位置保存用
-	bool saveclickflag;
-	bool clickflag;
+	bool saveclickflag;//クリック制御を行う為のフラグ
+	bool clickflag;    //
 	clickpos.posX = -1;
 	clickpos.posY = -1;
 	outclickpos.posX = -1;
@@ -309,6 +325,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 		//自分のターン以外は操作を不可能にする
 		if (turn == 0)
 		{
+			
 			if (clickflag == false && saveclickflag == true)
 			{
 				if (moveflag == false)
@@ -321,12 +338,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 							movepiece = i;
 							moveflag = true;
 							clickflag = true;
-							for (int j = 0; j < piecetable[i].movelimit; j++)
-							{
-								if(SavePos.y + piecetable[i].moverange[j][1] >= 0 && SavePos.y + piecetable[i].moverange[j][1] < 7 &&
-									SavePos.x + piecetable[i].moverange[j][0] >= 0 && SavePos.x + piecetable[i].moverange[j][0] < 7)
-								CanMoveMap[SavePos.y + piecetable[i].moverange[j][1]][SavePos.x + piecetable[i].moverange[j][0]] = 1;
-							}
+							CheckMoveRange(piecetable[i], piecetable);
 						}
 					}
 				}
@@ -576,4 +588,294 @@ POS HitPos(int PosX, int PosY)
 	POS nullpos = {-1,-1};
 
 	return nullpos;
+}
+
+//行動範囲領域判定
+void CheckMoveRange(Piece piece, Piece AllPiece[])
+{
+	//前判定
+	for (int i = 1; i <= piece.movefront; i++)
+	{
+		bool breakflag = false;
+
+		for (int j = 0; j < 28; j++)
+		{
+			if (AllPiece[j].posX == piece.posX && AllPiece[j].posY == piece.posY - i && AllPiece[j].type != 0)
+			{
+				if (AllPiece[j].MeorEne == piece.MeorEne)
+				{
+					breakflag = true;
+				}
+				else
+				{
+					if (piece.posY - i >= 0)
+						CanMoveMap[piece.posY - i][piece.posX] = 1;
+					breakflag = true;
+				}
+			}
+		}
+
+		if (breakflag == true)
+		{
+			break;
+		}
+		else
+		{
+			if (piece.posY - i >= 0)
+				CanMoveMap[piece.posY - i][piece.posX] = 1;
+		}
+	}
+	//後ろ判定
+	for (int i = 1; i <= piece.moveback; i++)
+	{
+		bool breakflag = false;
+
+		for (int j = 0; j < 28; j++)
+		{
+			if (AllPiece[j].posX == piece.posX && AllPiece[j].posY == piece.posY + i&& AllPiece[j].type != 0)
+			{
+				if (AllPiece[j].MeorEne == piece.MeorEne)
+				{
+					breakflag = true;
+				}
+				else
+				{
+					if (piece.posY - i <= 6)
+						CanMoveMap[piece.posY + i][piece.posX] = 1;
+					breakflag = true;
+				}
+			}
+		}
+
+		if (breakflag == true)
+		{
+			break;
+		}
+		else
+		{
+			if (piece.posY - i <= 6)
+				CanMoveMap[piece.posY + i][piece.posX] = 1;
+		}
+	}
+	//左判定
+	for (int i = 1; i <= piece.moveleft; i++)
+	{
+		bool breakflag = false;
+
+		for (int j = 0; j < 28; j++)
+		{
+			if (AllPiece[j].posX == piece.posX - i && AllPiece[j].posY == piece.posY&& AllPiece[j].type != 0)
+			{
+				if (AllPiece[j].MeorEne == piece.MeorEne)
+				{
+					breakflag = true;
+				}
+				else
+				{
+					if (piece.posX - i >= 0)
+						CanMoveMap[piece.posY][piece.posX - i] = 1;
+					breakflag = true;
+				}
+			}
+		}
+
+		if (breakflag == true)
+		{
+			break;
+		}
+		else
+		{
+			if (piece.posX - i >= 0)
+				CanMoveMap[piece.posY][piece.posX - i] = 1;
+		}
+	}
+	//右判定
+	for (int i = 1; i <= piece.moveright; i++)
+	{
+		bool breakflag = false;
+
+		for (int j = 0; j < 28; j++)
+		{
+			if (AllPiece[j].posX == piece.posX + i && AllPiece[j].posY == piece.posY&& AllPiece[j].type != 0)
+			{
+				if (AllPiece[j].MeorEne == piece.MeorEne)
+				{
+					breakflag = true;
+				}
+				else
+				{
+					if (piece.posX + i <= 6)
+						CanMoveMap[piece.posY][piece.posX + i] = 1;
+					breakflag = true;
+				}
+			}
+		}
+
+		if (breakflag == true)
+		{
+			break;
+		}
+		else
+		{
+			if (piece.posX + i <= 6)
+				CanMoveMap[piece.posY][piece.posX + i] = 1;
+		}
+	}
+	//左斜め上判定
+	for (int i = 1; i <= piece.dialu; i++)
+	{
+		bool breakflag = false;
+
+		for (int j = 0; j < 28; j++)
+		{
+			if (AllPiece[j].posX == piece.posX - i && AllPiece[j].posY == piece.posY - i&& AllPiece[j].type != 0)
+			{
+				if (AllPiece[j].MeorEne == piece.MeorEne)
+				{
+					breakflag = true;
+				}
+				else
+				{
+					if (piece.posY - i >= 0 && piece.posX - i >= 0)
+						CanMoveMap[piece.posY - i][piece.posX - i] = 1;
+					breakflag = true;
+				}
+			}
+		}
+
+		if (breakflag == true)
+		{
+			break;
+		}
+		else
+		{
+			if (piece.posY - i >= 0 && piece.posX - i >= 0)
+				CanMoveMap[piece.posY - i][piece.posX - i] = 1;
+		}
+	}
+	//左斜め下判定
+	for (int i = 1; i <= piece.diald; i++)
+	{
+		bool breakflag = false;
+
+		for (int j = 0; j < 28; j++)
+		{
+			if (AllPiece[j].posX == piece.posX - i && AllPiece[j].posY == piece.posY + i&& AllPiece[j].type != 0)
+			{
+				if (AllPiece[j].MeorEne == piece.MeorEne)
+				{
+					breakflag = true;
+				}
+				else
+				{
+					if (piece.posY + i <= 6 && piece.posX - i >= 0)
+						CanMoveMap[piece.posY + i][piece.posX - i] = 1;
+					breakflag = true;
+				}
+			}
+		}
+
+		if (breakflag == true)
+		{
+			break;
+		}
+		else
+		{
+			if (piece.posY + i <= 6 && piece.posX - i >= 0)
+				CanMoveMap[piece.posY + i][piece.posX - i] = 1;
+		}
+	}
+	//右斜め上判定
+	for (int i = 1; i <= piece.diaru; i++)
+	{
+		bool breakflag = false;
+
+		for (int j = 0; j < 28; j++)
+		{
+			if (AllPiece[j].posX == piece.posX + i && AllPiece[j].posY == piece.posY - i&& AllPiece[j].type != 0)
+			{
+				if (AllPiece[j].MeorEne == piece.MeorEne)
+				{
+					breakflag = true;
+				}
+				else
+				{
+					if (piece.posY - i >= 0 && piece.posX + i <= 6)
+						CanMoveMap[piece.posY - i][piece.posX + i] = 1;
+					breakflag = true;
+				}
+			}
+		}
+
+		if (breakflag == true)
+		{
+			break;
+		}
+		else
+		{
+			if (piece.posY - i >= 0 && piece.posX + i <= 6)
+				CanMoveMap[piece.posY - i][piece.posX + i] = 1;
+		}
+	}
+	//右斜め下判定
+	for (int i = 1; i <= piece.diard; i++)
+	{
+		bool breakflag = false;
+
+		for (int j = 0; j < 28; j++)
+		{
+			if (AllPiece[j].posX == piece.posX + i && AllPiece[j].posY == piece.posY + i&& AllPiece[j].type != 0)
+			{
+				if (AllPiece[j].MeorEne == piece.MeorEne)
+				{
+					breakflag = true;
+				}
+				else
+				{
+					if (piece.posY + i <= 6 && piece.posX + i <= 6)
+						CanMoveMap[piece.posY + i][piece.posX + i] = 1;
+					breakflag = true;
+				}
+			}
+		}
+
+		if (breakflag == true)
+		{
+			break;
+		}
+		else
+		{
+			if (piece.posY + i <= 6 && piece.posX + i <= 6)
+				CanMoveMap[piece.posY + i][piece.posX + i] = 1;
+		}
+	}
+	//特殊位置移動判定
+	for (int i = 0; i < piece.movelimit; i++)
+	{
+		bool breakflag = false;
+
+		for (int j = 0; j < 28; j++)
+		{
+			if (AllPiece[j].posX == piece.posX + piece.spicialmoverange[i][0] && AllPiece[j].posY == piece.posY + piece.spicialmoverange[i][1] && AllPiece[j].type != 0)
+			{
+				if (AllPiece[j].MeorEne == piece.MeorEne)
+				{
+					breakflag = true;
+				}
+				else
+				{
+					if (piece.posY + piece.spicialmoverange[i][1] >= 0 && piece.posY + piece.spicialmoverange[i][1] <= 6 &&
+						piece.posX + piece.spicialmoverange[i][0] >= 0 && piece.posX + piece.spicialmoverange[i][0] <= 6)
+						CanMoveMap[piece.posY + piece.spicialmoverange[i][1]][piece.posX + piece.spicialmoverange[i][0]] = 1;
+					breakflag = true;
+				}
+			}
+		}
+		if (breakflag == false)
+		{
+			if (piece.posY + piece.spicialmoverange[i][1] >= 0 && piece.posY + piece.spicialmoverange[i][1] <= 6 &&
+				piece.posX + piece.spicialmoverange[i][0] >= 0 && piece.posX + piece.spicialmoverange[i][0] <= 6)
+				CanMoveMap[piece.posY + piece.spicialmoverange[i][1]][piece.posX + piece.spicialmoverange[i][0]] = 1;
+		}
+	}
 }

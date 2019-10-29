@@ -1,5 +1,6 @@
 #include "DxLib.h"
-#include"Piece.h"
+#include "Piece.h"
+#include "Grobal.h"
 
 #define SCREEN_PIXWIDTH		832
 #define SCREEN_PIXHEIGHT	448
@@ -9,22 +10,6 @@
 #define POPDOWN_Y 64
 
 #define PI	3.1415926535897932384626433832795f
-
-//座標設定用
-typedef struct PositionInfo
-{
-	int posX;
-	int posY;
-}Pos;
-
-//駒設定用
-typedef struct PieceInfo
-{
-	int type;
-	int posX;
-	int posY;
-	bool MeorEne;
-}Piece;
 
 //クリックの領域をチェックする関数
 bool HitClick(int Cx, int Cy, int x1, int y1);
@@ -71,6 +56,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	//4.騎士(飛車)
 	//5.王
 	//6.相手の王
+	int CanMoveMap[7][7] = {0};
 
 	//駒保存用
 	Piece piecetable[28];
@@ -92,6 +78,68 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 					piecetable[count].MeorEne = true;
 				}
 				count++;
+
+				if (MainMap[i][j] == 1)
+				{
+					piecetable[count].movelimit = 1;
+					piecetable[count].moverange[0][0] = 0; piecetable[count].moverange[0][1] = -1;
+				}
+				if (MainMap[i][j] == 2)
+				{
+					piecetable[count].movelimit = 12;
+					piecetable[count].moverange[0][0] = -3;  piecetable[count].moverange[0][1] = 3;
+					piecetable[count].moverange[1][0] = -3;  piecetable[count].moverange[1][1] = -3;
+					piecetable[count].moverange[2][0] = -2;  piecetable[count].moverange[2][1] = 2;
+					piecetable[count].moverange[3][0] = -2;  piecetable[count].moverange[3][1] = -2;
+					piecetable[count].moverange[4][0] = -1;  piecetable[count].moverange[4][1] = 1;
+					piecetable[count].moverange[5][0] = -1;  piecetable[count].moverange[5][1] = -1;
+					piecetable[count].moverange[6][0] = 1;   piecetable[count].moverange[6][1] = 1;
+					piecetable[count].moverange[7][0] = 1;   piecetable[count].moverange[7][1] = -1;
+					piecetable[count].moverange[8][0] = 2;   piecetable[count].moverange[8][1] = 2;
+					piecetable[count].moverange[9][0] = 2;   piecetable[count].moverange[9][1] = -2;
+					piecetable[count].moverange[10][0] = 3;  piecetable[count].moverange[10][1] = 3;
+					piecetable[count].moverange[11][0] = 3;  piecetable[count].moverange[11][1] = -3;
+				}
+				if (MainMap[i][j] == 3)
+				{
+					piecetable[count].movelimit = 8;
+					piecetable[count].moverange[0][0] = -3; piecetable[count].moverange[0][1] = 1;
+					piecetable[count].moverange[1][0] = -3; piecetable[count].moverange[1][1] = -1;
+					piecetable[count].moverange[2][0] = -1; piecetable[count].moverange[2][1] = 3;
+					piecetable[count].moverange[3][0] = -1; piecetable[count].moverange[3][1] = -3;
+					piecetable[count].moverange[4][0] = 1;  piecetable[count].moverange[4][1] = 3;
+					piecetable[count].moverange[5][0] = 1;  piecetable[count].moverange[5][1] = -3;
+					piecetable[count].moverange[6][0] = 3;  piecetable[count].moverange[6][1] = 1;
+					piecetable[count].moverange[7][0] = 3;  piecetable[count].moverange[7][1] = -1;
+				}
+				if (MainMap[i][j] == 4)
+				{
+					piecetable[count].movelimit = 12;
+					piecetable[count].moverange[0][0] = -3;  piecetable[count].moverange[0][1] = 0;
+					piecetable[count].moverange[1][0] = -2;  piecetable[count].moverange[1][1] = 0;
+					piecetable[count].moverange[2][0] = -1;  piecetable[count].moverange[2][1] = 0;
+					piecetable[count].moverange[3][0] = 0;   piecetable[count].moverange[3][1] = 3;
+					piecetable[count].moverange[4][0] = 0;   piecetable[count].moverange[4][1] = 2;
+					piecetable[count].moverange[5][0] = 0;   piecetable[count].moverange[5][1] = 1;
+					piecetable[count].moverange[6][0] = 0;   piecetable[count].moverange[6][1] = -1;
+					piecetable[count].moverange[7][0] = 0;   piecetable[count].moverange[7][1] = -2;
+					piecetable[count].moverange[8][0] = 0;   piecetable[count].moverange[8][1] = -3;
+					piecetable[count].moverange[9][0] = 1;   piecetable[count].moverange[9][1] = 0;
+					piecetable[count].moverange[10][0] = 2;  piecetable[count].moverange[10][1] = 0;
+					piecetable[count].moverange[11][0] = 3;  piecetable[count].moverange[11][1] = 0;
+				}
+				if (MainMap[i][j] == 5)
+				{
+					piecetable[count].movelimit = 8;
+					piecetable[count].moverange[0][0] = -1; piecetable[count].moverange[0][1] = 1;
+					piecetable[count].moverange[1][0] = -1; piecetable[count].moverange[1][1] = 0;
+					piecetable[count].moverange[2][0] = -1; piecetable[count].moverange[2][1] = -1;
+					piecetable[count].moverange[3][0] = 0;  piecetable[count].moverange[3][1] = 1;
+					piecetable[count].moverange[4][0] = 0;  piecetable[count].moverange[4][1] = -1;
+					piecetable[count].moverange[5][0] = 1;  piecetable[count].moverange[5][1] = 1;
+					piecetable[count].moverange[6][0] = 1;  piecetable[count].moverange[6][1] = 0;
+					piecetable[count].moverange[7][0] = 1;  piecetable[count].moverange[7][1] = -1;
+				}
 			}
 		}
 	}
@@ -125,6 +173,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	int King =LoadGraph("image\\King(64).png");//ここに王の画像
 	int EKing = LoadGraph("image\\King(64).png");//ここに王の画像
 
+	int GreenFilter = LoadGraph("image\\greenfilter.png");
+
 	//一旦ここで位置移動する。後で消すかも。
 	int SoldX = 1, SoldY = 1;//兵士の位置X,Y
 	int SorcX = 2, SorcY = 2;//魔導士の位置X,Y
@@ -150,8 +200,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	};
 
 	POS movePos = {0,0};
-	int movepiece = 0;
-	bool moveflag = 0;
+	int movepiece = -1;
+	bool moveflag = false;
 
 	int EKingX = 6, EKingY = 6;//敵の王の位置X,Y
 
@@ -260,49 +310,58 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			{
 				if (moveflag == false)
 				{
-					clickflag = true;
 					POS SavePos = HitPos(clickpos.posX, clickpos.posY);
 					for (int i = 0; i < 28; i++)
 					{
-						if (SavePos.x == piecetable[i].posX && SavePos.y == piecetable[i].posY)
+						if (SavePos.x == piecetable[i].posX && SavePos.y == piecetable[i].posY && piecetable[i].type != 0)
 						{
 							movepiece = i;
 							moveflag = true;
+							clickflag = true;
+							/*for (int j = 0; j < piecetable[i].movelimit; j++)
+							{
+
+							}*/
 						}
 					}
 				}
 				else
 				{
-					int latemove = -1;
-					movePos = HitPos(clickpos.posX, clickpos.posY);
-					for (int i = 0; i < 28; i++)
+					if (clickpos.posX >= POPUP_X && clickpos.posX <= POPUP_X + 64 * 7)
 					{
-						if (movePos.x == piecetable[i].posX && movePos.y == piecetable[i].posY && i != movepiece)
+						int latemove = -1;
+						movePos = HitPos(clickpos.posX, clickpos.posY);
+						for (int i = 0; i < 28; i++)
 						{
-							latemove = i;
+							if (movePos.x == piecetable[i].posX && movePos.y == piecetable[i].posY && i != movepiece)
+							{
+								latemove = i;
+							}
 						}
-					}
-					if (latemove != -1)
-					{
-						if (piecetable[movepiece].MeorEne != piecetable[latemove].MeorEne || piecetable[latemove].type == 0)
+						if (latemove != -1)
+						{
+							if (piecetable[movepiece].MeorEne != piecetable[latemove].MeorEne || piecetable[latemove].type == 0)
+							{
+								piecetable[movepiece].posX = movePos.x;
+								piecetable[movepiece].posY = movePos.y;
+								piecetable[latemove].type = 0;
+								movepiece = -1;
+							}
+						}
+						else
 						{
 							piecetable[movepiece].posX = movePos.x;
 							piecetable[movepiece].posY = movePos.y;
-							piecetable[latemove].type = 0;
+							movepiece = -1;
 						}
+						clickflag = true;
+						moveflag = false;
+						/*
+						if(piecetable[movepiece].MeorEne)
+								movepiece = i;
+								moveflag = true;
+						*/
 					}
-					else
-					{
-						piecetable[movepiece].posX = movePos.x;
-						piecetable[movepiece].posY = movePos.y;
-					}
-					clickflag = true;
-					moveflag = false;
-					/*
-					if(piecetable[movepiece].MeorEne)
-							movepiece = i;
-							moveflag = true;
-					*/
 				}
 			}
 			else if (saveclickflag == false)
@@ -394,6 +453,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 					//王の生成
 					DrawGraphF(piecetable[i].posX * 64 + 192, piecetable[i].posY * 64, King, TRUE);
 					break;
+				}
+				if (i == movepiece)
+				{
+					DrawGraphF(piecetable[i].posX * 64 + 192, piecetable[i].posY * 64, GreenFilter, TRUE);
 				}
 			}
 

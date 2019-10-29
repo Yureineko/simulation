@@ -37,10 +37,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 		{ 2,3,4,6,4,3,2 },
 		{ 1,1,1,1,1,1,1 },
 		{ 0,0,0,0,0,0,0 },
-		{ 0,0,5,0,0,0,0 },
 		{ 0,0,0,0,0,0,0 },
-		{ 1,1,1,0,1,1,1 },
-		{ 2,3,4,0,4,3,2 },
+		{ 0,0,0,0,0,0,0 },
+		{ 1,1,1,1,1,1,1 },
+		{ 2,3,4,5,4,3,2 },
 	};
 	//1.•ºŽm(•à)
 	//2.–‚“±Žm(Šp)
@@ -226,8 +226,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 		
 
 
-			DrawBox(0, 0, 192, SCREEN_PIXHEIGHT, GetColor(0, 255, 255), 1);
-			DrawBox(640, 0, SCREEN_PIXWIDTH, SCREEN_PIXHEIGHT, GetColor(255, 0, 255), 1);
+			/*DrawBox(0, 0, 192, SCREEN_PIXHEIGHT, GetColor(0, 255, 255), 1);
+			DrawBox(640, 0, SCREEN_PIXWIDTH, SCREEN_PIXHEIGHT, GetColor(255, 0, 255), 1);*/
 	//‘I‘ðŽˆ‚ÌˆÚ“®	
 		if (CheckHitKey(KEY_INPUT_UP))
 		{

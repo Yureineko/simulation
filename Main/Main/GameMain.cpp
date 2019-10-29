@@ -259,15 +259,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 	
 	
-	int turn=0;//ターン変数....0:自分のターン　1:相手のターン
+	bool turn=true;//ターン変数....0:自分のターン　1:相手のターン
 	int movepointX;//駒の移動の変数(MainMapと照らし合わせて使用する。)
 	int Mx, My;//マウスの位置
 
 
 
 
-	int win_flag = false;//勝った時のフラグ
-	int lose_flag = false;//負けた時のフラグ
+	bool win_flag = false;//勝った時のフラグ
+	bool lose_flag = false;//負けた時のフラグ
 
 
 
@@ -326,11 +326,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 		}
 
 		//自分のターン以外は操作を不可能にする
-		if (turn == 0)
+		if (turn == true)
 		{
-			
+			//クリックしたとき
 			if (clickflag == false && saveclickflag == true)
 			{
+				//緑色の範囲を描画
 				if (moveflag == false)
 				{
 					POS SavePos = HitPos(clickpos.posX, clickpos.posY);
@@ -364,6 +365,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 							{
 								piecetable[movepiece].posX = movePos.x;
 								piecetable[movepiece].posY = movePos.y;
+								if (piecetable[latemove].type == 6)
+									win_flag = true;
+								if (piecetable[latemove].type == 5)
+									lose_flag = true;
 								piecetable[latemove].type = 0;
 								movepiece = -1;
 							}
@@ -376,6 +381,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 						}
 						clickflag = true;
 						moveflag = false;
+
+						turn = false;
+
 						for (int i = 0; i < 7; i++)
 						{
 							for (int j = 0; j < 7; j++)
@@ -396,13 +404,20 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 				clickflag = false;
 			}
 
-			
+
 
 			GetMousePoint(&Mx, &My);
 
 
+			
+		}
 
-
+	
+		//Zキーを押すと手番を自分に戻す。
+		if (CheckHitKey(KEY_INPUT_Z))
+		{
+			turn = true;
+		}
 			//マウスの左クリックが押されているか
 			//マウスが押されていないとき
 			//ここでクリックできる領域を設定
@@ -488,6 +503,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 				}
 				if (CanMoveMap[piecetable[i].posY][piecetable[i].posX] == 1)
 				{
+					//緑の移動範囲描画
 					DrawGraphF(piecetable[i].posX * 64 + 192, piecetable[i].posY * 64, GreenFilter, TRUE);
 				}
 			}
@@ -501,15 +517,35 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 					}
 				}
 			}
-					
+			
+			
 
+
+			if (win_flag == true)
+			{
+				SetFontSize(40);
+				//LoadGraphScreen(64, 0, "image\\駒.png", TRUE);
+				DrawString(350, 250, "YOU WIN", GetColor(255, 0, 0));
+				DrawString(300, 300, "Enterで終了", GetColor(255, 0, 0));
+			}
+			else if (lose_flag == true)
+			{
+				SetFontSize(40);
+				DrawString(350, 250, "YOU LOSE", GetColor(255, 0, 0));
+				DrawString(300, 300, "Enterで終了", GetColor(255, 0, 0));
+			}
+
+			if (CheckHitKey(KEY_INPUT_RETURN) && (win_flag == true||lose_flag==true))
+			{
+				break;
+			}
 			//king->Draw();
 			
 		
 
 
 		
-		}
+		
 		
 		//この辺り?で勝敗判定を行ってbreakでwhile文を抜ける。
 

@@ -295,10 +295,21 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	}
 
 
-	//while(裏画面)
+	//タイトル仮置き
+	while (1)
+	{
+		ScreenFlip();//画像のフリップ(切り替え)
+		ClearDrawScreen();//画像のクリア
 
-
-
+		DrawString(0, 32, "タイトル(仮)", GetColor(255, 255, 255));
+		DrawString(0, 48, "Enterで始める", GetColor(255, 255, 255));
+		DrawString(0, 256, "帰ってベルセリアやりたい", GetColor(255, 255, 255));
+		if (CheckHitKey(KEY_INPUT_RETURN))
+		{
+			break;
+		}
+	}
+	
 	//ここでゲームのメイン部分構築
 	while (ProcessMessage() != -1)
 	{

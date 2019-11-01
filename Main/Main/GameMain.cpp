@@ -225,7 +225,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 
 	//int King = LoadGraph("image\\King.png");
-
+	Scenes scene = TITLE;
 	
 	t_chara = LoadGraph("image\\キャラ1(仮).png");
 	t_chara2 = LoadGraph("image\\キャラ2(仮).png");
@@ -264,6 +264,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 	bool win_flag = false;//勝った時のフラグ
 	bool lose_flag = false;//負けた時のフラグ
+	bool gameend_flag = false;//ゲーム終了する際に使うフラグ
 
 
 
@@ -290,36 +291,66 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 	}
 
-
-	//while(裏画面)
-
-
-
-	//ここでゲームのメイン部分構築
 	while (ProcessMessage() != -1)
 	{
-		ScreenFlip();//画像のフリップ(切り替え)
-		ClearDrawScreen();//画像のクリア
+		switch (scene)
+		{
+		case TITLE:
+			SetFontSize(16);
+			DrawString(0, 32, "タイトル(仮)", GetColor(255, 255, 255));
+			DrawString(0, 48, "十字キー上で始める", GetColor(255, 255, 255));
+			DrawString(0, 64, "十字キー下で終わる", GetColor(255, 255, 255));
+			DrawString(0, 256, "帰ってベルセリアやりたい", GetColor(255, 255, 255));
+			if (CheckHitKey(KEY_INPUT_UP))
+			{
+				scene = SELECT;
+				break;
+			}
+			else if (CheckHitKey(KEY_INPUT_DOWN))
+			{
+				gameend_flag = true;
+				break;
+			}
+			break;
 
-		//マウスの状態を確認する
-		if (GetMouseInput() & MOUSE_INPUT_LEFT)
-		{
-			//左クリックが押されたとき、押した場所を確認する
-			if (saveclickflag == false)
+		case SELECT:
+			//初期化タイミング
+			DrawString(0, 48, "十字キー右で始める", GetColor(255, 255, 255));
+			DrawString(0, 64, "十字キー左で終わる", GetColor(255, 255, 255));
+			if (CheckHitKey(KEY_INPUT_RIGHT))
 			{
-				saveclickflag = true;
-				GetMousePoint(&clickpos.posX, &clickpos.posY);
+				scene = GAME;
+				break;
 			}
-		}
-		else
-		{
-			//左クリックが離されたとき、離した場所を確認する
-			if (saveclickflag == true)
+			else if (CheckHitKey(KEY_INPUT_LEFT))
 			{
-				saveclickflag = false;
-				GetMousePoint(&outclickpos.posX, &outclickpos.posY);
+				gameend_flag = true;
+				break;
 			}
-		}
+			break;
+
+		case GAME:
+
+			//ここでゲームのメイン部分構築
+			//マウスの状態を確認する
+			if (GetMouseInput() & MOUSE_INPUT_LEFT)
+			{
+				//左クリックが押されたとき、押した場所を確認する
+				if (saveclickflag == false)
+				{
+					saveclickflag = true;
+					GetMousePoint(&clickpos.posX, &clickpos.posY);
+				}
+			}
+			else
+			{
+				//左クリックが離されたとき、離した場所を確認する
+				if (saveclickflag == true)
+				{
+					saveclickflag = false;
+					GetMousePoint(&outclickpos.posX, &outclickpos.posY);
+				}
+			}
 
 		//自分のターン以外は操作を不可能にする
 		if (turn == true)
@@ -386,89 +417,43 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 						clickflag = true;
 						moveflag = false;
 
-						turn = false;
+							turn = false;
 
-						for (int i = 0; i < 7; i++)
-						{
-							for (int j = 0; j < 7; j++)
+							for (int i = 0; i < 7; i++)
 							{
-								CanMoveMap[i][j] = 0;
+								for (int j = 0; j < 7; j++)
+								{
+									CanMoveMap[i][j] = 0;
+								}
 							}
+							/*
+							if(piecetable[movepiece].MeorEne)
+							movepiece = i;
+							moveflag = true;
+							*/
 						}
-						/*
-						if(piecetable[movepiece].MeorEne)
-								movepiece = i;
-								moveflag = true;
-						*/
 					}
 				}
-			}
-			else if (saveclickflag == false)
-			{
-				clickflag = false;
-			}
-
-
-
-			GetMousePoint(&Mx, &My);
-
-
-			
-		}
-
-	
-		//Zキーを押すと手番を自分に戻す。
-		if (CheckHitKey(KEY_INPUT_Z))
-		{
-			turn = true;
-		}
-			//マウスの左クリックが押されているか
-			//マウスが押されていないとき
-			//ここでクリックできる領域を設定
-			//クリックした先が0ならそこに描画
-			/*
-			for (int y = 0; y < 7; y++)
-			{
-				for (int x = 0; x < 7; x++)
+				else if (saveclickflag == false)
 				{
-					switch (MainMap[y][x])
-					{
-					case 1:
-						//兵士の生成
-						soldier = new SOLDIER(x * 64, y * 64);
-						MainMap[y][x] = 1;
-						soldier->Draw();
-						break;
-					case 2:
-						//魔導士の生成
-						sorcerer = new SORCERER(x * 64, y * 64);
-						MainMap[y][x] = 2;
-						sorcerer->Draw();
-						break;
-					case 3:
-						//諜報員の生成
-						espionage = new ESPIONAGE(x * 64, y * 64);
-						MainMap[y][x] = 3;
-						espionage->Draw();
-						break;
-
-					case 4:
-						//騎士の生成
-						knight = new KNIGHT(x * 64, y * 64);
-						MainMap[y][x] = 4;
-						knight->Draw();
-						break;
-
-					case 5:
-						   //王の生成
-						   king = new KING(x * 64, y * 64);
-						   MainMap[y][x] = 5;
-						   king->Draw();
-						break;
-					}
-					
+					clickflag = false;
 				}
-			}*/
+
+
+
+				GetMousePoint(&Mx, &My);
+
+
+
+			}
+
+
+			//Zキーを押すと手番を自分に戻す。
+			if (CheckHitKey(KEY_INPUT_Z))
+			{
+				turn = true;
+			}
+			
 			//背景の画像表示	
 			LoadGraphScreen(0, 0, "image\\BackGround.png", TRUE);
 			DrawGraph(0, 0, t_chara, TRUE);//プレイヤー1の描画
@@ -502,7 +487,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 				case 6:
 					//敵王の生成
-					DrawRotaGraph(piecetable[i].posX * 64 + 224, piecetable[i].posY * 64+32,1.0f,PI, EKing, TRUE);
+					DrawRotaGraph(piecetable[i].posX * 64 + 224, piecetable[i].posY * 64 + 32, 1.0f, PI, EKing, TRUE);
 					break;
 				}
 				if (CanMoveMap[piecetable[i].posY][piecetable[i].posX] == 1)
@@ -521,8 +506,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 					}
 				}
 			}
-			
-			
+
+
 
 
 			if (win_flag == true)
@@ -530,55 +515,75 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 				SetFontSize(40);
 				//LoadGraphScreen(64, 0, "image\\駒.png", TRUE);
 				DrawString(350, 250, "YOU WIN", GetColor(255, 0, 0));
-				DrawString(300, 300, "Enterで終了", GetColor(255, 0, 0));
+				DrawString(250, 300, "十字キー右でタイトルへ", GetColor(255, 0, 0));
+				DrawString(250, 350, "十字キー左で終了", GetColor(255, 0, 0));
 			}
 			else if (lose_flag == true)
 			{
 				SetFontSize(40);
 				DrawString(350, 250, "YOU LOSE", GetColor(255, 0, 0));
-				DrawString(300, 300, "Enterで終了", GetColor(255, 0, 0));
+				DrawString(250, 300, "十字キー右でタイトルへ", GetColor(255, 0, 0));
+				DrawString(250, 350, "十字キー左で終了", GetColor(255, 0, 0));
 			}
 
-			if (CheckHitKey(KEY_INPUT_RETURN) && (win_flag == true||lose_flag==true))
+			if (CheckHitKey(KEY_INPUT_UP) && (win_flag == true || lose_flag == true))
 			{
+				scene = TITLE;
+				break;
+			}
+			else if (CheckHitKey(KEY_INPUT_DOWN) && (win_flag == true || lose_flag == true))
+			{
+				gameend_flag = true;
 				break;
 			}
 			//king->Draw();
-			
-		
 
 
-		
-		
-		
-		//この辺り?で勝敗判定を行ってbreakでwhile文を抜ける。
 
-		
 
-		//outposが-1以外の場合数値を-1にする
-		if (outclickpos.posX != -1 && outclickpos.posY != -1)
-		{
-			clickpos.posX = -1;
-			clickpos.posY = -1;
-			outclickpos.posX = -1;
-			outclickpos.posY = -1;
-		}
 
-//----------登録した駒の移動描画-----------
 
-		//アニメーション再生サンプル
-		/*while (ProcessMessage() == 0)
-		{
+
+			//この辺り?で勝敗判定を行ってbreakでwhile文を抜ける。
+
+
+
+			//outposが-1以外の場合数値を-1にする
+			if (outclickpos.posX != -1 && outclickpos.posY != -1)
+			{
+				clickpos.posX = -1;
+				clickpos.posY = -1;
+				outclickpos.posX = -1;
+				outclickpos.posY = -1;
+			}
+
+			//----------登録した駒の移動描画-----------
+
+			//アニメーション再生サンプル
+			/*while (ProcessMessage() == 0)
+			{
 			DrawGraph(0, 0, MovieGraphHandle, FALSE);
 			WaitTimer(10);
-		}*/
+			}*/
 
-		//文字列表示
-		//DrawString(x, y, 表示する文字列(*char), 表示する際の文字の色(GetColor(r,g,b)));
+			//文字列表示
+			//DrawString(x, y, 表示する文字列(*char), 表示する際の文字の色(GetColor(r,g,b)));
 
-		//画像表示
-		//DrawGraph(x, y, img画像(int型), TRUE);
+			//画像表示
+			//DrawGraph(x, y, img画像(int型), TRUE);
 
+
+
+			break;
+		}
+
+		ScreenFlip();//画像のフリップ(切り替え)
+		ClearDrawScreen();//画像のクリア
+
+		if (gameend_flag == true)
+		{
+			break;
+		}
 	}
 
 	//Dxライブラリ終了処理

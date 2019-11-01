@@ -28,6 +28,11 @@ typedef struct PieceInfo
 	int spicialmoverange[8][2];
 }Piece;
 
+enum Scenes
+{
+	TITLE,SELECT,GAME,
+};
+
 int CanMoveMap[7][7] =
 {
 	0

@@ -231,7 +231,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	//int King = LoadGraph("image\\King.png");
 
 	
-	t_chara = LoadGraph("image\\キャラ1(仮).png");
+	t_chara = LoadGraph("image\\キャラクターC(仮).png");
 	t_chara2 = LoadGraph("image\\キャラ2(仮).png");
 	
 

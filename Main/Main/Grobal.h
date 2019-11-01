@@ -4,6 +4,7 @@
 //座標設定用
 typedef struct PositionInfo
 {
+	//ポジション使う際に
 	int posX;
 	int posY;
 }Pos;

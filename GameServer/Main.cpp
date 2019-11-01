@@ -13,12 +13,15 @@ struct Pos
 	int x, y;
 };
 
-//送信データ用構造体
-struct Data
+//プレイヤー情報
+struct Player
 {
-	Pos p;
-	int flg;
-	int hp;
+	IPDATA IpAddress;
+	bool connectnow;
+	bool pairflg;
+	int enemynumber;
+	int NetUDPHandle;
+	int NoConetime;
 };
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
@@ -26,9 +29,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	IPDATA Ip;//送信用IPアドレスデータ
 	int port = -1; //接続ポート
 	char StrBuf[256] = { 0,0,-1 };//データバッファ
-	int NetUDPHandle;//ネットワークハンドル
+	int NetUDPHandleData;//ネットワークハンドル
+	int NetUDPHandleConnect;//ネットワークハンドル
+	int RecvHandle;//設定用
 	char STR[256] = { NULL };//送信データ用
-	Data d;//送信データ用(構造体)
+	Player user[10];//通信するIPアドレスを保存しておくための場所
+	int pair[5][2];//お互いのペアを保存しておく
+	int connectmachine = 0;//繋げたマシン数
+	int pearcount = 0;
 
 	SetMainWindowText("受信側");//windowの名前
 	ChangeWindowMode(TRUE);//windowモード
@@ -37,20 +45,113 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	if (DxLib_Init() == -1) return -1;//エラーが起きたら終了
 
+	for (int i = 0; i < 10; i++)
+	{
+		user[i].IpAddress.d1 = 0;
+		user[i].IpAddress.d2 = 0;
+		user[i].IpAddress.d3 = 0;
+		user[i].IpAddress.d4 = 0;
+		user[i].connectnow = false;
+		user[i].pairflg = false;
+		user[i].enemynumber = -1;
+		user[i].NetUDPHandle = MakeUDPSocket(40 + i);
+		user[i].NoConetime = 0;
+	}
+
 	SetDrawScreen(DX_SCREEN_BACK);
 
 	//UDP通信用のソケットハンドルの設定
-	NetUDPHandle = MakeUDPSocket(40);
-
+	NetUDPHandleData = MakeUDPSocket(50);
+	NetUDPHandleConnect = MakeUDPSocket(30);
 
 	while (ProcessMessage() != -1)
 	{
+		
+		for (int i = 0; i < 10; i++)
+		{
+			//繋いでいるマシンの数だけ回す
+			if (user[i].connectnow == true)
+			{
+				//受信処理
+				if (CheckNetWorkRecvUDP(user[i].NetUDPHandle) == TRUE)
+				{
+					int data = 0;
+					user[i].NoConetime = 0;
+					NetWorkRecvUDP(user[i].NetUDPHandle, &user[i].IpAddress, NULL, &data, sizeof(int), FALSE);
 
+					if (user[i].pairflg == true)
+					{
+						int trueconnect = 2;
+						//データの送信
+						NetWorkSendUDP(user[i].NetUDPHandle, user[i].IpAddress, 99, &trueconnect, sizeof(int));
+					}
+					else
+					{
+						int falseconnect = 1;
+						//データの送信
+						NetWorkSendUDP(user[i].NetUDPHandle, user[i].IpAddress, 99, &falseconnect, sizeof(int));
+					}
+				}
+				else
+				{
+					user[i].NoConetime++;
+					if (user[i].NoConetime >= 60)
+					{
+						user[i].IpAddress.d1 = 0;
+						user[i].IpAddress.d2 = 0;
+						user[i].IpAddress.d3 = 0;
+						user[i].IpAddress.d4 = 0;
+						user[i].connectnow = false;
+						if (user[i].pairflg == true)
+						{
+							user[i].pairflg = false;
+							user[user[i].enemynumber].pairflg = false;
+							user[user[i].enemynumber].enemynumber = -1;
+							user[i].enemynumber = -1;
+						}
+						user[i].NoConetime = 0;
+					}
+				}
+				DrawString(0, 32 * i, "マシンと接続できました", GetColor(255, 255, 255));
+			}
+		}
 
 		//受信処理
-		if (CheckNetWorkRecvUDP(NetUDPHandle) == TRUE)
+		if (CheckNetWorkRecvUDP(NetUDPHandleConnect) == TRUE)
 		{
-			
+			for (int i = 0; i < 10; i++)
+			{
+				if (user[i].connectnow == false)
+				{
+					int data = 0;
+					NetWorkRecvUDP(NetUDPHandleConnect, &user[i].IpAddress, NULL, &data, sizeof(int), FALSE);
+					//データの送信
+					NetWorkSendUDP(user[i].NetUDPHandle, user[i].IpAddress, 99, &data, sizeof(int));
+					user[i].connectnow = true;
+					connectmachine++;
+					break;
+				}
+			}
+		}
+		//ペアづくり
+		for (int i = 0, count = 0, pairnum = -1; i < 10; i++)
+		{
+			if (user[i].connectnow == true && user[i].pairflg == false)
+			{
+				count++;
+				if (count == 1)
+				{
+					pairnum = i;
+				}
+				else
+				{
+					user[pairnum].pairflg = true;
+					user[i].pairflg = true;
+					user[pairnum].enemynumber = i;
+					user[i].enemynumber = pairnum;
+					break;
+				}
+			}
 		}
 
 		//画面の更新
@@ -59,7 +160,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	}
 
 	//ソケットハンドルの削除
-	DeleteUDPSocket(NetUDPHandle);
+	for(int i = 0; i < 10; i++)
+		DeleteUDPSocket(user[i].NetUDPHandle);
+	DeleteUDPSocket(NetUDPHandleData);
+	DeleteUDPSocket(NetUDPHandleConnect);
 
 	DxLib_End();//DXライブラリ使用の終了処理
 

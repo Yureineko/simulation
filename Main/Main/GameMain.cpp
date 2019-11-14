@@ -387,8 +387,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 								if (piecetable[latemove].type == 7)//壁には通れなくさせる。
 									movepiece = -1;
 
-								piecetable[latemove].type = 0;
-								movepiece = -1;
+								piecetable[latemove].type = 0;//何もない場所には空白
+								movepiece = -1;//移動前の駒は非表示に
 							}
 							//移動先が壁なら進めない
 							//else if(piecetable[])
@@ -464,11 +464,25 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 		//if()
 		//必殺技の箇所にマウスが
-		if (mx <CLDOWN_X&&mx>CLUP_X&&my<CLDOWN_Y&&my>CLUP_Y)
-		{	
-			if (GetMouseInput()&MOUSE_INPUT_RIGHT)
+		for (int d = 0; d < 7; d++)
+		{
+			for (int e = 0; e < 7; e++)
+			{
+
+			}
+		}
+		if (GetMouseInput()&MOUSE_INPUT_RIGHT)
+		{
+			if (skillclickflag == false)
 			{
 				skillclickflag = true;
+				GetMousePoint(&mx, &my);//カーソルの現在位置を取得
+			}
+			
+		}
+		if (mx <CLDOWN_X&&mx>CLUP_X&&my<CLDOWN_Y&&my>CLUP_Y)
+		{	
+				
 				removeskillclickflag = true;
 				if (skillclickflag == true && removeskillclickflag == true)
 				{
@@ -482,7 +496,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 				}
 				
-			}
+			
 		}
 		cr = GetColor(0, 255, 0);//緑色を取得
 

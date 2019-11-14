@@ -525,12 +525,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 				DrawString(250, 350, "十字キー左で終了", GetColor(255, 0, 0));
 			}
 
-			if (CheckHitKey(KEY_INPUT_UP) && (win_flag == true || lose_flag == true))
+			if (CheckHitKey(KEY_INPUT_RIGHT) && (win_flag == true || lose_flag == true))
 			{
 				scene = TITLE;
 				break;
 			}
-			else if (CheckHitKey(KEY_INPUT_DOWN) && (win_flag == true || lose_flag == true))
+			else if (CheckHitKey(KEY_INPUT_LEFT) && (win_flag == true || lose_flag == true))
 			{
 				gameend_flag = true;
 				break;

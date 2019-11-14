@@ -4,6 +4,7 @@
 //座標設定用
 typedef struct PositionInfo
 {
+	//ポジション使う際に
 	int posX;
 	int posY;
 }Pos;
@@ -26,6 +27,11 @@ typedef struct PieceInfo
 	int diard;
 	int spicialmoverange[8][2];
 }Piece;
+
+enum Scenes
+{
+	TITLE,SELECT,GAME,
+};
 
 int CanMoveMap[7][7] =
 {

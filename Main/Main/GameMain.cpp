@@ -210,7 +210,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	int t_charaB2;//仮背景(プレイヤー2)の表示　
 	int t_chara2;//仮キャラクター(プレイヤー2)の表示　2体目
 
-
 	unsigned int DeadlyButton;//キャラの必殺技のボタンの表示
 	DeadlyButton = GetColor(0, 0, 255);//ボタンの青色を取得
 
@@ -240,12 +239,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	//ボタン管理座標用
 	Pos clickpos;     //クリック位置保存用
 	Pos outclickpos;  //クリック離した位置保存用
-	bool saveclickflag;//クリックのして離したときフラグ
-	bool clickflag;//クリックしたときのフラグ
-	clickpos.posX = -1;//
-	clickpos.posY = -1;//
-	outclickpos.posX = -1;//必殺技のボタンのクリック場所点X
-	outclickpos.posY = -1;//必殺技のボタンのクリック場所点Y
+	bool saveclickflag;//クリックポジション取得の制御を行う為のフラグ
+	bool clickflag;    //クリック制御を行う為のフラグ
+	//初期化
+	clickpos.posX = -1;
+	clickpos.posY = -1;
+	outclickpos.posX = -1;
+	outclickpos.posY = -1;
 	saveclickflag = false;
 	clickflag = false;
 
@@ -263,6 +263,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 
 	//int King = LoadGraph("image\\King.png");
+	Scenes scene = TITLE;
+	
+	t_charaB = LoadGraph("image\\キャラ背景候補1.png");
+	t_charaB2 = LoadGraph("image\\キャラ背景候補3.png");
+	t_chara = LoadGraph("image\\キャラクター1リサイズ透過.png");
+	t_chara2 = LoadGraph("image\\キャラクター1リサイズ透過.png");
 	Scenes scene = TITLE;
 	
 	t_charaB = LoadGraph("image\\キャラ背景候補1.png");
@@ -461,7 +467,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 									CanMoveMap[i][j] = 0;
 								}
 							}
-							
+							/*
+							if(piecetable[movepiece].MeorEne)
+							movepiece = i;
+							moveflag = true;
+							*/
 						}
 					}
 				}
@@ -469,36 +479,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 				{
 					clickflag = false;
 				}
-						for (int i = 0; i < 7; i++)
-						{
-							for (int j = 0; j < 7; j++)
-							{
-								CanMoveMap[i][j] = 0;
-							}
-						}
-						
-					}
-					else
-					{
-						moveflag = false;
-						for (int i = 0; i < 7; i++)
-						{
-							for (int j = 0; j < 7; j++)
-							{
-								CanMoveMap[i][j] = 0;
-							}
-						}
-					}
-				}
-				
-
-
-
-			}
-			else if (saveclickflag == false)
-			{
-				clickflag = false;
-			}
 
 
 

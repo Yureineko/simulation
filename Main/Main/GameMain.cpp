@@ -184,9 +184,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	//画像int変換関数
 	//int img = LoadGraph("画像名");
 	
-
-	int t_chara;//仮キャラクターの表示　1体目
-	int t_chara2;//仮キャラクターの表示　2体目
+	int t_charaB;//仮背景(プレイヤー1)の表示　
+	int t_chara;//仮キャラクター(プレイヤー1)の表示　1体目
+	int t_charaB2;//仮背景(プレイヤー2)の表示　
+	int t_chara2;//仮キャラクター(プレイヤー2)の表示　2体目
 
 	int Soldier=LoadGraph("image\\Soldier(64).png");//ここに兵士の画像
 	int Sorcerer=LoadGraph("image\\Sorcerer(64).png");//ここに魔導士の画像
@@ -227,8 +228,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	//int King = LoadGraph("image\\King.png");
 	Scenes scene = TITLE;
 	
-	t_chara = LoadGraph("image\\キャラクターC(仮).png");
-	t_chara2 = LoadGraph("image\\キャラ2(仮).png");
+	t_charaB = LoadGraph("image\\キャラ背景候補1.png");
+	t_charaB2 = LoadGraph("image\\キャラ背景候補3.png");
+	t_chara = LoadGraph("image\\キャラクター1リサイズ透過.png");
+	t_chara2 = LoadGraph("image\\キャラクター1リサイズ透過.png");
 	
 
 	int sc = LoadGraph("image\\BackGround.png");
@@ -455,7 +458,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			
 			//背景の画像表示	
 			LoadGraphScreen(0, 0, "image\\BackGround.png", TRUE);
+			DrawGraph(0, 0, t_charaB, TRUE);//プレイヤー1の背景の描画
 			DrawGraph(0, 0, t_chara, TRUE);//プレイヤー1の描画
+			DrawGraph(640, 0, t_charaB2, TRUE);//プレイヤー2の背景の描画
 			DrawGraph(640, 0, t_chara2, TRUE);//プレイヤー2の描画
 			for (int i = 0; i < 28; i++)
 			{
@@ -516,6 +521,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 				DrawString(350, 250, "YOU WIN", GetColor(255, 0, 0));
 				DrawString(250, 300, "十字キー右でタイトルへ", GetColor(255, 0, 0));
 				DrawString(250, 350, "十字キー左で終了", GetColor(255, 0, 0));
+
+				t_charaB = LoadGraph("image\\キャラ背景候補1.png");
+				t_charaB2 = LoadGraph("image\\キャラ背景候補3.png");
+				t_chara = LoadGraph("image\\キャラクター1勝利透過.png");
+				t_chara2 = LoadGraph("image\\キャラクター1敗北透過.png");
+
 			}
 			else if (lose_flag == true)
 			{

@@ -269,12 +269,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	t_charaB2 = LoadGraph("image\\キャラ背景候補3.png");
 	t_chara = LoadGraph("image\\キャラクター1リサイズ透過.png");
 	t_chara2 = LoadGraph("image\\キャラクター1リサイズ透過.png");
-	Scenes scene = TITLE;
 	
-	t_charaB = LoadGraph("image\\キャラ背景候補1.png");
-	t_charaB2 = LoadGraph("image\\キャラ背景候補3.png");
-	t_chara = LoadGraph("image\\キャラクター1リサイズ透過.png");
-	t_chara2 = LoadGraph("image\\キャラクター1リサイズ透過.png");
 	
 
 	int sc = LoadGraph("image\\BackGround.png");
@@ -527,8 +522,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 				removeskillclickflag = true;
 				if (skillclickflag == true && removeskillclickflag == true)
 				{
-					MainMap[i][j] = 4;
-					//PlaySoundMem(se, DX_PLAYTYPE_BACK);
+					//MainMap[i][j] = 4;
+					PlaySoundMem(se, DX_PLAYTYPE_BACK);
 					skillclickflag = false;
 					removeskillclickflag = false;
 				}
@@ -591,7 +586,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 				if (CanMoveMap[piecetable[i].posY][piecetable[i].posX] == 1)
 				{
 					//緑の移動範囲描画
-					DrawGraphF(piecetable[i].posX * 64 + 192, piecetable[i].posY * 64, GreenFilter, TRUE);
+					DrawGraphF(piecetable[i].po
+						sX * 64 + 192, piecetable[i].posY * 64, GreenFilter, TRUE);
 				}
 			}
 			for (int i = 0; i < 7; i++)
@@ -696,7 +692,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	//Dxライブラリ終了処理
 	DxLib_End();
 
-	return 0
+	return 0;
 }
 
 

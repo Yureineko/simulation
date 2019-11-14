@@ -304,7 +304,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			DrawString(0, 32, "タイトル(仮)", GetColor(255, 255, 255));
 			DrawString(0, 48, "十字キー上で始める", GetColor(255, 255, 255));
 			DrawString(0, 64, "十字キー下で終わる", GetColor(255, 255, 255));
-			DrawString(0, 256, "帰ってベルセリアやりたい", GetColor(255, 255, 255));
 			if (CheckHitKey(KEY_INPUT_UP))
 			{
 				scene = SELECT;

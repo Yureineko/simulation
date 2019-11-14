@@ -25,6 +25,8 @@ struct Move_POS
 };
 
 
+
+
 class SOLDIER //•ºŽm‚ÌƒNƒ‰ƒX
 {
 public:

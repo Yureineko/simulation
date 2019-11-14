@@ -31,3 +31,9 @@ int CanMoveMap[7][7] =
 {
 	0
 };
+
+//•Çİ’è
+typedef struct Wall
+{
+
+};

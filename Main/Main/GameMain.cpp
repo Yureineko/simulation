@@ -207,23 +207,19 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	//ボタン管理座標用
 	Pos clickpos;     //クリック位置保存用
 	Pos outclickpos;  //クリック離した位置保存用
-	bool saveclickflag;//クリック制御を行う為のフラグ
-	bool clickflag;    //
+	bool saveclickflag;//クリックポジション取得の制御を行う為のフラグ
+	bool clickflag;    //クリック制御を行う為のフラグ
+	//初期化
 	clickpos.posX = -1;
 	clickpos.posY = -1;
 	outclickpos.posX = -1;
 	outclickpos.posY = -1;
 	saveclickflag = false;
 	clickflag = false;
-	//[][0]に駒の種類、[][1]に生存状況、[][2]にx座標、[][3]にy座標
-	int MyPieceInfo[14][4]
-	{
-		{1,1,1,1},{1,1,1,2}
-	};
 
-	POS movePos = {0,0};
-	int movepiece = -1;
-	bool moveflag = false;
+	POS movePos = {0,0}; //動く先のポジション
+	int movepiece = -1;  //動かす駒のナンバーを保存しておく用
+	bool moveflag = false;//動かす駒を選ぶのか、動いてほしい場所を選ぶのか
 
 	int EKingX = 6, EKingY = 6;//敵の王の位置X,Y
 
@@ -231,7 +227,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	//int King = LoadGraph("image\\King.png");
 	Scenes scene = TITLE;
 	
-	t_chara = LoadGraph("image\\キャラ1(仮).png");
+	t_chara = LoadGraph("image\\キャラクターC(仮).png");
 	t_chara2 = LoadGraph("image\\キャラ2(仮).png");
 	
 
@@ -355,62 +351,70 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 				}
 			}
 
-			//自分のターン以外は操作を不可能にする
-			if (turn == true)
+		//自分のターン以外は操作を不可能にする
+		if (turn == true)
+		{
+			//クリックしたとき
+			if (clickflag == false && saveclickflag == true)
 			{
-				//クリックしたとき
-				if (clickflag == false && saveclickflag == true)
+				//キャラを選択し緑色のマス(行動できる範囲)を描画
+				if (moveflag == false)
 				{
-					//緑色の範囲を描画
-					if (moveflag == false)
+					//クリックしたマスを取得しそのマスに該当する駒を探す
+					POS SavePos = HitPos(clickpos.posX, clickpos.posY);
+					for (int i = 0; i < 28; i++)
 					{
-						POS SavePos = HitPos(clickpos.posX, clickpos.posY);
-						for (int i = 0; i < 28; i++)
+						//該当する駒があり、その駒が生きていれば
+						if (SavePos.x == piecetable[i].posX && SavePos.y == piecetable[i].posY && piecetable[i].type != 0)
 						{
-							if (SavePos.x == piecetable[i].posX && SavePos.y == piecetable[i].posY && piecetable[i].type != 0)
-							{
-								movepiece = i;
-								moveflag = true;
-								clickflag = true;
-								CheckMoveRange(piecetable[i], piecetable);
-							}
+							//その駒の対応ナンバーを一時保存する
+							movepiece = i;
+							//行動場所を選ぶようにする
+							moveflag = true;
+							clickflag = true;
+							//移動できる範囲を緑色で指定する
+							CheckMoveRange(piecetable[i], piecetable);
 						}
 					}
-					else
+				}
+				//緑色のマスを選択し上記で選んだ駒をその場所に移動
+				else
+				{
+					//選んだマスを取得
+					movePos = HitPos(clickpos.posX, clickpos.posY);
+					//そのマスが範囲内
+					if (clickpos.posX >= POPUP_X && clickpos.posX <= POPUP_X + 64 * 7 && CanMoveMap[movePos.y][movePos.x] == 1)
 					{
-						movePos = HitPos(clickpos.posX, clickpos.posY);
-						if (clickpos.posX >= POPUP_X && clickpos.posX <= POPUP_X + 64 * 7 && CanMoveMap[movePos.y][movePos.x] == 1)
+						int latemove = -1;
+						for (int i = 0; i < 28; i++)
 						{
-							int latemove = -1;
-							for (int i = 0; i < 28; i++)
+							if (movePos.x == piecetable[i].posX && movePos.y == piecetable[i].posY && i != movepiece)
 							{
-								if (movePos.x == piecetable[i].posX && movePos.y == piecetable[i].posY && i != movepiece)
-								{
-									latemove = i;
-								}
+								latemove = i;
 							}
-							if (latemove != -1)
-							{
-								if (piecetable[movepiece].MeorEne != piecetable[latemove].MeorEne || piecetable[latemove].type == 0)
-								{
-									piecetable[movepiece].posX = movePos.x;
-									piecetable[movepiece].posY = movePos.y;
-									if (piecetable[latemove].type == 6)
-										win_flag = true;
-									if (piecetable[latemove].type == 5)
-										lose_flag = true;
-									piecetable[latemove].type = 0;
-									movepiece = -1;
-								}
-							}
-							else
+						}
+						if (latemove != -1)
+						{
+							if (piecetable[movepiece].MeorEne != piecetable[latemove].MeorEne || piecetable[latemove].type == 0)
 							{
 								piecetable[movepiece].posX = movePos.x;
 								piecetable[movepiece].posY = movePos.y;
+								if (piecetable[latemove].type == 6)
+									win_flag = true;
+								if (piecetable[latemove].type == 5)
+									lose_flag = true;
+								piecetable[latemove].type = 0;
 								movepiece = -1;
 							}
-							clickflag = true;
-							moveflag = false;
+						}
+						else
+						{
+							piecetable[movepiece].posX = movePos.x;
+							piecetable[movepiece].posY = movePos.y;
+							movepiece = -1;
+						}
+						clickflag = true;
+						moveflag = false;
 
 							turn = false;
 

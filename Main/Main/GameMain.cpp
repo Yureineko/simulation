@@ -212,6 +212,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 	unsigned int DeadlyButton;//キャラの必殺技のボタンの表示
 	DeadlyButton = GetColor(0, 0, 255);//ボタンの青色を取得
+	int Skillbotton = LoadPauseGraph("能力待機ボタン.png");//能力発動待機ボタンを表示
+
+
 
 	int Soldier=LoadGraph("image\\Soldier(64).png");//ここに兵士の画像
 	int Sorcerer=LoadGraph("image\\Sorcerer(64).png");//ここに魔導士の画像
@@ -227,7 +230,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 
 
-	int GreenFilter = LoadGraph("image\\greenfilter.png");
+	int GreenFilter = LoadGraph("image\\greenfilter.png");//駒の移動範囲の描画
 
 	//一旦ここで位置移動する。後で消すかも。
 	int SoldX = 1, SoldY = 1;//兵士の位置X,Y
@@ -490,50 +493,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			turn = true;
 		}
 
-		//キャラの必殺ボタンをクリックしたとき
-		int mx, my;//カーソルの位置保存
-		skillclickflag = false;
-		removeskillclickflag=false;
-
-		GetMousePoint(&mx, &my);//カーソルの現在位置を取得
-
-
-		//if()
-		//必殺技の箇所にマウスが
-		for (int d = 0; d < 7; d++)
-		{
-			for (int e = 0; e < 7; e++)
-			{
-
-			}
-		}
-		if (GetMouseInput()&MOUSE_INPUT_RIGHT)
-		{
-			if (skillclickflag == false)
-			{
-				skillclickflag = true;
-				GetMousePoint(&mx, &my);//カーソルの現在位置を取得
-			}
-			
-		}
-		if (mx <CLDOWN_X&&mx>CLUP_X&&my<CLDOWN_Y&&my>CLUP_Y)
-		{	
-				
-				removeskillclickflag = true;
-				if (skillclickflag == true && removeskillclickflag == true)
-				{
-					//MainMap[i][j] = 4;
-					PlaySoundMem(se, DX_PLAYTYPE_BACK);
-					skillclickflag = false;
-					removeskillclickflag = false;
-				}
-				else
-				{
-
-				}
-				
-			
-		}
+	
 		cr = GetColor(0, 255, 0);//緑色を取得
 
 		//DrawCircle(0,60,180,cr,TRUE);
@@ -546,7 +506,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			DrawGraph(640, 0, t_charaB2, TRUE);//プレイヤー2の背景の描画
 			DrawGraph(640, 0, t_chara2, TRUE);//プレイヤー2の描画
 			DrawCircle(90, 330, 60, DeadlyButton,TRUE);//必殺技のボタン(青い円)の描画
-			DrawString(50, 320, "必殺!発動!",GetColor(255,0,0));//必殺技ボタンの文字描画
+			DrawString(50, 320, "能力発動!",GetColor(255,0,0));//必殺技ボタンの文字描画
+			//駒の描画ひとしきり
 			for (int i = 0; i < 28; i++)
 			{
 				switch (piecetable[i].type)
@@ -586,8 +547,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 				if (CanMoveMap[piecetable[i].posY][piecetable[i].posX] == 1)
 				{
 					//緑の移動範囲描画
-					DrawGraphF(piecetable[i].po
-						sX * 64 + 192, piecetable[i].posY * 64, GreenFilter, TRUE);
+					DrawGraphF(piecetable[i].posX * 64 + 192, piecetable[i].posY * 64, GreenFilter, TRUE);
 				}
 			}
 			for (int i = 0; i < 7; i++)
@@ -600,6 +560,58 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 					}
 				}
 			}
+
+	//-------------------キャラの能力関係の処理---------------
+
+			//キャラの必殺ボタンをクリックしたとき
+			int mx, my;//カーソルの位置保存
+			skillclickflag = false;
+			removeskillclickflag = false;
+
+			GetMousePoint(&mx, &my);//カーソルの現在位置を取得
+
+
+									//if()
+									//必殺技の箇所にマウスが
+			for (int d = 0; d < 7; d++)
+			{
+				for (int e = 0; e < 7; e++)
+				{
+
+				}
+			}
+
+
+			//ボタンの領域内でかつ
+			if (mx <CLDOWN_X&&mx>CLUP_X&&my<CLDOWN_Y&&my>CLUP_Y)
+			{
+				//マウスの右クリックをすると
+				if (GetMouseInput()&MOUSE_INPUT_RIGHT)
+				{
+					skillclickflag = true;
+					removeskillclickflag = true;
+					if (skillclickflag == true)
+					{
+						
+						//PlaySoundMem(se, DX_PLAYTYPE_BACK);
+						//DrawTriangle(200, 50, 90, 420, 180, 420, DeadlyButton, TRUE);
+						DrawCircle(90, 330, 60, DeadlyButton, TRUE);//必殺技のボタン(青い円)の描画
+						DrawString(30, 320, "能力発動待機中....", GetColor(255, 0, 255));//必殺技ボタンの文字描画
+
+						//skillclickflag = false;
+						//removeskillclickflag = false;
+					}
+					else if(removeskillclickflag==true)
+					{
+						//skillclickflag = false;
+						//removeskillclickflag = false;
+					}
+
+
+				}
+			}
+
+
 
 
 
@@ -682,7 +694,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 		ScreenFlip();//画像のフリップ(切り替え)
 		ClearDrawScreen();//画像のクリア
-
+		//ゲームを終わる
 		if (gameend_flag == true)
 		{
 			break;

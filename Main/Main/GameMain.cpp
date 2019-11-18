@@ -586,8 +586,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 				if (CanMoveMap[piecetable[i].posY][piecetable[i].posX] == 1)
 				{
 					//—Î‚ÌˆÚ“®”ÍˆÍ•`‰æ
-					DrawGraphF(piecetable[i].po
-						sX * 64 + 192, piecetable[i].posY * 64, GreenFilter, TRUE);
+					DrawGraphF(piecetable[i].posX * 64 + 192, piecetable[i].posY * 64, GreenFilter, TRUE);
 				}
 			}
 			for (int i = 0; i < 7; i++)

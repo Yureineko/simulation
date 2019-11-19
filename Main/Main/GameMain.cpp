@@ -66,123 +66,123 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	//5.王
 	//6.相手の王
 
-	//駒保存用
-	//ここで駒の移動距離やクラスの初期化を行う
-	Piece piecetable[28];
-	//MainMapから値を取得し、その位置でその役職の情報を得る
-	for (int i = 0, count = 0; i < 7; i++)
-	{
-		for (int j = 0; j < 7; j++)
-		{
-			//0じゃない(そこに駒がある)場合
-			if (MainMap[i][j] >= 1&&MainMap[i][j]<=6)
-			{
-				//posX,posYにそれぞれ値を入れる
-				piecetable[count].posX = j;
-				piecetable[count].posY = i;
-				//マップナンバーから役職を特定する
-				piecetable[count].type = MainMap[i][j];
-				//半分より上なら敵駒、下なら自陣の駒という風に設定する
-				if (i < 4)
-				{
-					piecetable[count].MeorEne = false;
-				}
-				else
-				{
-					piecetable[count].MeorEne = true;
-				}
-				//移動
-				//役職をもとに移動設定を入れていく(クラス化予定あり)
-				//兵士
-				if (MainMap[i][j] == 1)
-				{
-					piecetable[count].movelimit = 0;
-					piecetable[count].moveleft = 0;
-					piecetable[count].moveright = 0;
-					piecetable[count].movefront = 1;
-					piecetable[count].moveback = 0;
-					piecetable[count].dialu = 0;
-					piecetable[count].diald = 0;
-					piecetable[count].diaru = 0;
-					piecetable[count].diard = 0;
-				}
-				//魔導士
-				if (MainMap[i][j] == 2)
-				{
-					piecetable[count].movelimit = 0;
-					piecetable[count].moveleft = 0;
-					piecetable[count].moveright = 0;
-					piecetable[count].movefront = 0;
-					piecetable[count].moveback = 0;
-					piecetable[count].dialu = 3;
-					piecetable[count].diald = 3;
-					piecetable[count].diaru = 3;
-					piecetable[count].diard = 3;
-				}
-				//諜報員
-				if (MainMap[i][j] == 3)
-				{
-					piecetable[count].movelimit = 8;
-					piecetable[count].spicialmoverange[0][0] = -2; piecetable[count].spicialmoverange[0][1] = 1;
-					piecetable[count].spicialmoverange[1][0] = -2; piecetable[count].spicialmoverange[1][1] = -1;
-					piecetable[count].spicialmoverange[2][0] = -1; piecetable[count].spicialmoverange[2][1] = 2;
-					piecetable[count].spicialmoverange[3][0] = -1; piecetable[count].spicialmoverange[3][1] = -2;
-					piecetable[count].spicialmoverange[4][0] = 1;  piecetable[count].spicialmoverange[4][1] = 2;
-					piecetable[count].spicialmoverange[5][0] = 1;  piecetable[count].spicialmoverange[5][1] = -2;
-					piecetable[count].spicialmoverange[6][0] = 2;  piecetable[count].spicialmoverange[6][1] = 1;
-					piecetable[count].spicialmoverange[7][0] = 2;  piecetable[count].spicialmoverange[7][1] = -1;
-					piecetable[count].moveleft = 0;
-					piecetable[count].moveright = 0;
-					piecetable[count].movefront = 0;
-					piecetable[count].moveback = 0;
-					piecetable[count].dialu = 0;
-					piecetable[count].diald = 0;
-					piecetable[count].diaru = 0;
-					piecetable[count].diard = 0;
-				}
-				//騎士
-				if (MainMap[i][j] == 4)
-				{
-					piecetable[count].movelimit = 0;
-					piecetable[count].moveleft = 3;
-					piecetable[count].moveright = 3;
-					piecetable[count].movefront = 3;
-					piecetable[count].moveback = 3;
-					piecetable[count].dialu = 0;
-					piecetable[count].diald = 0;
-					piecetable[count].diaru = 0;
-					piecetable[count].diard = 0;
-				}
-				//自陣王
-				if (MainMap[i][j] == 5)
-				{
-					piecetable[count].movelimit = 0;
-					piecetable[count].moveleft = 1;
-					piecetable[count].moveright = 1;
-					piecetable[count].movefront = 1;
-					piecetable[count].moveback = 1;
-					piecetable[count].dialu = 1;
-					piecetable[count].diald = 1;
-					piecetable[count].diaru = 1;
-					piecetable[count].diard = 1;
-				}
-				//壁
-				if (MainMap[i][j] == 7)
-				{
-					piecetable[count].movelimit = 0;
-					piecetable[count].moveleft = 0;
-					piecetable[count].moveright = 0;
-					piecetable[count].movefront = 0;
-					piecetable[count].moveback = 0;
-					piecetable[count].dialu = 0;
-					piecetable[count].diald = 0;
-					piecetable[count].diaru = 0;
-					piecetable[count].diard = 0;
-				}
-				count++;
-			}
-		}
-	}
+	////駒保存用
+	////ここで駒の移動距離やクラスの初期化を行う
+	//Piece piecetable[28];
+	////MainMapから値を取得し、その位置でその役職の情報を得る
+	//for (int i = 0, count = 0; i < 7; i++)
+	//{
+	//	for (int j = 0; j < 7; j++)
+	//	{
+	//		//0じゃない(そこに駒がある)場合
+	//		if (MainMap[i][j] >= 1&&MainMap[i][j]<=6)
+	//		{
+	//			//posX,posYにそれぞれ値を入れる
+	//			piecetable[count].posX = j;
+	//			piecetable[count].posY = i;
+	//			//マップナンバーから役職を特定する
+	//			piecetable[count].type = MainMap[i][j];
+	//			//半分より上なら敵駒、下なら自陣の駒という風に設定する
+	//			if (i < 4)
+	//			{
+	//				piecetable[count].MeorEne = false;
+	//			}
+	//			else
+	//			{
+	//				piecetable[count].MeorEne = true;
+	//			}
+	//			//移動
+	//			//役職をもとに移動設定を入れていく(クラス化予定あり)
+	//			//兵士
+	//			if (MainMap[i][j] == 1)
+	//			{
+	//				piecetable[count].movelimit = 0;
+	//				piecetable[count].moveleft = 0;
+	//				piecetable[count].moveright = 0;
+	//				piecetable[count].movefront = 1;
+	//				piecetable[count].moveback = 0;
+	//				piecetable[count].dialu = 0;
+	//				piecetable[count].diald = 0;
+	//				piecetable[count].diaru = 0;
+	//				piecetable[count].diard = 0;
+	//			}
+	//			//魔導士
+	//			if (MainMap[i][j] == 2)
+	//			{
+	//				piecetable[count].movelimit = 0;
+	//				piecetable[count].moveleft = 0;
+	//				piecetable[count].moveright = 0;
+	//				piecetable[count].movefront = 0;
+	//				piecetable[count].moveback = 0;
+	//				piecetable[count].dialu = 3;
+	//				piecetable[count].diald = 3;
+	//				piecetable[count].diaru = 3;
+	//				piecetable[count].diard = 3;
+	//			}
+	//			//諜報員
+	//			if (MainMap[i][j] == 3)
+	//			{
+	//				piecetable[count].movelimit = 8;
+	//				piecetable[count].spicialmoverange[0][0] = -2; piecetable[count].spicialmoverange[0][1] = 1;
+	//				piecetable[count].spicialmoverange[1][0] = -2; piecetable[count].spicialmoverange[1][1] = -1;
+	//				piecetable[count].spicialmoverange[2][0] = -1; piecetable[count].spicialmoverange[2][1] = 2;
+	//				piecetable[count].spicialmoverange[3][0] = -1; piecetable[count].spicialmoverange[3][1] = -2;
+	//				piecetable[count].spicialmoverange[4][0] = 1;  piecetable[count].spicialmoverange[4][1] = 2;
+	//				piecetable[count].spicialmoverange[5][0] = 1;  piecetable[count].spicialmoverange[5][1] = -2;
+	//				piecetable[count].spicialmoverange[6][0] = 2;  piecetable[count].spicialmoverange[6][1] = 1;
+	//				piecetable[count].spicialmoverange[7][0] = 2;  piecetable[count].spicialmoverange[7][1] = -1;
+	//				piecetable[count].moveleft = 0;
+	//				piecetable[count].moveright = 0;
+	//				piecetable[count].movefront = 0;
+	//				piecetable[count].moveback = 0;
+	//				piecetable[count].dialu = 0;
+	//				piecetable[count].diald = 0;
+	//				piecetable[count].diaru = 0;
+	//				piecetable[count].diard = 0;
+	//			}
+	//			//騎士
+	//			if (MainMap[i][j] == 4)
+	//			{
+	//				piecetable[count].movelimit = 0;
+	//				piecetable[count].moveleft = 3;
+	//				piecetable[count].moveright = 3;
+	//				piecetable[count].movefront = 3;
+	//				piecetable[count].moveback = 3;
+	//				piecetable[count].dialu = 0;
+	//				piecetable[count].diald = 0;
+	//				piecetable[count].diaru = 0;
+	//				piecetable[count].diard = 0;
+	//			}
+	//			//自陣王
+	//			if (MainMap[i][j] == 5)
+	//			{
+	//				piecetable[count].movelimit = 0;
+	//				piecetable[count].moveleft = 1;
+	//				piecetable[count].moveright = 1;
+	//				piecetable[count].movefront = 1;
+	//				piecetable[count].moveback = 1;
+	//				piecetable[count].dialu = 1;
+	//				piecetable[count].diald = 1;
+	//				piecetable[count].diaru = 1;
+	//				piecetable[count].diard = 1;
+	//			}
+	//			//壁
+	//			if (MainMap[i][j] == 7)
+	//			{
+	//				piecetable[count].movelimit = 0;
+	//				piecetable[count].moveleft = 0;
+	//				piecetable[count].moveright = 0;
+	//				piecetable[count].movefront = 0;
+	//				piecetable[count].moveback = 0;
+	//				piecetable[count].dialu = 0;
+	//				piecetable[count].diald = 0;
+	//				piecetable[count].diaru = 0;
+	//				piecetable[count].diard = 0;
+	//			}
+	//			count++;
+	//		}
+	//	}
+	//}
 
 	SORCERER*sorcerer;//魔導士の本体
 	enum VEC Sor_vec;//魔導士の移動方向
@@ -205,11 +205,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	//画像int変換関数
 	//int img = LoadGraph("画像名");
 	
-	int t_charaB;//仮背景(プレイヤー1)の表示　
-	int t_chara;//仮キャラクター(プレイヤー1)の表示　1体目
-	int t_charaB2;//仮背景(プレイヤー2)の表示　
-	int t_chara2;//仮キャラクター(プレイヤー2)の表示　2体目
-	int t_chara3;
+	int t_charaB;//仮背景(プレイヤー1)の表示	
+	int t_charaB2;//仮背景(プレイヤー2)の表示
+	int t_chara,t_charawin,t_charalose,t_charaskill;//仮キャラクター(プレイヤー1)の表示　1体目
+	int t_chara2, t_chara2win, t_chara2lose, t_chara2skill;//仮キャラクター(プレイヤー2)の表示　2体目
 
 	unsigned int DeadlyButton;//キャラの必殺技のボタンの表示
 	DeadlyButton = GetColor(0, 0, 255);//ボタンの青色を取得
@@ -247,19 +246,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	Pos outclickpos;  //クリック離した位置保存用
 	bool saveclickflag;//クリックポジション取得の制御を行う為のフラグ
 	bool clickflag;    //クリック制御を行う為のフラグ
-	//初期化
-	clickpos.posX = -1;
-	clickpos.posY = -1;
-	outclickpos.posX = -1;
-	outclickpos.posY = -1;
-	saveclickflag = false;
-	clickflag = false;
 
 	bool skillclickflag;//必殺ボタンをクリックしたときのフラグ
-	bool removeskillclickflag;//必殺ボタンをクリックして離したときのフラグ
-
-	
-	
+	bool removeskillclickflag;//必殺ボタンをクリックして離したときのフラグ	
 
 	POS movePos = {0,0}; //動く先のポジション
 	int movepiece = -1;  //動かす駒のナンバーを保存しておく用
@@ -272,12 +261,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	Scenes scene = TITLE;
 	
 	t_charaB = LoadGraph("image\\キャラ背景候補1.png");
-	t_charaB2 = LoadGraph("image\\キャラ背景候補3.png");
-	t_chara = LoadGraph("image\\キャラクター1リサイズ透過.png");
-	t_chara2 = LoadGraph("image\\キャラクター1リサイズ透過.png");
-	t_chara3 = LoadGraph("image\\キャラクターC(仮).png");
-	
-	
+	t_charaB2 = LoadGraph("image\\キャラ背景候補3.png");	
 
 	int sc = LoadGraph("image\\BackGround.png");
 
@@ -303,8 +287,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	int Mx, My;//マウスの位置
 
 
-	bool win_flag = false;//勝った時のフラグ
-	bool lose_flag = false;//負けた時のフラグ
+	bool win_flag;//勝った時のフラグ
+	bool lose_flag;//負けた時のフラグ
 	bool gameend_flag = false;//ゲーム終了する際に使うフラグ
 
 	unsigned int cr;//辺り範囲の描画の
@@ -335,6 +319,129 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 		switch (scene)
 		{
 		case TITLE:
+			//勝敗・ターンフラグ初期化
+			win_flag = false;//勝った時のフラグ
+			lose_flag = false;//負けた時のフラグ
+			turn = true;
+
+			//駒保存用
+			//ここで駒の移動距離やクラスの初期化を行う
+			Piece piecetable[28];
+			//MainMapから値を取得し、その位置でその役職の情報を得る
+			for (int i = 0, count = 0; i < 7; i++)
+			{
+				for (int j = 0; j < 7; j++)
+				{
+					//0じゃない(そこに駒がある)場合
+					if (MainMap[i][j] >= 1 && MainMap[i][j] <= 6)
+					{
+						//posX,posYにそれぞれ値を入れる
+						piecetable[count].posX = j;
+						piecetable[count].posY = i;
+						//マップナンバーから役職を特定する
+						piecetable[count].type = MainMap[i][j];
+						//半分より上なら敵駒、下なら自陣の駒という風に設定する
+						if (i < 4)
+						{
+							piecetable[count].MeorEne = false;
+						}
+						else
+						{
+							piecetable[count].MeorEne = true;
+						}
+						//移動
+						//役職をもとに移動設定を入れていく(クラス化予定あり)
+						//兵士
+						if (MainMap[i][j] == 1)
+						{
+							piecetable[count].movelimit = 0;
+							piecetable[count].moveleft = 0;
+							piecetable[count].moveright = 0;
+							piecetable[count].movefront = 1;
+							piecetable[count].moveback = 0;
+							piecetable[count].dialu = 0;
+							piecetable[count].diald = 0;
+							piecetable[count].diaru = 0;
+							piecetable[count].diard = 0;
+						}
+						//魔導士
+						if (MainMap[i][j] == 2)
+						{
+							piecetable[count].movelimit = 0;
+							piecetable[count].moveleft = 0;
+							piecetable[count].moveright = 0;
+							piecetable[count].movefront = 0;
+							piecetable[count].moveback = 0;
+							piecetable[count].dialu = 3;
+							piecetable[count].diald = 3;
+							piecetable[count].diaru = 3;
+							piecetable[count].diard = 3;
+						}
+						//諜報員
+						if (MainMap[i][j] == 3)
+						{
+							piecetable[count].movelimit = 8;
+							piecetable[count].spicialmoverange[0][0] = -2; piecetable[count].spicialmoverange[0][1] = 1;
+							piecetable[count].spicialmoverange[1][0] = -2; piecetable[count].spicialmoverange[1][1] = -1;
+							piecetable[count].spicialmoverange[2][0] = -1; piecetable[count].spicialmoverange[2][1] = 2;
+							piecetable[count].spicialmoverange[3][0] = -1; piecetable[count].spicialmoverange[3][1] = -2;
+							piecetable[count].spicialmoverange[4][0] = 1;  piecetable[count].spicialmoverange[4][1] = 2;
+							piecetable[count].spicialmoverange[5][0] = 1;  piecetable[count].spicialmoverange[5][1] = -2;
+							piecetable[count].spicialmoverange[6][0] = 2;  piecetable[count].spicialmoverange[6][1] = 1;
+							piecetable[count].spicialmoverange[7][0] = 2;  piecetable[count].spicialmoverange[7][1] = -1;
+							piecetable[count].moveleft = 0;
+							piecetable[count].moveright = 0;
+							piecetable[count].movefront = 0;
+							piecetable[count].moveback = 0;
+							piecetable[count].dialu = 0;
+							piecetable[count].diald = 0;
+							piecetable[count].diaru = 0;
+							piecetable[count].diard = 0;
+						}
+						//騎士
+						if (MainMap[i][j] == 4)
+						{
+							piecetable[count].movelimit = 0;
+							piecetable[count].moveleft = 3;
+							piecetable[count].moveright = 3;
+							piecetable[count].movefront = 3;
+							piecetable[count].moveback = 3;
+							piecetable[count].dialu = 0;
+							piecetable[count].diald = 0;
+							piecetable[count].diaru = 0;
+							piecetable[count].diard = 0;
+						}
+						//自陣王
+						if (MainMap[i][j] == 5)
+						{
+							piecetable[count].movelimit = 0;
+							piecetable[count].moveleft = 1;
+							piecetable[count].moveright = 1;
+							piecetable[count].movefront = 1;
+							piecetable[count].moveback = 1;
+							piecetable[count].dialu = 1;
+							piecetable[count].diald = 1;
+							piecetable[count].diaru = 1;
+							piecetable[count].diard = 1;
+						}
+						//壁
+						if (MainMap[i][j] == 7)
+						{
+							piecetable[count].movelimit = 0;
+							piecetable[count].moveleft = 0;
+							piecetable[count].moveright = 0;
+							piecetable[count].movefront = 0;
+							piecetable[count].moveback = 0;
+							piecetable[count].dialu = 0;
+							piecetable[count].diald = 0;
+							piecetable[count].diaru = 0;
+							piecetable[count].diard = 0;
+						}
+						count++;
+					}
+				}
+			}
+
 			SetFontSize(16);
 			DrawString(0, 32, "タイトル(仮)", GetColor(255, 255, 255));
 			DrawString(0, 48, "十字キー上で始める", GetColor(255, 255, 255));
@@ -352,6 +459,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			break;
 
 		case SELECT:
+			//初期化
+			clickpos.posX = -1;
+			clickpos.posY = -1;
+			outclickpos.posX = -1;
+			outclickpos.posY = -1;
+			saveclickflag = false;
+			clickflag = false;
+			t_chara = LoadGraph("image\\キャラクター1\\キャラクター1リサイズ透過.png");
+			t_chara2 = LoadGraph("image\\キャラクター2\\キャラクター2メイン.png");
+
 			//初期化タイミング
 			//マウスの状態を確認する
 			if (GetMouseInput() & MOUSE_INPUT_LEFT)
@@ -372,31 +489,26 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 					GetMousePoint(&outclickpos.posX, &outclickpos.posY);
 				}
 			}
-			DrawString(0, 48, "十字キー右で始める", GetColor(255, 255, 255));
-			DrawString(0, 64, "十字キー左で終わる", GetColor(255, 255, 255));
 			DrawGraph(0, 0, t_charaB, TRUE);//プレイヤー1の背景の描画			
 			DrawGraph(640, 0, t_charaB2, TRUE);//プレイヤー2の背景の描画
 			DrawGraph(0, 0, t_chara, TRUE);//プレイヤー1の描画
-			DrawGraph(640, 0, t_chara3, TRUE);//プレイヤー2の描画
+			DrawGraph(640, 0, t_chara2, TRUE);//プレイヤー2の描画
 			if (clickflag == false && saveclickflag == true)
 			{
 				if (clickpos.posX <= 194 && clickpos.posY <= 448)
 				{
 					charaselect = 1;
 					scene = GAME;
-					break;
 				}
 				else if (clickpos.posX >= 640 && clickpos.posY <= 448)
 				{
 					charaselect = 2;
 					scene = GAME;
-					break;
 				}
 			}
 			break;
 
 		case GAME:
-
 			//ここでゲームのメイン部分構築
 			//マウスの状態を確認する
 			if (GetMouseInput() & MOUSE_INPUT_LEFT)
@@ -539,19 +651,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			if (charaselect == 1)
 			{
 				DrawGraph(0, 0, t_chara, TRUE);//プレイヤー1の描画
-				DrawGraph(640, 0, t_chara3, TRUE);//プレイヤー2の描画
+				DrawGraph(640, 0, t_chara2, TRUE);//プレイヤー2の描画
 			}
 			else if (charaselect == 2)
 			{
-				DrawGraph(0, 0, t_chara3, TRUE);//プレイヤー1の描画
+				DrawGraph(0, 0, t_chara2, TRUE);//プレイヤー1の描画
 				DrawGraph(640, 0, t_chara, TRUE);//プレイヤー2の描画
 			}
 			
-
-
-			
-			DrawCircle(90, 330, 60, DeadlyButton,TRUE);//必殺技のボタン(青い円)の描画
-			DrawString(50, 320, "能力発動!",GetColor(255,0,0));//必殺技ボタンの文字描画
+			//DrawCircle(90, 330, 60, DeadlyButton,TRUE);//必殺技のボタン(青い円)の描画
+			//DrawString(50, 320, "能力発動!",GetColor(255,0,0));//必殺技ボタンの文字描画
 			//駒の描画ひとしきり
 			for (int i = 0; i < 28; i++)
 			{
@@ -669,10 +778,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 				DrawString(250, 300, "十字キー右でタイトルへ", GetColor(255, 0, 0));
 				DrawString(250, 350, "十字キー左で終了", GetColor(255, 0, 0));
 
-				t_charaB = LoadGraph("image\\キャラ背景候補1.png");
-				t_charaB2 = LoadGraph("image\\キャラ背景候補3.png");
-				t_chara = LoadGraph("image\\キャラクター1勝利透過.png");
-				t_chara2 = LoadGraph("image\\キャラクター1敗北透過.png");
+				if (charaselect == 1)
+				{
+					t_chara = LoadGraph("image\\キャラクター1\\キャラクター1勝利透過.png");
+					t_chara2 = LoadGraph("image\\キャラクター2\\キャラクター2敗北.png");
+				}
+				if (charaselect == 2)
+				{
+					t_chara = LoadGraph("image\\キャラクター1\\キャラクター1敗北透過.png");
+					t_chara2 = LoadGraph("image\\キャラクター2\\キャラクター2勝利.png");
+				}
 
 			}
 			//敗北時敗北画面表示

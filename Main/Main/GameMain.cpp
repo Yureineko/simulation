@@ -209,6 +209,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	int t_chara;//仮キャラクター(プレイヤー1)の表示　1体目
 	int t_charaB2;//仮背景(プレイヤー2)の表示　
 	int t_chara2;//仮キャラクター(プレイヤー2)の表示　2体目
+	int t_chara3;
 
 	unsigned int DeadlyButton;//キャラの必殺技のボタンの表示
 	DeadlyButton = GetColor(0, 0, 255);//ボタンの青色を取得
@@ -237,7 +238,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	int SorcX = 2, SorcY = 2;//魔導士の位置X,Y
 	int EspiX = 3, EspiY = 3;//諜報員の位置X,Y
 	int KnightX = 4, KnightY = 4;//騎士の位置X,Y
-	int KingX = 5, KingY = 5;//王の位置X,Y	
+	int KingX = 5, KingY = 5;//王の位置X,Y
+	//キャラ選択用変数
+	int charaselect;
 
 	//ボタン管理座標用
 	Pos clickpos;     //クリック位置保存用
@@ -272,6 +275,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	t_charaB2 = LoadGraph("image\\キャラ背景候補3.png");
 	t_chara = LoadGraph("image\\キャラクター1リサイズ透過.png");
 	t_chara2 = LoadGraph("image\\キャラクター1リサイズ透過.png");
+	t_chara3 = LoadGraph("image\\キャラクターC(仮).png");
 	
 	
 
@@ -349,17 +353,45 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 		case SELECT:
 			//初期化タイミング
+			//マウスの状態を確認する
+			if (GetMouseInput() & MOUSE_INPUT_LEFT)
+			{
+				//左クリックが押されたとき、押した場所を確認する
+				if (saveclickflag == false)
+				{
+					saveclickflag = true;
+					GetMousePoint(&clickpos.posX, &clickpos.posY);
+				}
+			}
+			else
+			{
+				//左クリックが離されたとき、離した場所を確認する
+				if (saveclickflag == true)
+				{
+					saveclickflag = false;
+					GetMousePoint(&outclickpos.posX, &outclickpos.posY);
+				}
+			}
 			DrawString(0, 48, "十字キー右で始める", GetColor(255, 255, 255));
 			DrawString(0, 64, "十字キー左で終わる", GetColor(255, 255, 255));
-			if (CheckHitKey(KEY_INPUT_RIGHT))
+			DrawGraph(0, 0, t_charaB, TRUE);//プレイヤー1の背景の描画			
+			DrawGraph(640, 0, t_charaB2, TRUE);//プレイヤー2の背景の描画
+			DrawGraph(0, 0, t_chara, TRUE);//プレイヤー1の描画
+			DrawGraph(640, 0, t_chara3, TRUE);//プレイヤー2の描画
+			if (clickflag == false && saveclickflag == true)
 			{
-				scene = GAME;
-				break;
-			}
-			else if (CheckHitKey(KEY_INPUT_LEFT))
-			{
-				gameend_flag = true;
-				break;
+				if (clickpos.posX <= 194 && clickpos.posY <= 448)
+				{
+					charaselect = 1;
+					scene = GAME;
+					break;
+				}
+				else if (clickpos.posX >= 640 && clickpos.posY <= 448)
+				{
+					charaselect = 2;
+					scene = GAME;
+					break;
+				}
 			}
 			break;
 
@@ -501,10 +533,23 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			
 			//背景の画像表示	
 			LoadGraphScreen(0, 0, "image\\BackGround.png", TRUE);
-			DrawGraph(0, 0, t_charaB, TRUE);//プレイヤー1の背景の描画
-			DrawGraph(0, 0, t_chara, TRUE);//プレイヤー1の描画
+			DrawGraph(0, 0, t_charaB, TRUE);//プレイヤー1の背景の描画			
 			DrawGraph(640, 0, t_charaB2, TRUE);//プレイヤー2の背景の描画
-			DrawGraph(640, 0, t_chara2, TRUE);//プレイヤー2の描画
+
+			if (charaselect == 1)
+			{
+				DrawGraph(0, 0, t_chara, TRUE);//プレイヤー1の描画
+				DrawGraph(640, 0, t_chara3, TRUE);//プレイヤー2の描画
+			}
+			else if (charaselect == 2)
+			{
+				DrawGraph(0, 0, t_chara3, TRUE);//プレイヤー1の描画
+				DrawGraph(640, 0, t_chara, TRUE);//プレイヤー2の描画
+			}
+			
+
+
+			
 			DrawCircle(90, 330, 60, DeadlyButton,TRUE);//必殺技のボタン(青い円)の描画
 			DrawString(50, 320, "能力発動!",GetColor(255,0,0));//必殺技ボタンの文字描画
 			//駒の描画ひとしきり

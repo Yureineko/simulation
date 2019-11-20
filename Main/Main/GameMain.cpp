@@ -10,10 +10,11 @@
 #define POPDOWN_X 64//
 #define POPDOWN_Y 64
 
-#define CLUP_X 40
-#define CLUP_Y 265
-#define CLDOWN_X 160
-#define CLDOWN_Y 385
+//左側のキャラの能力ボタンの範囲
+#define CLUP_X 40//左　点
+#define CLUP_Y 280//上　点
+#define CLDOWN_X 150//右　点
+#define CLDOWN_Y 380//下　点
 
 
 #define PI	3.1415926535897932384626433832795f
@@ -66,124 +67,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	//5.王
 	//6.相手の王
 
-	////駒保存用
-	////ここで駒の移動距離やクラスの初期化を行う
-	//Piece piecetable[28];
-	////MainMapから値を取得し、その位置でその役職の情報を得る
-	//for (int i = 0, count = 0; i < 7; i++)
-	//{
-	//	for (int j = 0; j < 7; j++)
-	//	{
-	//		//0じゃない(そこに駒がある)場合
-	//		if (MainMap[i][j] >= 1&&MainMap[i][j]<=6)
-	//		{
-	//			//posX,posYにそれぞれ値を入れる
-	//			piecetable[count].posX = j;
-	//			piecetable[count].posY = i;
-	//			//マップナンバーから役職を特定する
-	//			piecetable[count].type = MainMap[i][j];
-	//			//半分より上なら敵駒、下なら自陣の駒という風に設定する
-	//			if (i < 4)
-	//			{
-	//				piecetable[count].MeorEne = false;
-	//			}
-	//			else
-	//			{
-	//				piecetable[count].MeorEne = true;
-	//			}
-	//			//移動
-	//			//役職をもとに移動設定を入れていく(クラス化予定あり)
-	//			//兵士
-	//			if (MainMap[i][j] == 1)
-	//			{
-	//				piecetable[count].movelimit = 0;
-	//				piecetable[count].moveleft = 0;
-	//				piecetable[count].moveright = 0;
-	//				piecetable[count].movefront = 1;
-	//				piecetable[count].moveback = 0;
-	//				piecetable[count].dialu = 0;
-	//				piecetable[count].diald = 0;
-	//				piecetable[count].diaru = 0;
-	//				piecetable[count].diard = 0;
-	//			}
-	//			//魔導士
-	//			if (MainMap[i][j] == 2)
-	//			{
-	//				piecetable[count].movelimit = 0;
-	//				piecetable[count].moveleft = 0;
-	//				piecetable[count].moveright = 0;
-	//				piecetable[count].movefront = 0;
-	//				piecetable[count].moveback = 0;
-	//				piecetable[count].dialu = 3;
-	//				piecetable[count].diald = 3;
-	//				piecetable[count].diaru = 3;
-	//				piecetable[count].diard = 3;
-	//			}
-	//			//諜報員
-	//			if (MainMap[i][j] == 3)
-	//			{
-	//				piecetable[count].movelimit = 8;
-	//				piecetable[count].spicialmoverange[0][0] = -2; piecetable[count].spicialmoverange[0][1] = 1;
-	//				piecetable[count].spicialmoverange[1][0] = -2; piecetable[count].spicialmoverange[1][1] = -1;
-	//				piecetable[count].spicialmoverange[2][0] = -1; piecetable[count].spicialmoverange[2][1] = 2;
-	//				piecetable[count].spicialmoverange[3][0] = -1; piecetable[count].spicialmoverange[3][1] = -2;
-	//				piecetable[count].spicialmoverange[4][0] = 1;  piecetable[count].spicialmoverange[4][1] = 2;
-	//				piecetable[count].spicialmoverange[5][0] = 1;  piecetable[count].spicialmoverange[5][1] = -2;
-	//				piecetable[count].spicialmoverange[6][0] = 2;  piecetable[count].spicialmoverange[6][1] = 1;
-	//				piecetable[count].spicialmoverange[7][0] = 2;  piecetable[count].spicialmoverange[7][1] = -1;
-	//				piecetable[count].moveleft = 0;
-	//				piecetable[count].moveright = 0;
-	//				piecetable[count].movefront = 0;
-	//				piecetable[count].moveback = 0;
-	//				piecetable[count].dialu = 0;
-	//				piecetable[count].diald = 0;
-	//				piecetable[count].diaru = 0;
-	//				piecetable[count].diard = 0;
-	//			}
-	//			//騎士
-	//			if (MainMap[i][j] == 4)
-	//			{
-	//				piecetable[count].movelimit = 0;
-	//				piecetable[count].moveleft = 3;
-	//				piecetable[count].moveright = 3;
-	//				piecetable[count].movefront = 3;
-	//				piecetable[count].moveback = 3;
-	//				piecetable[count].dialu = 0;
-	//				piecetable[count].diald = 0;
-	//				piecetable[count].diaru = 0;
-	//				piecetable[count].diard = 0;
-	//			}
-	//			//自陣王
-	//			if (MainMap[i][j] == 5)
-	//			{
-	//				piecetable[count].movelimit = 0;
-	//				piecetable[count].moveleft = 1;
-	//				piecetable[count].moveright = 1;
-	//				piecetable[count].movefront = 1;
-	//				piecetable[count].moveback = 1;
-	//				piecetable[count].dialu = 1;
-	//				piecetable[count].diald = 1;
-	//				piecetable[count].diaru = 1;
-	//				piecetable[count].diard = 1;
-	//			}
-	//			//壁
-	//			if (MainMap[i][j] == 7)
-	//			{
-	//				piecetable[count].movelimit = 0;
-	//				piecetable[count].moveleft = 0;
-	//				piecetable[count].moveright = 0;
-	//				piecetable[count].movefront = 0;
-	//				piecetable[count].moveback = 0;
-	//				piecetable[count].dialu = 0;
-	//				piecetable[count].diald = 0;
-	//				piecetable[count].diaru = 0;
-	//				piecetable[count].diard = 0;
-	//			}
-	//			count++;
-	//		}
-	//	}
-	//}
-
 	SORCERER*sorcerer;//魔導士の本体
 	enum VEC Sor_vec;//魔導士の移動方向
 
@@ -205,15 +88,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	//画像int変換関数
 	//int img = LoadGraph("画像名");
 	
+	int textbox = LoadGraph("image\\hakkou1.png");//テキストボックスの表示
 	int t_charaB;//仮背景(プレイヤー1)の表示	
 	int t_charaB2;//仮背景(プレイヤー2)の表示
 	int t_chara,t_charawin,t_charalose,t_charaskill;//仮キャラクター(プレイヤー1)の表示　1体目
 	int t_chara2, t_chara2win, t_chara2lose, t_chara2skill;//仮キャラクター(プレイヤー2)の表示　2体目
+	int t_chara3, t_chara3win, t_chara3lose, t_chara3skill;//仮キャラクター(プレイヤー3)の表示　3体目
 
 	unsigned int DeadlyButton;//キャラの必殺技のボタンの表示
 	DeadlyButton = GetColor(0, 0, 255);//ボタンの青色を取得
-	int Skillbotton = LoadPauseGraph("能力待機ボタン.png");//能力発動待機ボタンを表示
-
+	int Skillbotton = LoadGraph("image\\能力発動！ボタン.png");//能力発動ボタンを表示
+	int Skillwaite = LoadGraph("image\\能力待機.png");//能力発動待機ボタンを表示
 
 
 	int Soldier=LoadGraph("image\\Soldier(64).png");//ここに兵士の画像
@@ -231,6 +116,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 
 	int GreenFilter = LoadGraph("image\\greenfilter.png");//駒の移動範囲の描画
+	int RedFilter = LoadGraph("image\\redfilter.png");//壁の出現範囲の描画
+
 
 	//一旦ここで位置移動する。後で消すかも。
 	int SoldX = 1, SoldY = 1;//兵士の位置X,Y
@@ -247,10 +134,28 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	bool saveclickflag;//クリックポジション取得の制御を行う為のフラグ
 	bool clickflag;    //クリック制御を行う為のフラグ
 
+	Pos skillflag;//能力ボタン部分
+
+
+	//初期化
+	clickpos.posX = -1;
+	clickpos.posY = -1;
+	outclickpos.posX = -1;
+	outclickpos.posY = -1;
+	saveclickflag = false;
+	clickflag = false;
+
+
 	bool skillclickflag;//必殺ボタンをクリックしたときのフラグ
-	bool removeskillclickflag;//必殺ボタンをクリックして離したときのフラグ	
+	skillclickflag = false;//ボタンをクリックしたときのフラグ
+
+	bool skillbuttonflag;//スキルのボタンの制御
+	skillbuttonflag = false;//スキルのボタンのフラグ
+	
 
 	POS movePos = {0,0}; //動く先のポジション
+	POS wallPos = { 0,0 };//壁を表示出来る場所
+
 	int movepiece = -1;  //動かす駒のナンバーを保存しておく用
 	bool moveflag = false;//動かす駒を選ぶのか、動いてほしい場所を選ぶのか
 
@@ -287,8 +192,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	int Mx, My;//マウスの位置
 
 
-	bool win_flag;//勝った時のフラグ
-	bool lose_flag;//負けた時のフラグ
+
+	GetMousePoint(&Mx, &My);//カーソルの現在位置を取得
+
+	bool win_flag = false;//勝った時のフラグ
+	bool lose_flag = false;//負けた時のフラグ
 	bool gameend_flag = false;//ゲーム終了する際に使うフラグ
 
 	unsigned int cr;//辺り範囲の描画の
@@ -468,6 +376,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			clickflag = false;
 			t_chara = LoadGraph("image\\キャラクター1\\キャラクター1リサイズ透過.png");
 			t_chara2 = LoadGraph("image\\キャラクター2\\キャラクター2メイン.png");
+			t_chara3 = LoadGraph("image\\キャラクター3\\キャラクター3立ち絵.png");			
 
 			//初期化タイミング
 			//マウスの状態を確認する
@@ -489,21 +398,45 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 					GetMousePoint(&outclickpos.posX, &outclickpos.posY);
 				}
 			}
-			DrawGraph(0, 0, t_charaB, TRUE);//プレイヤー1の背景の描画			
-			DrawGraph(640, 0, t_charaB2, TRUE);//プレイヤー2の背景の描画
-			DrawGraph(0, 0, t_chara, TRUE);//プレイヤー1の描画
-			DrawGraph(640, 0, t_chara2, TRUE);//プレイヤー2の描画
-			if (clickflag == false && saveclickflag == true)
+			DrawExtendGraphF(0, 50, 416, 498, t_charaB, TRUE);//プレイヤー1の背景の描画
+			DrawGraph(115, 50, t_chara, TRUE);//プレイヤー1の描画
+			DrawExtendGraphF(0, 183, 416, 631, t_charaB2, TRUE);//プレイヤー2の背景の描画
+			DrawGraph(115, 183, t_chara2, TRUE);//プレイヤー2の描画
+			DrawExtendGraphF(0, 316, 416, 764, t_charaB, TRUE);//プレイヤー3の背景の描画
+			DrawGraph(115, 316, t_chara3, TRUE);//プレイヤー3の描画
+
+			DrawGraph(0, 0, textbox, TRUE);//テキストボックスの描画
+			DrawExtendGraphF(416, 50, 832, 448, textbox, TRUE);//テキストボックスの描画
+
+			DrawString(32, 16, "キャラを選択してください", GetColor(255, 255, 255));
+			DrawString(500, 200, "能力", GetColor(255, 255, 255));
+
+			if (saveclickflag == true)
 			{
-				if (clickpos.posX <= 194 && clickpos.posY <= 448)
+				if (clickflag == false)
 				{
-					charaselect = 1;
-					scene = GAME;
+					if (clickpos.posX <= 416 && 50 <= clickpos.posY&&clickpos.posY <= 183)
+					{
+						charaselect = 1;
+						scene = GAME;
+						clickflag = true;
+					}
+					else if (clickpos.posX <= 416 && 183 < clickpos.posY&&clickpos.posY <= 316)
+					{
+						charaselect = 2;
+						scene = GAME;
+						clickflag = true;
+					}
+					else if (clickpos.posX <= 416 && clickpos.posY >= 316)
+					{
+						charaselect = 3;
+						scene = GAME;
+						clickflag = true;
+					}
 				}
-				else if (clickpos.posX >= 640 && clickpos.posY <= 448)
+				else
 				{
-					charaselect = 2;
-					scene = GAME;
+					clickflag = false;
 				}
 			}
 			break;
@@ -573,7 +506,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 							}
 						}
 						if (latemove != -1)
-						{
+						{//駒同氏が重なったときの処理
 							if (piecetable[movepiece].MeorEne != piecetable[latemove].MeorEne || piecetable[latemove].type == 0)
 							{
 								piecetable[movepiece].posX = movePos.x;
@@ -607,6 +540,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 								for (int j = 0; j < 7; j++)
 								{
 									CanMoveMap[i][j] = 0;
+
+									DwallMap[i][j] = 0;
 								}
 							}
 							/*
@@ -626,6 +561,119 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 				GetMousePoint(&Mx, &My);
 
+//---------------壁の生成処理---------------------
+//キャラの必殺ボタンをクリックしたとき
+			
+										//必殺技の箇所にマウスがあるとき
+               //ボタンの領域内でかつ
+				if (Mx <CLDOWN_X&&Mx>CLUP_X&&My<CLDOWN_Y&&My>CLUP_Y)
+				{
+					//マウスの右クリックをすると
+					if (GetMouseInput()&MOUSE_INPUT_RIGHT)
+					{
+						skillclickflag = true;
+
+					
+					}
+
+				}
+
+
+				//-----------ここから赤い範囲の処理-------------
+				//クリックしたとき
+				if (clickflag == false && saveclickflag == true)
+				{
+					//キャラを選択し緑色のマス(行動できる範囲)を描画
+					if (moveflag == false)
+					{
+						//クリックしたマスを取得しそのマスに該当する駒を探す
+						POS SavePos = HitPos(clickpos.posX, clickpos.posY);
+						for (int i = 0; i < 28; i++)
+						{
+							//該当する駒があり、その駒が生きていれば
+							if (SavePos.x == piecetable[i].posX && SavePos.y == piecetable[i].posY && piecetable[i].type != 0)
+							{
+								//その駒の対応ナンバーを一時保存する
+								movepiece = i;
+								//行動場所を選ぶようにする
+								moveflag = true;
+								clickflag = true;
+								//移動できる範囲を緑色で指定する
+								CheckMoveRange(piecetable[i], piecetable);
+							}
+						}
+					}
+					//緑色のマスを選択し上記で選んだ駒をその場所に移動
+					else
+					{
+						//選んだマスを取得
+						movePos = HitPos(clickpos.posX, clickpos.posY);
+						//そのマスが範囲内
+						if (clickpos.posX >= POPUP_X && clickpos.posX <= POPUP_X + 64 * 7 && CanMoveMap[movePos.y][movePos.x] == 1)
+						{
+							int latemove = -1;//駒の配列番号の保存
+							for (int i = 0; i < 28; i++)
+							{
+								if (movePos.x == piecetable[i].posX && movePos.y == piecetable[i].posY && i != movepiece)
+								{
+									latemove = i;
+								}
+							}
+							if (latemove != -1)
+							{//駒同氏が重なったときの処理
+								if (piecetable[movepiece].MeorEne != piecetable[latemove].MeorEne || piecetable[latemove].type == 0)
+								{
+									piecetable[movepiece].posX = movePos.x;
+									piecetable[movepiece].posY = movePos.y;
+									if (piecetable[latemove].type == 6)//相手の王を取ったら勝ちのフラグをtrueに
+										win_flag = true;
+									if (piecetable[latemove].type == 5)//自分の王を取られたら負けのフラグをtrueに
+										lose_flag = true;
+									if (piecetable[latemove].type == 7)//壁には通れなくさせる。
+										movepiece = -1;
+
+									piecetable[latemove].type = 0;//何もない場所には空白
+									movepiece = -1;//移動前の駒は非表示に
+								}
+								//移動先が壁なら進めない
+								//else if(piecetable[])
+							}
+							else
+							{
+								piecetable[movepiece].posX = movePos.x;
+								piecetable[movepiece].posY = movePos.y;
+								movepiece = -1;
+							}
+							clickflag = true;
+							moveflag = false;
+
+							turn = false;
+
+							for (int i = 0; i < 7; i++)
+							{
+								for (int j = 0; j < 7; j++)
+								{
+									CanMoveMap[i][j] = 0;
+
+									DwallMap[i][j] = 0;
+								}
+							}
+							/*
+							if(piecetable[movepiece].MeorEne)
+							movepiece = i;
+							moveflag = true;
+							*/
+						}
+					}
+				}
+				else if (saveclickflag == false)
+				{
+					clickflag = false;
+				}
+
+
+
+				GetMousePoint(&Mx, &My);
 
 
 			}
@@ -656,6 +704,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			else if (charaselect == 2)
 			{
 				DrawGraph(0, 0, t_chara2, TRUE);//プレイヤー1の描画
+				DrawGraph(640, 0, t_chara3, TRUE);//プレイヤー2の描画
+			}
+			else if (charaselect == 3)
+			{
+				DrawGraph(0, 0, t_chara3, TRUE);//プレイヤー1の描画
 				DrawGraph(640, 0, t_chara, TRUE);//プレイヤー2の描画
 			}
 			
@@ -703,6 +756,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 					//緑の移動範囲描画
 					DrawGraphF(piecetable[i].posX * 64 + 192, piecetable[i].posY * 64, GreenFilter, TRUE);
 				}
+				//if (DwallMap[walls[i].posy][walls[i].posx]==1)
+				//{
+				//	//赤の壁出現範囲描画
+				//	DrawGraphF(walls[i].posx * 64 + 192, walls[i].posy * 64, RedFilter, TRUE);
+				//}
 			}
 			for (int i = 0; i < 7; i++)
 			{
@@ -712,61 +770,29 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 					{
 						DrawGraphF(j * 64 + 192, i * 64, GreenFilter, TRUE);
 					}
-				}
-			}
-
-	//-------------------キャラの能力関係の処理---------------
-
-			//キャラの必殺ボタンをクリックしたとき
-			int mx, my;//カーソルの位置保存
-			skillclickflag = false;
-			removeskillclickflag = false;
-
-			GetMousePoint(&mx, &my);//カーソルの現在位置を取得
-
-
-									//if()
-									//必殺技の箇所にマウスが
-			for (int d = 0; d < 7; d++)
-			{
-				for (int e = 0; e < 7; e++)
-				{
-
-				}
-			}
-
-
-			//ボタンの領域内でかつ
-			if (mx <CLDOWN_X&&mx>CLUP_X&&my<CLDOWN_Y&&my>CLUP_Y)
-			{
-				//マウスの右クリックをすると
-				if (GetMouseInput()&MOUSE_INPUT_RIGHT)
-				{
-					skillclickflag = true;
-					removeskillclickflag = true;
-					if (skillclickflag == true)
+					if (DwallMap[i][j] == 1)
 					{
-						
-						//PlaySoundMem(se, DX_PLAYTYPE_BACK);
-						//DrawTriangle(200, 50, 90, 420, 180, 420, DeadlyButton, TRUE);
-						DrawCircle(90, 330, 60, DeadlyButton, TRUE);//必殺技のボタン(青い円)の描画
-						DrawString(30, 320, "能力発動待機中....", GetColor(255, 0, 255));//必殺技ボタンの文字描画
-
-						//skillclickflag = false;
-						//removeskillclickflag = false;
+						DrawGraphF(j * 64 + 192, i * 64, RedFilter, TRUE);
 					}
-					else if(removeskillclickflag==true)
-					{
-						//skillclickflag = false;
-						//removeskillclickflag = false;
-					}
-
-
 				}
 			}
 
+	//----能力ボタン描画---------
+			//能力ボタンの場所を待機中にする
+			if (skillclickflag == true)
+			{
 
+				DrawExtendGraphF(0, 230, 200, 430, Skillwaite, TRUE);//能力待機中の描画
+			}
 
+			else
+			{
+				if (skillclickflag == true)
+				{
+					skillclickflag = false;
+					DrawExtendGraphF(40, 280, 150, 380, Skillbotton, TRUE);//能力発動ボタンの描画
+				}
+			}
 
 
 			//勝利時勝利画面表示
@@ -784,11 +810,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 					t_chara2 = LoadGraph("image\\キャラクター2\\キャラクター2敗北.png");
 				}
 				if (charaselect == 2)
+				{					
+					t_chara2 = LoadGraph("image\\キャラクター2\\キャラクター2勝利.png");
+					t_chara3 = LoadGraph("image\\キャラクター3\\キャラクター3敗北.png");
+				}
+				if (charaselect == 3)
 				{
 					t_chara = LoadGraph("image\\キャラクター1\\キャラクター1敗北透過.png");
-					t_chara2 = LoadGraph("image\\キャラクター2\\キャラクター2勝利.png");
+					t_chara3 = LoadGraph("image\\キャラクター3\\キャラクター3勝利.png");
 				}
-
 			}
 			//敗北時敗北画面表示
 			else if (lose_flag == true)
@@ -918,6 +948,30 @@ POS HitPos(int PosX, int PosY)
 
 	return nullpos;
 }
+
+//能力ボタンを押したとき0の場所を調べる
+POS ZeroPos(int ZposX, int ZposY)
+{
+	for (int i = 0; i < 7; i++)
+	{
+		for (int j = 0; j < 7; j++)
+		{
+			if (HitClick(ZposX, ZposY, POPUP_X + POPDOWN_X * i, POPUP_Y + POPDOWN_Y * j) == true)
+			{
+				//ここで壁の出現位置を返す
+				POS pos;
+				pos.x = i;
+				pos.y = j;
+
+				return pos;
+			}
+		}
+	}
+	POS nullpos = { -1,-1 };
+
+	return nullpos;
+}
+
 
 //行動範囲領域判定
 void CheckMoveRange(Piece piece, Piece AllPiece[])

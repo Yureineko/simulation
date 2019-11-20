@@ -38,8 +38,28 @@ int CanMoveMap[7][7] =
 	0
 };
 
+//•Ç‚ğ”­¶‚³‚¹‚ê‚éêŠ
+int DwallMap[7][7] =
+{
+	0
+};
+
 //•Çİ’è
 typedef struct Wall
 {
+	int type;
+	int posx;
+	int posy;
+	bool MeorEne;
+	int movelimit;
+	int movefront;
+	int moveback;
+	int moveleft;
+	int moveright;
+	int dialu;
+	int diald;
+	int diaru;
+	int diard;
 
-};
+
+}Walls;

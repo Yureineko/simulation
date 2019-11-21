@@ -95,6 +95,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	int t_chara2, t_chara2win, t_chara2lose, t_chara2skill;//仮キャラクター(プレイヤー2)の表示　2体目
 	int t_chara3, t_chara3win, t_chara3lose, t_chara3skill;//仮キャラクター(プレイヤー3)の表示　3体目
 
+
+
 	unsigned int DeadlyButton;//キャラの必殺技のボタンの表示
 	DeadlyButton = GetColor(0, 0, 255);//ボタンの青色を取得
 	int Skillbotton = LoadGraph("image\\能力発動！ボタン.png");//能力発動ボタンを表示
@@ -572,9 +574,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 					if (GetMouseInput()&MOUSE_INPUT_RIGHT)
 					{
 						skillclickflag = true;
-
-					
 					}
+
 
 				}
 
@@ -714,6 +715,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			
 			//DrawCircle(90, 330, 60, DeadlyButton,TRUE);//必殺技のボタン(青い円)の描画
 			//DrawString(50, 320, "能力発動!",GetColor(255,0,0));//必殺技ボタンの文字描画
+			DrawExtendGraphF(40, 280, 150, 380, Skillbotton, TRUE);//能力発動ボタンの描画
 			//駒の描画ひとしきり
 			for (int i = 0; i < 28; i++)
 			{
@@ -781,18 +783,25 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			//能力ボタンの場所を待機中にする
 			if (skillclickflag == true)
 			{
-
-				DrawExtendGraphF(0, 230, 200, 430, Skillwaite, TRUE);//能力待機中の描画
+				if (charaselect == 1)
+				{
+					DrawExtendGraphF(0, 230, 200, 430, Skillwaite, TRUE);//能力待機中の描画
+					t_chara = LoadGraph("image\\キャラクター1\\キャラクター1スキル透過.PNG");
+				}
+				else if (charaselect == 2)
+				{
+					DrawExtendGraphF(0, 230, 200, 430, Skillwaite, TRUE);//能力待機中の描画
+					t_chara2 = LoadGraph("image\\キャラクター2\\キャラクター2スキル.PNG");
+				}
 			}
 
-			else
+			/*else if()
 			{
 				if (skillclickflag == true)
 				{
 					skillclickflag = false;
-					DrawExtendGraphF(40, 280, 150, 380, Skillbotton, TRUE);//能力発動ボタンの描画
 				}
-			}
+			}*/
 
 
 			//勝利時勝利画面表示

@@ -191,10 +191,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	int movepointX;//駒の移動の変数(MainMapと照らし合わせて使用する。)
 	int Mx, My;//マウスの位置
 
-
-
-	GetMousePoint(&Mx, &My);//カーソルの現在位置を取得
-
 	bool win_flag = false;//勝った時のフラグ
 	bool lose_flag = false;//負けた時のフラグ
 	bool gameend_flag = false;//ゲーム終了する際に使うフラグ
@@ -228,9 +224,31 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 		{
 		case TITLE:
 			//勝敗・ターンフラグ初期化
+			saveclickflag = false;
+			clickflag = false;
 			win_flag = false;//勝った時のフラグ
 			lose_flag = false;//負けた時のフラグ
 			turn = true;
+
+			//マウスの状態を確認する
+			if (GetMouseInput() & MOUSE_INPUT_LEFT)
+			{
+				//左クリックが押されたとき、押した場所を確認する
+				if (saveclickflag == false)
+				{
+					saveclickflag = true;
+					GetMousePoint(&clickpos.posX, &clickpos.posY);
+				}
+			}
+			else
+			{
+				//左クリックが離されたとき、離した場所を確認する
+				if (saveclickflag == true)
+				{
+					saveclickflag = false;
+					GetMousePoint(&outclickpos.posX, &outclickpos.posY);
+				}
+			}
 
 			//駒保存用
 			//ここで駒の移動距離やクラスの初期化を行う
@@ -351,23 +369,31 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			}
 
 			SetFontSize(16);
+			DrawExtendGraphF(300, 200, 500, 250, textbox, TRUE);//テキストボックスの描画
+			DrawExtendGraphF(300, 300, 500, 350, textbox, TRUE);//テキストボックスの描画
 			DrawString(0, 32, "タイトル(仮)", GetColor(255, 255, 255));
-			DrawString(0, 48, "十字キー上で始める", GetColor(255, 255, 255));
-			DrawString(0, 64, "十字キー下で終わる", GetColor(255, 255, 255));
-			if (CheckHitKey(KEY_INPUT_UP))
+			DrawString(375, 215, "始める", GetColor(255, 255, 255));
+			DrawString(375, 315, "終わる", GetColor(255, 255, 255));
+
+			if (saveclickflag == true)
 			{
-				scene = SELECT;
-				break;
-			}
-			else if (CheckHitKey(KEY_INPUT_DOWN))
-			{
-				gameend_flag = true;
-				break;
+				if (clickflag == false)
+				{
+					if (300 <= clickpos.posX&&clickpos.posX <= 500 && 200 <= clickpos.posY&&clickpos.posY <= 250)
+					{
+						scene = SELECT;
+					}
+					else if (300 <= clickpos.posX&&clickpos.posX <= 500 && 300 <= clickpos.posY&&clickpos.posY <= 350)
+					{
+						gameend_flag = true;
+					}
+				}
 			}
 			break;
 
 		case SELECT:
 			//初期化
+			GetMousePoint(&Mx, &My);//カーソルの現在位置を取得
 			clickpos.posX = -1;
 			clickpos.posY = -1;
 			outclickpos.posX = -1;
@@ -409,7 +435,30 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			DrawExtendGraphF(416, 50, 832, 448, textbox, TRUE);//テキストボックスの描画
 
 			DrawString(32, 16, "キャラを選択してください", GetColor(255, 255, 255));
-			DrawString(500, 200, "能力", GetColor(255, 255, 255));
+
+			if (0 <= Mx && Mx <= 416 && 50 <= My && My <= 183)
+			{
+				DrawString(480, 180, "フェンス・オブ・ガイア", GetColor(255, 255, 255));
+				DrawString(480, 250, "任意のマスを中心に", GetColor(255, 255, 255));
+				DrawString(480, 266, "ユニットが侵入できない", GetColor(255, 255, 255));
+				DrawString(480, 282, "縦に1列横に3列の防壁を設置する", GetColor(255, 255, 255));
+			}
+			else if (0 <= Mx && Mx <= 416 && 183 < My && My <= 316)
+			{
+				DrawString(480, 180, "マイン・オブ・ファイア", GetColor(255, 255, 255));
+				DrawString(480, 250, "任意のマスに相手からは見えない", GetColor(255, 255, 255));
+				DrawString(480, 266, "地雷を設置する", GetColor(255, 255, 255));
+				DrawString(480, 282, "地雷を踏んだユニットは即座に退場する", GetColor(255, 255, 255));
+			}
+			else if (0 <= Mx && Mx <= 416 && My > 316)
+			{
+				DrawString(480, 180, "エターナルフォースブリザード", GetColor(255, 255, 255));
+				DrawString(480, 250, "相手プレイヤーは死ぬ", GetColor(255, 255, 255));
+			}
+			else
+			{
+
+			}
 
 			if (saveclickflag == true)
 			{
@@ -427,7 +476,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 						scene = GAME;
 						clickflag = true;
 					}
-					else if (clickpos.posX <= 416 && clickpos.posY >= 316)
+					else if (clickpos.posX <= 416 && clickpos.posY > 316)
 					{
 						charaselect = 3;
 						scene = GAME;
@@ -877,7 +926,26 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			//画像表示
 			//DrawGraph(x, y, img画像(int型), TRUE);
 
-
+			//case GAMEEND:
+			//	//マウスの状態を確認する
+			//	if (GetMouseInput() & MOUSE_INPUT_LEFT)
+			//	{
+			//		//左クリックが押されたとき、押した場所を確認する
+			//		if (saveclickflag == false)
+			//		{
+			//			saveclickflag = true;
+			//			GetMousePoint(&clickpos.posX, &clickpos.posY);
+			//		}
+			//	}
+			//	else
+			//	{
+			//		//左クリックが離されたとき、離した場所を確認する
+			//		if (saveclickflag == true)
+			//		{
+			//			saveclickflag = false;
+			//			GetMousePoint(&outclickpos.posX, &outclickpos.posY);
+			//		}
+			//	}
 
 			break;
 		}

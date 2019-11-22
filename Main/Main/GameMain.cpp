@@ -206,6 +206,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	bool win_flag = false;//勝った時のフラグ
 	bool lose_flag = false;//負けた時のフラグ
 	bool gameend_flag = false;//ゲーム終了する際に使うフラグ
+	bool time = false;//タイムラグ発生用フラグ
 
 	unsigned int cr;//辺り範囲の描画の
 
@@ -241,6 +242,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			win_flag = false;//勝った時のフラグ
 			lose_flag = false;//負けた時のフラグ
 			turn = true;
+			time = false;
 
 			//マウスの状態を確認する
 			if (GetMouseInput() & MOUSE_INPUT_LEFT)
@@ -410,8 +412,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			clickpos.posY = -1;
 			outclickpos.posX = -1;
 			outclickpos.posY = -1;
-			saveclickflag = false;
-			clickflag = false;
 			t_chara = LoadGraph("image\\キャラクター1\\キャラクター1リサイズ透過.png");
 			t_chara2 = LoadGraph("image\\キャラクター2\\キャラクター2メイン.png");
 			t_chara3 = LoadGraph("image\\キャラクター3\\キャラクター3立ち絵.png");			
@@ -676,7 +676,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 		
 			//背景の画像表示	
 			LoadGraphScreen(0, 0, "image\\BackGround.png", TRUE);
-			DrawGraph(0, 0, t_charaB, TRUE);//プレイヤー1の背景の描画			
+			DrawGraph(0, 0, t_charaB, TRUE);//プレイヤー1の背景の描画
 			DrawGraph(640, 0, t_charaB2, TRUE);//プレイヤー2の背景の描画
 
 			if (charaselect == 1)
@@ -804,73 +804,71 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 						t_chara3 = LoadGraph("image\\キャラクター3\\キャラクター3立ち絵.png");
 						skillclickflag = false;
 					}
-					
-					
 				}
-				
 			}
 
-
-			//勝利時勝利画面表示
 			if (win_flag == true)
 			{
-				SetFontSize(40);
-				//LoadGraphScreen(64, 0, "image\\駒.png", TRUE);
-				DrawString(350, 250, "YOU WIN", GetColor(255, 0, 0));
-				DrawString(250, 300, "十字キー右でタイトルへ", GetColor(255, 0, 0));
-				DrawString(250, 350, "十字キー左で終了", GetColor(255, 0, 0));
-
-				if (charaselect == 1)
-				{
-					t_chara = LoadGraph("image\\キャラクター1\\キャラクター1勝利透過.png");
-					t_chara2 = LoadGraph("image\\キャラクター2\\キャラクター2敗北.png");
-					skillredflag = true;
-				}
-				if (charaselect == 2)
-				{					
-					t_chara2 = LoadGraph("image\\キャラクター2\\キャラクター2勝利.png");
-					t_chara3 = LoadGraph("image\\キャラクター3\\キャラクター3敗北.png");
-					skillredflag = true;
-				}
-				if (charaselect == 3)
-				{
-					t_chara = LoadGraph("image\\キャラクター1\\キャラクター1敗北透過.png");
-					t_chara3 = LoadGraph("image\\キャラクター3\\キャラクター3勝利.png");
-					skillredflag = true;
-				}
+				scene = GAMEEND;
 			}
-			//敗北時敗北画面表示
 			else if (lose_flag == true)
 			{
-				SetFontSize(40);
-				DrawString(350, 250, "YOU LOSE", GetColor(255, 0, 0));
-				DrawString(250, 300, "十字キー右でタイトルへ", GetColor(255, 0, 0));
-				DrawString(250, 350, "十字キー左で終了", GetColor(255, 0, 0));
-				DrawString(300, 300, "Enterで終了", GetColor(255, 0, 0));
-				turn = false;
+				scene = GAMEEND;
 			}
+			break;
 
-			if (CheckHitKey(KEY_INPUT_RIGHT) && (win_flag == true || lose_flag == true))
-			{
-				scene = TITLE;
-				break;
-			}
-			else if (CheckHitKey(KEY_INPUT_LEFT) && (win_flag == true || lose_flag == true))
-			{
-				gameend_flag = true;
-				break;
-			}
+			////勝利時勝利画面表示
+			//if (win_flag == true)
+			//{
+			//	SetFontSize(40);
+			//	//LoadGraphScreen(64, 0, "image\\駒.png", TRUE);
+			//	DrawString(350, 250, "YOU WIN", GetColor(255, 0, 0));
+			//	DrawString(250, 300, "十字キー右でタイトルへ", GetColor(255, 0, 0));
+			//	DrawString(250, 350, "十字キー左で終了", GetColor(255, 0, 0));
+
+			//	if (charaselect == 1)
+			//	{
+			//		t_chara = LoadGraph("image\\キャラクター1\\キャラクター1勝利透過.png");
+			//		t_chara2 = LoadGraph("image\\キャラクター2\\キャラクター2敗北.png");
+			//		skillredflag = true;
+			//	}
+			//	if (charaselect == 2)
+			//	{					
+			//		t_chara2 = LoadGraph("image\\キャラクター2\\キャラクター2勝利.png");
+			//		t_chara3 = LoadGraph("image\\キャラクター3\\キャラクター3敗北.png");
+			//		skillredflag = true;
+			//	}
+			//	if (charaselect == 3)
+			//	{
+			//		t_chara = LoadGraph("image\\キャラクター1\\キャラクター1敗北透過.png");
+			//		t_chara3 = LoadGraph("image\\キャラクター3\\キャラクター3勝利.png");
+			//		skillredflag = true;
+			//	}
+			//}
+			////敗北時敗北画面表示
+			//else if (lose_flag == true)
+			//{
+			//	SetFontSize(40);
+			//	DrawString(350, 250, "YOU LOSE", GetColor(255, 0, 0));
+			//	DrawString(250, 300, "十字キー右でタイトルへ", GetColor(255, 0, 0));
+			//	DrawString(250, 350, "十字キー左で終了", GetColor(255, 0, 0));
+			//	DrawString(300, 300, "Enterで終了", GetColor(255, 0, 0));
+			//	turn = false;
+			//}
+
+			//if (CheckHitKey(KEY_INPUT_RIGHT) && (win_flag == true || lose_flag == true))
+			//{
+			//	scene = TITLE;
+			//	break;
+			//}
+			//else if (CheckHitKey(KEY_INPUT_LEFT) && (win_flag == true || lose_flag == true))
+			//{
+			//	gameend_flag = true;
+			//	break;
+			//}
 			//king->Draw();
 
-
-
-
-
-
-
 			//この辺り?で勝敗判定を行ってbreakでwhile文を抜ける。
-
-
 
 			//outposが-1以外の場合数値を-1にする
 			if (outclickpos.posX != -1 && outclickpos.posY != -1)
@@ -896,29 +894,122 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			//画像表示
 			//DrawGraph(x, y, img画像(int型), TRUE);
 
-			//case GAMEEND:
-			//	//マウスの状態を確認する
-			//	if (GetMouseInput() & MOUSE_INPUT_LEFT)
-			//	{
-			//		//左クリックが押されたとき、押した場所を確認する
-			//		if (saveclickflag == false)
-			//		{
-			//			saveclickflag = true;
-			//			GetMousePoint(&clickpos.posX, &clickpos.posY);
-			//		}
-			//	}
-			//	else
-			//	{
-			//		//左クリックが離されたとき、離した場所を確認する
-			//		if (saveclickflag == true)
-			//		{
-			//			saveclickflag = false;
-			//			GetMousePoint(&outclickpos.posX, &outclickpos.posY);
-			//		}
-			//	}
+			
+			case GAMEEND:
+				//マウスの状態を確認する
+				if (GetMouseInput() & MOUSE_INPUT_LEFT)
+				{
+					//左クリックが押されたとき、押した場所を確認する
+					if (saveclickflag == false)
+					{
+						saveclickflag = true;
+						GetMousePoint(&clickpos.posX, &clickpos.posY);
+					}
+				}
+				else
+				{
+					//左クリックが離されたとき、離した場所を確認する
+					if (saveclickflag == true)
+					{
+						saveclickflag = false;
+						GetMousePoint(&outclickpos.posX, &outclickpos.posY);
+					}
+				}
 
+				//勝利時勝利画面表示
+				if (win_flag == true)
+				{
+					if (time == false)
+					{
+						WaitTimer(500);
+					}
+					time = true;
+
+					SetFontSize(40);
+
+					DrawGraph(0, 0, t_charaB, TRUE);//プレイヤー1の背景の描画
+					DrawGraph(640, 0, t_charaB2, TRUE);//プレイヤー2の背景の描画
+					DrawExtendGraphF(194, 398, 416, 448, textbox, TRUE);//テキストボックスの描画
+					DrawExtendGraphF(417, 398, 639, 448, textbox, TRUE);//テキストボックスの描画
+
+					DrawString(340, 50, "YOU WIN", GetColor(255, 0, 0));
+					DrawString(200, 403, "タイトルへ", GetColor(255, 0, 0));
+					DrawString(490, 403, "終了", GetColor(255, 0, 0));
+
+					if (charaselect == 1)
+					{
+						t_chara = LoadGraph("image\\キャラクター1\\キャラクター1勝利透過.png");
+						t_chara2 = LoadGraph("image\\キャラクター2\\キャラクター2敗北.png");
+						DrawGraph(0, 0, t_chara, TRUE);//プレイヤー1の描画
+						DrawGraph(640, 0, t_chara2, TRUE);//プレイヤー2の描画
+						skillredflag = true;
+					}
+					if (charaselect == 2)
+					{
+						t_chara2 = LoadGraph("image\\キャラクター2\\キャラクター2勝利.png");
+						t_chara3 = LoadGraph("image\\キャラクター3\\キャラクター3敗北.png");
+						DrawGraph(0, 0, t_chara2, TRUE);//プレイヤー1の描画
+						DrawGraph(640, 0, t_chara3, TRUE);//プレイヤー2の描画
+						skillredflag = true;
+					}
+					if (charaselect == 3)
+					{
+						t_chara = LoadGraph("image\\キャラクター1\\キャラクター1敗北透過.png");
+						t_chara3 = LoadGraph("image\\キャラクター3\\キャラクター3勝利.png");
+						DrawGraph(0, 0, t_chara3, TRUE);//プレイヤー1の描画
+						DrawGraph(640, 0, t_chara, TRUE);//プレイヤー2の描画
+						skillredflag = true;
+					}
+					
+					if (saveclickflag == true)
+					{
+						if (clickflag == false)
+						{
+							if (194 <= clickpos.posX && clickpos.posX <= 416 && 398 <= clickpos.posY && clickpos.posY <= 448)
+							{
+								scene = TITLE;
+								clickflag = true;
+							}
+							else if (417 <= clickpos.posX && clickpos.posX <= 639 && 398 <= clickpos.posY && clickpos.posY <= 448)
+							{
+								gameend_flag = true;
+								clickflag = true;
+							}
+						}
+						else
+						{
+							clickflag = false;
+						}
+					}
+					break;
+				}
+				//敗北時敗北画面表示
+				else if (lose_flag == true)
+				{
+					WaitTimer(500);
+
+					SetFontSize(40);
+					DrawExtendGraphF(200, 200, 500, 300, textbox, TRUE);//テキストボックスの描画
+					DrawExtendGraphF(200, 350, 500, 450, textbox, TRUE);//テキストボックスの描画
+
+					DrawString(330, 50, "YOU WIN", GetColor(255, 0, 0));
+					DrawString(250, 250, "タイトルへ", GetColor(255, 0, 0));
+					DrawString(250, 400, "終了", GetColor(255, 0, 0));
+				}
+
+				if (CheckHitKey(KEY_INPUT_RIGHT) && (win_flag == true || lose_flag == true))
+				{
+					scene = TITLE;
+					break;
+				}
+				else if (CheckHitKey(KEY_INPUT_LEFT) && (win_flag == true || lose_flag == true))
+				{
+					gameend_flag = true;
+					break;
+				}
 			break;
 		}
+
 
 		ScreenFlip();//画像のフリップ(切り替え)
 		ClearDrawScreen();//画像のクリア

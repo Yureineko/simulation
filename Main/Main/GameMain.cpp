@@ -34,6 +34,13 @@ void CheckMoveRange(Piece piece, Piece AllPiece[]);
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine, int nCmdShow)
 {
+	//IPアドレス設定用
+	IPDATA Ip;
+	//接続ポート
+	int port = -1;
+	//ネットワークハンドル
+	int NetUDPHandle;
+
 	//windowモードで起動
 	ChangeWindowMode(TRUE);
 	//Dxライブラリの初期化
@@ -49,6 +56,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	int Random[1];
 	int Green = GetColor(0, 255, 0);
 	
+	//バックグラウンドの再生
+	SetAlwaysRunFlag(TRUE);
+
 	//乱数の初期値を123456に設定する
 	SRand(123456);
 
@@ -245,6 +255,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	int cx, cy;
 	bool Click_flag = 0;
 
+	Ip.d1 = 172;
+	Ip.d2 = 17;
+	Ip.d3 = 60;
+	Ip.d4 = 122;
+
+	NetUDPHandle = MakeUDPSocket(99);
+
+	int Data = 0;
+	int UserNum = -1;
+	int connecttime = 0;
 
 	//DXライブラリを初期化
 	if (DxLib_Init() == -1)
@@ -434,6 +454,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 				{
 					if (300 <= clickpos.posX&&clickpos.posX <= 500 && 200 <= clickpos.posY&&clickpos.posY <= 250)
 					{
+						int num = 1;
+						NetWorkSendUDP(NetUDPHandle, Ip, 30, &num, sizeof(int));
 						scene = SELECT;
 					}
 					else if (300 <= clickpos.posX&&clickpos.posX <= 500 && 300 <= clickpos.posY&&clickpos.posY <= 350)
@@ -441,6 +463,44 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 						gameend_flag = true;
 					}
 				}
+			}
+			break;
+
+		case CONNECT:
+			
+			if (UserNum != -1)
+			{
+				int Tempnum = 0;
+				NetWorkSendUDP(NetUDPHandle, Ip, UserNum, &Tempnum, sizeof(int));
+			}
+
+			if (CheckNetWorkRecvUDP(NetUDPHandle) == TRUE)
+			{
+				NetWorkRecvUDP(NetUDPHandle, &Ip, &UserNum, &Data, sizeof(int), FALSE);
+			}
+
+			if (Data >= 1)
+			{
+				if (Data == 1)
+				{
+					DrawString(0, 32, "対戦相手募集中...", GetColor(255, 255, 255));
+					connecttime = 0;
+				}
+				else
+				{
+					DrawString(0, 32, "接続確認中...", GetColor(255, 255, 255));
+					connecttime++;
+				}
+			}
+			else
+			{
+				DrawString(0, 32, "サーバー接続にゃう...", GetColor(255, 255, 255));
+			}
+
+			if (connecttime == 60)
+			{
+				connecttime = 0;
+				scene = SELECT;
 			}
 			break;
 
@@ -535,6 +595,34 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 					clickflag = false;
 				}
 			}
+
+			//通信確認用
+			if (UserNum != -1)
+			{
+				int Tempnum = 0;
+				NetWorkSendUDP(NetUDPHandle, Ip, UserNum, &Tempnum, sizeof(int));
+			}
+
+			if (CheckNetWorkRecvUDP(NetUDPHandle) == TRUE)
+			{
+				NetWorkRecvUDP(NetUDPHandle, &Ip, &UserNum, &Data, sizeof(int), FALSE);
+			}
+
+			if (Data == 1)
+			{
+				connecttime++;
+				if (connecttime == 60)
+				{
+					//対戦相手が消えたため接続に戻る
+					//初期化は任せた
+					scene = CONNECT;
+				}
+			}
+			else
+			{
+				connecttime = 0;
+			}
+
 			break;
 
 		case GAME:
@@ -761,6 +849,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 				}
 			}
+			else
+			{
+				//ここから相手ターン
+				if (CheckNetWorkRecvUDP(NetUDPHandle) == TRUE)
+				{
+					NetWorkRecvUDP(NetUDPHandle, &Ip, &UserNum, &Data, sizeof(int), FALSE);
+				}
+			}
 	
 		//Zキーを押すと手番を自分に戻す。
 		if (CheckHitKey(KEY_INPUT_Z))
@@ -971,6 +1067,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 					}
 				}
+			}
+
+			if (UserNum != -1)
+			{
+				int Tempnum = 0;
+				NetWorkSendUDP(NetUDPHandle, Ip, UserNum, &Tempnum, sizeof(int));
 			}
 
 			if (win_flag == true)

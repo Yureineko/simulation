@@ -12,6 +12,8 @@ public:
 
 private:
 
+	bool Deadly;
+
 	void PL1_skill();//PLAYER1‚ÌƒXƒLƒ‹‚Ìˆ—
 	void Draw();//PLAYER1‚Ì•`‰æ
 };

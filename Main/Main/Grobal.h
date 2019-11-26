@@ -30,7 +30,7 @@ typedef struct PieceInfo
 
 enum Scenes
 {
-	TITLE,SELECT,GAME,
+	TITLE,SELECT,GAME,GAMEEND,
 };
 //‹î‚Ì“®‚¯‚éMap
 int CanMoveMap[7][7] =

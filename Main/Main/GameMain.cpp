@@ -28,6 +28,8 @@ bool CheckButton(Pos pushclick, Pos outclick, Pos button, int sizex, int sizey);
 
 POS HitPos(int PosX, int PosY);//位置を取得
 
+POS ZeroPos(int ZposX, int ZposY);//位置を取得
+
 void CheckMoveRange(Piece piece, Piece AllPiece[]);
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine, int nCmdShow)
@@ -138,6 +140,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	bool saveclickflag;//クリックポジション取得の制御を行う為のフラグ
 	bool clickflag;    //クリック制御を行う為のフラグ
 
+	//壁と地雷の能力ボタン
 	Pos skillpos;//クリックした能力ボタン部分
 	Pos outskillpos;//クリック離した能力ボタン部分
 	bool saveskillflag;//クリックポジション取得の制御を行う為のフラグ スキル
@@ -150,6 +153,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	outclickpos.posY = -1;
 	saveclickflag = false;
 	clickflag = false;
+
+	//壁
+	skillpos.posX = -1;
+	skillpos.posY = -1;
+	outskillpos.posX = -1;
+	outskillpos.posY = -1;
+	saveskillflag = false;
+	Sclickflag = false;
 
 
 	bool skillclickflag;//必殺ボタンをクリックしたときのフラグ
@@ -173,6 +184,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 	int movepiece = -1;  //動かす駒のナンバーを保存しておく用
 	bool moveflag = false;//動かす駒を選ぶのか、動いてほしい場所を選ぶのか
+
+
+	int appearanceWall = -1;//出現
+	bool appearanceflag = false;//出現する場所を選ぶ
 
 	int EKingX = 6, EKingY = 6;//敵の王の位置X,Y
 
@@ -279,6 +294,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			{
 				for (int j = 0; j < 7; j++)
 				{
+					
+
 					//0じゃない(そこに駒がある)場合
 					if (MainMap[i][j] >= 1 && MainMap[i][j] <= 6)
 					{
@@ -384,6 +401,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 							piecetable[count].diaru = 0;
 							piecetable[count].diard = 0;
 						}
+
+						////そこに駒がない場合
+						//if (MainMap[i][j] == 0)
+						//{
+						//	//壁の所にそれぞれの値を入れる
+						//	wall[count].posx = j;
+						//	wall[count].posy = i;
+
+						//	//自分の物である
+						//	count++;
+						//}
 						count++;
 					}
 				}
@@ -553,6 +581,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 								moveflag = true;
 								clickflag = true;
 								//移動できる範囲を緑色で指定する
+								//マスに触れる所
 								CheckMoveRange(piecetable[i], piecetable);
 							}
 						}
@@ -563,6 +592,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 						//選んだマスを取得
 						movePos = HitPos(clickpos.posX, clickpos.posY);
 						//そのマスが範囲内
+						//クリックした場所と駒の位置があっていれば
 						if (clickpos.posX >= POPUP_X && clickpos.posX <= POPUP_X + 64 * 7 && CanMoveMap[movePos.y][movePos.x] == 1)
 						{
 							int latemove = -1;//駒の配列番号の保存
@@ -603,21 +633,18 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 							moveflag = false;
 
 							turn = false;
-							//恐らくここでMainMapを更新
+							//クリックした後の緑範囲を消す
 							for (int i = 0; i < 7; i++)
 							{
 								for (int j = 0; j < 7; j++)
 								{
 									CanMoveMap[i][j] = 0;
 
+									DwallMap[i][j]=0;
 									
 								}
 							}
-							/*
-							if(piecetable[movepiece].MeorEne)
-							movepiece = i;
-							moveflag = true;
-							*/
+							
 						}
 					}
 				}
@@ -683,28 +710,29 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 						}
 					}
 					//赤い範囲をクリックすると
-					if (wallskill1 == true)
+					if (Mouse==1&&wallskill1 == true)
 					{
 						//クリックしたとき
-						if (Mouse==1)
+						//キャラを選択し緑色のマス(行動できる範囲)を描画
+						if (appearanceflag == false)
 						{
-							//左クリックが押されたとき、押した場所を確認する
-							if (saveclickflag == false)
+							//クリックしたマスを取得しそのマスに該当する駒を探す
+							POS WallPos = ZeroPos(clickpos.posX, clickpos.posY);
+							for (int i = 0; i < 49; i++)
 							{
-								saveclickflag = true;
-								GetMousePoint(&clickpos.posX, &clickpos.posY);
+								//該当する駒があり、その駒が生きていれば
+								if (WallPos.x == wall[i].posx && WallPos.y == wall[i].posy && wall[i].type == 0)
+								{
+									//その駒の対応ナンバーを一時保存する
+									appearanceWall = i;
+									//行動場所を選ぶようにする
+									appearanceflag = true;
+									clickflag = true;
+									//出現できる範囲を赤色で指定する
+									//CheckMoveRange(wall[i], wall);
+								}
 							}
 						}
-						else if(Mouse)
-						{
-							//左クリックが離されたとき、離した場所を確認する
-							if (saveclickflag == true)
-							{
-								saveclickflag = false;
-								GetMousePoint(&outclickpos.posX, &outclickpos.posY);
-							}
-						}
-						//POS Redpos = HitPos(skillpos.posX, skillpos.posY);
 
 
 					}
@@ -764,10 +792,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 				DrawGraph(640, 0, t_chara, TRUE);//プレイヤー2の描画
 			}
 			
-			//DrawCircle(90, 330, 60, DeadlyButton,TRUE);//必殺技のボタン(青い円)の描画
-			//DrawString(50, 320, "能力発動!",GetColor(255,0,0));//必殺技ボタンの文字描画
 			DrawExtendGraphF(40, 280, 150, 380, Skillbotton, TRUE);//能力発動ボタンの描画
 			//駒の描画ひとしきり
+			//上2行と下2行
 			for (int i = 0; i < 28; i++)
 			{
 				switch (piecetable[i].type)
@@ -804,18 +831,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 					//DrawGraphF(piecetable[i].posX * 64 + 192, piecetable[i].posY * 64, wall, TRUE);
 					break;
 				}
-				if (CanMoveMap[piecetable[i].posY][piecetable[i].posX] == 1)
-				{
-					//緑の移動範囲描画
-					DrawGraphF(piecetable[i].posX * 64 + 192, piecetable[i].posY * 64, GreenFilter, TRUE);
-				}
-				if (CanMoveMap[piecetable[i].posY][piecetable[i].posX]==2)
-				{
-					//赤の壁出現範囲描画
-					DrawGraphF(piecetable[i].posX * 64 + 192, piecetable[i].posY * 64, RedFilter, TRUE);
-				}
+				//クリックしたときの緑の描画
+				//if (CanMoveMap[piecetable[i].posY][piecetable[i].posX] == 1)
+				//{
+				//	//緑の移動範囲描画
+				//	DrawGraphF(piecetable[i].posX * 64 + 192, piecetable[i].posY * 64, GreenFilter, TRUE);
+				//}
+				
 			}
-			//
+			//緑の範囲描画
 			for (int i = 0; i < 7; i++)
 			{
 				for (int j = 0; j < 7; j++)
@@ -823,12 +847,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 					if (CanMoveMap[i][j] == 1)
 					{
 						DrawGraphF(j * 64 + 192, i * 64, GreenFilter, TRUE);
-					}
-					
-					
+					}		
 				}
 			}
 
+		
+			
+			/*if (DwallMap[i][j] == 1)
+			{
+				DrawGraphF(j * 64 + 192, i * 64, RedFilter, TRUE);
+			}*/
 	//-------------能力ボタン描画---------
 			//能力ボタンの場所を待機中にする
 			if (skillclickflag == true&&skillflagremove==false)
@@ -841,17 +869,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 					t_chara = LoadGraph("image\\キャラクター1\\キャラクター1スキル透過.PNG");//スキル待機中のキャラ1
 					skillbuttonflag = true;
 					//駒が通れない壁を作る(横向き)
-
+					//赤い範囲を描画する
 					//MainMapの中にある0の場所を探す
 					for (int x=0; x < 7; x++)
 					{
 						for (int y=0; y < 7; y++)
 						{
 							//描画している、またはした後のMapから
-							if (MainMap[x][y]==0)
+							if (DwallMap[x][y]==1)
 							{
 
-								//赤い範囲を描画する
+							//赤い範囲を描画する
 							DrawGraphF(y * 64 + 192, x* 64, RedFilter, TRUE);
 							wallskill1 = true;
 							}
@@ -954,58 +982,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			}
 			break;
 
-			////勝利時勝利画面表示
-			//if (win_flag == true)
-			//{
-			//	SetFontSize(40);
-			//	//LoadGraphScreen(64, 0, "image\\駒.png", TRUE);
-			//	DrawString(350, 250, "YOU WIN", GetColor(255, 0, 0));
-			//	DrawString(250, 300, "十字キー右でタイトルへ", GetColor(255, 0, 0));
-			//	DrawString(250, 350, "十字キー左で終了", GetColor(255, 0, 0));
-
-			//	if (charaselect == 1)
-			//	{
-			//		t_chara = LoadGraph("image\\キャラクター1\\キャラクター1勝利透過.png");
-			//		t_chara2 = LoadGraph("image\\キャラクター2\\キャラクター2敗北.png");
-			//		skillredflag = true;
-			//	}
-			//	if (charaselect == 2)
-			//	{					
-			//		t_chara2 = LoadGraph("image\\キャラクター2\\キャラクター2勝利.png");
-			//		t_chara3 = LoadGraph("image\\キャラクター3\\キャラクター3敗北.png");
-			//		skillredflag = true;
-			//	}
-			//	if (charaselect == 3)
-			//	{
-			//		t_chara = LoadGraph("image\\キャラクター1\\キャラクター1敗北透過.png");
-			//		t_chara3 = LoadGraph("image\\キャラクター3\\キャラクター3勝利.png");
-			//		skillredflag = true;
-			//	}
-			//}
-			////敗北時敗北画面表示
-			//else if (lose_flag == true)
-			//{
-			//	SetFontSize(40);
-			//	DrawString(350, 250, "YOU LOSE", GetColor(255, 0, 0));
-			//	DrawString(250, 300, "十字キー右でタイトルへ", GetColor(255, 0, 0));
-			//	DrawString(250, 350, "十字キー左で終了", GetColor(255, 0, 0));
-			//	DrawString(300, 300, "Enterで終了", GetColor(255, 0, 0));
-			//	turn = false;
-			//}
-
-			//if (CheckHitKey(KEY_INPUT_RIGHT) && (win_flag == true || lose_flag == true))
-			//{
-			//	scene = TITLE;
-			//	break;
-			//}
-			//else if (CheckHitKey(KEY_INPUT_LEFT) && (win_flag == true || lose_flag == true))
-			//{
-			//	gameend_flag = true;
-			//	break;
-			//}
-			//king->Draw();
-
-			//この辺り?で勝敗判定を行ってbreakでwhile文を抜ける。
 
 			//outposが-1以外の場合数値を-1にする
 			if (outclickpos.posX != -1 && outclickpos.posY != -1)
@@ -1222,7 +1198,7 @@ POS ZeroPos(int ZposX, int ZposY)
 	{
 		for (int j = 0; j < 7; j++)
 		{
-			if (HitClick(ZposX, ZposY, POPUP_X + POPDOWN_X * i, POPUP_Y + POPDOWN_Y * j) == true)
+			if (HitClick(ZposX, ZposY, POPUP_X + POPDOWN_X * i, POPUP_Y + POPDOWN_Y * j) == 0)
 			{
 				//ここで壁の出現位置を返す
 				POS pos;

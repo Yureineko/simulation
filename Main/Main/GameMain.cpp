@@ -57,7 +57,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 		{ 2,3,4,6,4,3,2 },
 		{ 1,1,1,1,1,1,1 },
 		{ 0,0,0,0,0,0,0 },
-		{ 0,0,0,0,0,0,0 },
+		{ 0,0,7,0,0,0,0 },
 		{ 0,0,0,0,0,0,0 },
 		{ 1,1,1,1,1,1,1 },
 		{ 2,3,4,5,4,3,2 },
@@ -68,6 +68,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	//4.騎士(飛車)
 	//5.王
 	//6.相手の王
+	//7.壁
 
 	SORCERER*sorcerer;//魔導士の本体
 	enum VEC Sor_vec;//魔導士の移動方向
@@ -90,6 +91,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	//画像int変換関数
 	//int img = LoadGraph("画像名");
 	
+	int title = LoadGraph("image\\タイトル画面(仮候補).png");//タイトル画面読み込み
 	int textbox = LoadGraph("image\\hakkou1.png");//テキストボックスの表示
 	int t_charaB;//仮背景(プレイヤー1)の表示	
 	int t_charaB2;//仮背景(プレイヤー2)の表示
@@ -113,9 +115,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	int EKing = LoadGraph("image\\King(64).png");//ここに王の画像
 
 	//駒が通行できない壁
-	int wall;//切り取った壁
-	int Wall = LoadGraph("image\\Wall(64).png");//ここに必殺技(壁)の画像登録
-	wall=DerivationGraph(0,0, 64, 64, Wall);//壁の画像の切り取り
+	//int wall;//切り取った壁
+	int Wall = LoadGraph("image\\King(仮).png");//ここに必殺技(壁)の画像登録
+	//wall=DerivationGraph(0,0, 64, 64, Wall);//壁の画像の切り取り
 
 
 
@@ -129,6 +131,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	int EspiX = 3, EspiY = 3;//諜報員の位置X,Y
 	int KnightX = 4, KnightY = 4;//騎士の位置X,Y
 	int KingX = 5, KingY = 5;//王の位置X,Y
+	int WallX = 7, WallY = 7;//壁の位置X,Y
 	//キャラ選択用変数
 	int charaselect;
 
@@ -383,6 +386,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			}
 
 			SetFontSize(16);
+			DrawExtendGraphF(-50, -50, 882, 498, title, TRUE);//タイトルの描画
 			DrawExtendGraphF(300, 200, 500, 250, textbox, TRUE);//テキストボックスの描画
 			DrawExtendGraphF(300, 300, 500, 350, textbox, TRUE);//テキストボックスの描画
 			DrawString(0, 32, "タイトル(仮)", GetColor(255, 255, 255));
@@ -466,10 +470,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			{
 				DrawString(480, 180, "エターナルフォースブリザード", GetColor(255, 255, 255));
 				DrawString(480, 250, "相手プレイヤーは死ぬ", GetColor(255, 255, 255));
-			}
-			else
-			{
-
 			}
 
 			if (saveclickflag == true)
@@ -730,9 +730,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 					//敵王の生成
 					DrawRotaGraph(piecetable[i].posX * 64 + 224, piecetable[i].posY * 64 + 32, 1.0f, PI, EKing, TRUE);
 					break;
+
 				case 7:
 					//壁の生成
-					DrawGraphF(piecetable[i].posX * 64 + 192, piecetable[i].posY * 64, wall, TRUE);
+					DrawGraphF(piecetable[i].posX * 64 + 192, piecetable[i].posY * 64, Wall, TRUE);
 					break;
 				}
 				if (CanMoveMap[piecetable[i].posY][piecetable[i].posX] == 1)
@@ -816,57 +817,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 				scene = GAMEEND;
 			}
 			break;
-
-			////勝利時勝利画面表示
-			//if (win_flag == true)
-			//{
-			//	SetFontSize(40);
-			//	//LoadGraphScreen(64, 0, "image\\駒.png", TRUE);
-			//	DrawString(350, 250, "YOU WIN", GetColor(255, 0, 0));
-			//	DrawString(250, 300, "十字キー右でタイトルへ", GetColor(255, 0, 0));
-			//	DrawString(250, 350, "十字キー左で終了", GetColor(255, 0, 0));
-
-			//	if (charaselect == 1)
-			//	{
-			//		t_chara = LoadGraph("image\\キャラクター1\\キャラクター1勝利透過.png");
-			//		t_chara2 = LoadGraph("image\\キャラクター2\\キャラクター2敗北.png");
-			//		skillredflag = true;
-			//	}
-			//	if (charaselect == 2)
-			//	{					
-			//		t_chara2 = LoadGraph("image\\キャラクター2\\キャラクター2勝利.png");
-			//		t_chara3 = LoadGraph("image\\キャラクター3\\キャラクター3敗北.png");
-			//		skillredflag = true;
-			//	}
-			//	if (charaselect == 3)
-			//	{
-			//		t_chara = LoadGraph("image\\キャラクター1\\キャラクター1敗北透過.png");
-			//		t_chara3 = LoadGraph("image\\キャラクター3\\キャラクター3勝利.png");
-			//		skillredflag = true;
-			//	}
-			//}
-			////敗北時敗北画面表示
-			//else if (lose_flag == true)
-			//{
-			//	SetFontSize(40);
-			//	DrawString(350, 250, "YOU LOSE", GetColor(255, 0, 0));
-			//	DrawString(250, 300, "十字キー右でタイトルへ", GetColor(255, 0, 0));
-			//	DrawString(250, 350, "十字キー左で終了", GetColor(255, 0, 0));
-			//	DrawString(300, 300, "Enterで終了", GetColor(255, 0, 0));
-			//	turn = false;
-			//}
-
-			//if (CheckHitKey(KEY_INPUT_RIGHT) && (win_flag == true || lose_flag == true))
-			//{
-			//	scene = TITLE;
-			//	break;
-			//}
-			//else if (CheckHitKey(KEY_INPUT_LEFT) && (win_flag == true || lose_flag == true))
-			//{
-			//	gameend_flag = true;
-			//	break;
-			//}
-			//king->Draw();
 
 			//この辺り?で勝敗判定を行ってbreakでwhile文を抜ける。
 

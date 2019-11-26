@@ -32,7 +32,7 @@ enum Scenes
 {
 	TITLE,SELECT,GAME,
 };
-
+//‹î‚Ì“®‚¯‚éMap
 int CanMoveMap[7][7] =
 {
 	0

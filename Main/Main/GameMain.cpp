@@ -866,6 +866,21 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 					DrawExtendGraphF(0, 230, 200, 430, Skillwaite, TRUE);//能力待機中の描画
 					t_chara2 = LoadGraph("image\\キャラクター2\\キャラクター2スキル.PNG");//スキル待機中のキャラ2
 					skillbuttonflag = true;
+					for (int x = 0; x < 7; x++)
+					{
+						for (int y = 0; y < 7; y++)
+						{
+							if (MainMap[x][y] == 0)
+							{
+
+								//赤い範囲を描画する
+								DrawGraphF(y * 64 + 192, x * 64, RedFilter, TRUE);
+
+							}
+						}
+					}
+
+
 
 				}
 				//キャラ3の場合

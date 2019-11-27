@@ -968,17 +968,18 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 					//‹î‚ª’Ê‚ê‚È‚¢•Ç‚ğì‚é(‰¡Œü‚«)
 					//Ô‚¢”ÍˆÍ‚ğ•`‰æ‚·‚é
 					//MainMap‚Ì’†‚É‚ ‚é0‚ÌêŠ‚ğ’T‚·
-					for (int x=0; x < 7; x++)
+					for (int y=0; y < 7; y++)
 					{
-						for (int y=0; y < 7; y++)
+						for (int x=0; x < 7; x++)
 						{
 							//•`‰æ‚µ‚Ä‚¢‚éA‚Ü‚½‚Í‚µ‚½Œã‚ÌMap‚©‚ç
-							if (DwallMap[x][y]==1)
+							if (DwallMap[y][x]==0)
 							{
 
 							//Ô‚¢”ÍˆÍ‚ğ•`‰æ‚·‚é
 							DrawGraphF(y * 64 + 192, x* 64, RedFilter, TRUE);
 							wallskill1 = true;
+							//break;
 							}
 						}
 					}

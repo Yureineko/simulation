@@ -38,8 +38,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	IPDATA Ip;
 	//接続ポート
 	int port = -1;
+	char Strbuf[256] = { 0,0,-1 };//データバッファ
 	//ネットワークハンドル
 	int NetUDPHandle;
+	char STR[256] = { NULL };
+	DATA d;//送信用データ(構造体)
 
 	//windowモードで起動
 	ChangeWindowMode(TRUE);
@@ -235,8 +238,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	int mx, my;//マウスの位置
 	int Mx, My;
 
-	bool win_flag = false;//勝った時のフラグ
-	bool lose_flag = false;//負けた時のフラグ
+	bool win_flag;//勝った時のフラグ
+	bool lose_flag;//負けた時のフラグ
+
 	bool gameend_flag = false;//ゲーム終了する際に使うフラグ
 	bool time = false;//タイムラグ発生用フラグ
 
@@ -246,25 +250,24 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	//---------マウス操作の変数--------
 	 //GetMousePoint(&Mx,&My);//マウスの現在位置取得
 
-	//マウスをwindow上に表示させる。
-	//SetMouseDispFlag(TRUE);
-
 	//バックバッファに描画
 	SetDrawScreen(DX_SCREEN_BACK);
 
-	int cx, cy;
 	bool Click_flag = 0;
 
 	Ip.d1 = 172;
 	Ip.d2 = 17;
 	Ip.d3 = 60;
-	Ip.d4 = 122;
+	Ip.d4 = 255;
 
-	NetUDPHandle = MakeUDPSocket(99);
+	NetUDPHandle = MakeUDPSocket(42);
 
 	int Data = 0;
 	int UserNum = -1;
 	int connecttime = 0;
+
+	//データ送信用
+	//NetWorkSendUDP(NetUDPHandle, Ip, 41, &connecttime, sizeof(int));
 
 	//DXライブラリを初期化
 	if (DxLib_Init() == -1)
@@ -304,7 +307,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 					saveclickflag = false;
 					GetMousePoint(&outclickpos.posX, &outclickpos.posY);
 				}
-			}
+			}//ここまでクリックの処理
+			
 
 			//駒保存用
 			//ここで駒の移動距離やクラスの初期化を行う
@@ -455,8 +459,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 					if (300 <= clickpos.posX&&clickpos.posX <= 500 && 200 <= clickpos.posY&&clickpos.posY <= 250)
 					{
 						int num = 1;
-						NetWorkSendUDP(NetUDPHandle, Ip, 30, &num, sizeof(int));
+						NetWorkSendUDP(NetUDPHandle, Ip, 50, &num, sizeof(int));
 						scene = SELECT;
+						//scene = CONNECT;
 					}
 					else if (300 <= clickpos.posX&&clickpos.posX <= 500 && 300 <= clickpos.posY&&clickpos.posY <= 350)
 					{
@@ -465,13 +470,27 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 				}
 			}
 			break;
-
+			//ネットワークのシーン
 		case CONNECT:
 			
+			//パソコン同士で直つなぎするやり方 .
+			//if (CheckNetWorkRecvUDP(NetUDPHandle) == TRUE)
+			//{
+			//	DATA RecvData;//受信用構造体
+			//	NetWorkRecvUDP(NetUDPHandle, &Ip, &port, Strbuf, sizeof(Data), FALSE);
+			//	//NetWorkRecvUDP(NetUDPHandle, &Ip, &UserNum, &Data, sizeof(int), FALSE);
+			//}
+
+			//(下記)サーバーを介するやり方
 			if (UserNum != -1)
 			{
 				int Tempnum = 0;
 				NetWorkSendUDP(NetUDPHandle, Ip, UserNum, &Tempnum, sizeof(int));
+				//送信するデータの作成
+
+				/*d.p.x=
+				d.p.y=
+				d.Myking=*/
 			}
 
 			if (CheckNetWorkRecvUDP(NetUDPHandle) == TRUE)
@@ -929,11 +948,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 					break;
 				}
 				//クリックしたときの緑の描画
-				//if (CanMoveMap[piecetable[i].posY][piecetable[i].posX] == 1)
-				//{
-				//	//緑の移動範囲描画
-				//	DrawGraphF(piecetable[i].posX * 64 + 192, piecetable[i].posY * 64, GreenFilter, TRUE);
-				//}
+				if (CanMoveMap[piecetable[i].posY][piecetable[i].posX] == 1)
+				{
+					//緑の移動範囲描画
+					DrawGraphF(piecetable[i].posX * 64 + 192, piecetable[i].posY * 64, GreenFilter, TRUE);
+				}
 				
 			}
 			//緑の範囲描画
@@ -968,10 +987,20 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 					//駒が通れない壁を作る(横向き)
 					//赤い範囲を描画する
 					//MainMapの中にある0の場所を探す
+					/*switch (MainMap[i][j])
+					{
+					case 0:
+
+						break;
+					}*/
+
 					for (int y=0; y < 7; y++)
 					{
 						for (int x=0; x < 7; x++)
 						{
+							//MainMapの初期化
+							MainMap[y][x] = DwallMap[y][x];
+
 							//描画している、またはした後のMapから
 							if (DwallMap[y][x]==0)
 							{
@@ -979,7 +1008,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 							//赤い範囲を描画する
 							DrawGraphF(y * 64 + 192, x* 64, RedFilter, TRUE);
 							wallskill1 = true;
-							//break;
+							}
+							else
+							{
+								wallskill1 = false;
 							}
 						}
 					}

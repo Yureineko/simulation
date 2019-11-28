@@ -121,6 +121,7 @@ public:
 	 int GetX();
 	 int GetY();
 
+
 	//void king_Animation();//王のアニメーション
 
 private:

@@ -28,6 +28,7 @@ typedef struct PieceInfo
 	int spicialmoverange[8][2];
 }Piece;
 
+//シーン一覧
 enum Scenes
 {
 	TITLE,CONNECT,SELECT,GAME,GAMEEND,
@@ -42,6 +43,36 @@ int CanMoveMap[7][7] =
 int DwallMap[7][7] =
 {
 	0
+};
+
+//相手に送信するデータ
+struct DATA
+{
+	//駒の位置データ
+	POS p;
+	//自分の手番なのか相手の手番なのかのフラグ
+	int trun;
+	//自分の王が生きているかのフラグ
+	int Myking;
+};
+
+//ベースクラス
+class Base
+{
+private:
+
+public:
+	int ID;//デバッグ用
+	int flg;
+	virtual void Action() = 0;
+	virtual void Draw() = 0;//
+	virtual POS GetPos() = 0;//駒の位置
+	virtual int GetID() = 0;//相手のIPアドレス
+
+
+
+
+
 };
 
 //壁設定

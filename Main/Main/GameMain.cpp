@@ -145,7 +145,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	int KingX = 5, KingY = 5;//王の位置X,Y
 	int WallX = 7, WallY = 7;//壁の位置X,Y
 	//キャラ選択用変数
-	int charaselect;
+	int charaselect = 0;
+	int enemychara = 0;
 
 	//ボタン管理座標用
 	Pos clickpos;     //クリック位置保存用
@@ -262,7 +263,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 	NetUDPHandle = MakeUDPSocket(99);
 
-	int Data = 0;
+	char RecvData[10] = {0};
+	char SendData[10] = {0};
 	int UserNum = -1;
 	int connecttime = 0;
 
@@ -454,9 +456,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 				{
 					if (300 <= clickpos.posX&&clickpos.posX <= 500 && 200 <= clickpos.posY&&clickpos.posY <= 250)
 					{
-						int num = 1;
-						NetWorkSendUDP(NetUDPHandle, Ip, 30, &num, sizeof(int));
-						scene = SELECT;
+						SendData[0] = 1;
+						NetWorkSendUDP(NetUDPHandle, Ip, 30, SendData, sizeof(SendData));
+						scene = CONNECT;
 					}
 					else if (300 <= clickpos.posX&&clickpos.posX <= 500 && 300 <= clickpos.posY&&clickpos.posY <= 350)
 					{
@@ -467,21 +469,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			break;
 
 		case CONNECT:
-			
-			if (UserNum != -1)
-			{
-				int Tempnum = 0;
-				NetWorkSendUDP(NetUDPHandle, Ip, UserNum, &Tempnum, sizeof(int));
-			}
 
 			if (CheckNetWorkRecvUDP(NetUDPHandle) == TRUE)
 			{
-				NetWorkRecvUDP(NetUDPHandle, &Ip, &UserNum, &Data, sizeof(int), FALSE);
+				NetWorkRecvUDP(NetUDPHandle, &Ip, &UserNum, RecvData, sizeof(RecvData), FALSE);
 			}
 
-			if (Data >= 1)
+			if (RecvData[0] >= 1)
 			{
-				if (Data == 1)
+				if (RecvData[0] == 1)
 				{
 					DrawString(0, 32, "対戦相手募集中...", GetColor(255, 255, 255));
 					connecttime = 0;
@@ -545,7 +541,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			DrawGraph(0, 0, textbox, TRUE);//テキストボックスの描画
 			DrawExtendGraphF(416, 50, 832, 448, textbox, TRUE);//テキストボックスの描画
 
-			DrawString(32, 16, "キャラを選択してください", GetColor(255, 255, 255));
+			if (charaselect == 0)
+			{
+				DrawString(32, 16, "キャラを選択してください", GetColor(255, 255, 255));
+			}
+			else
+			{
+				DrawString(32, 16, "相手キャラ選択中..", GetColor(255, 255, 255));
+			}
+
 
 			if (0 <= Mx && Mx <= 416 && 50 <= My && My <= 183)
 			{
@@ -571,23 +575,23 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			{
 				if (clickflag == false)
 				{
-					if (clickpos.posX <= 416 && 50 <= clickpos.posY&&clickpos.posY <= 183)
+					if (charaselect == 0)
 					{
-						charaselect = 1;
-						scene = GAME;
-						clickflag = true;
-					}
-					else if (clickpos.posX <= 416 && 183 < clickpos.posY&&clickpos.posY <= 316)
-					{
-						charaselect = 2;
-						scene = GAME;
-						clickflag = true;
-					}
-					else if (clickpos.posX <= 416 && clickpos.posY > 316)
-					{
-						charaselect = 3;
-						scene = GAME;
-						clickflag = true;
+						if (clickpos.posX <= 416 && 50 <= clickpos.posY&&clickpos.posY <= 183)
+						{
+							charaselect = 1;
+							clickflag = true;
+						}
+						else if (clickpos.posX <= 416 && 183 < clickpos.posY&&clickpos.posY <= 316)
+						{
+							charaselect = 2;
+							clickflag = true;
+						}
+						else if (clickpos.posX <= 416 && clickpos.posY > 316)
+						{
+							charaselect = 3;
+							clickflag = true;
+						}
 					}
 				}
 				else
@@ -599,29 +603,35 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			//通信確認用
 			if (UserNum != -1)
 			{
-				int Tempnum = 0;
-				NetWorkSendUDP(NetUDPHandle, Ip, UserNum, &Tempnum, sizeof(int));
+				SendData[0] = 1;
+				SendData[1] = charaselect;
+				NetWorkSendUDP(NetUDPHandle, Ip, UserNum, SendData, sizeof(SendData));
 			}
 
 			if (CheckNetWorkRecvUDP(NetUDPHandle) == TRUE)
 			{
-				NetWorkRecvUDP(NetUDPHandle, &Ip, &UserNum, &Data, sizeof(int), FALSE);
-			}
-
-			if (Data == 1)
-			{
-				connecttime++;
-				if (connecttime == 60)
+				NetWorkRecvUDP(NetUDPHandle, &Ip, &UserNum, RecvData, sizeof(RecvData), FALSE);
+				if (RecvData[0] != 0)
 				{
-					//対戦相手が消えたため接続に戻る
-					//初期化は任せた
-					scene = CONNECT;
+					enemychara = RecvData[1];
+					if (charaselect != 0 && enemychara != 0)
+					{
+						scene = GAME;
+					}
+					connecttime = 0;
+				}
+				else
+				{
+					connecttime++;
+					if (connecttime == 60)
+					{
+						//対戦相手が消えたため接続に戻る
+						//初期化は任せた
+						scene = CONNECT;
+					}
 				}
 			}
-			else
-			{
-				connecttime = 0;
-			}
+
 
 			break;
 
@@ -679,6 +689,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 					{
 						//選んだマスを取得
 						movePos = HitPos(clickpos.posX, clickpos.posY);
+						//データ送る用保存
+						SendData[2] = 6 - piecetable[movepiece].posX;
+						SendData[3] = 6 - piecetable[movepiece].posY;
 						//そのマスが範囲内
 						//クリックした場所と駒の位置があっていれば
 						if (clickpos.posX >= POPUP_X && clickpos.posX <= POPUP_X + 64 * 7 && CanMoveMap[movePos.y][movePos.x] == 1)
@@ -706,6 +719,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 									piecetable[latemove].type = 0;//何もない場所には空白
 									movepiece = -1;//移動前の駒は非表示に
+
+									//データ送る用保存
+									SendData[4] = 6 - piecetable[latemove].posX;
+									SendData[5] = 6 - piecetable[latemove].posY;
 								}
 								//移動先が壁なら進めない
 								//else if(piecetable[])
@@ -851,11 +868,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			}
 			else
 			{
-				//ここから相手ターン
-				if (CheckNetWorkRecvUDP(NetUDPHandle) == TRUE)
-				{
-					NetWorkRecvUDP(NetUDPHandle, &Ip, &UserNum, &Data, sizeof(int), FALSE);
-				}
+				
 			}
 	
 		//Zキーを押すと手番を自分に戻す。
@@ -875,17 +888,26 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			if (charaselect == 1)
 			{
 				DrawGraph(0, 0, t_chara, TRUE);//プレイヤー1の描画
-				DrawGraph(640, 0, t_chara2, TRUE);//プレイヤー2の描画
 			}
 			else if (charaselect == 2)
 			{
 				DrawGraph(0, 0, t_chara2, TRUE);//プレイヤー1の描画
-				DrawGraph(640, 0, t_chara3, TRUE);//プレイヤー2の描画
 			}
 			else if (charaselect == 3)
 			{
 				DrawGraph(0, 0, t_chara3, TRUE);//プレイヤー1の描画
+			}
+			if (enemychara == 1)
+			{
 				DrawGraph(640, 0, t_chara, TRUE);//プレイヤー2の描画
+			}
+			else if (enemychara == 2)
+			{
+				DrawGraph(640, 0, t_chara2, TRUE);//プレイヤー2の描画
+			}
+			else if (enemychara == 3)
+			{
+				DrawGraph(640, 0, t_chara3, TRUE);//プレイヤー2の描画
 			}
 			
 			DrawExtendGraphF(40, 280, 150, 380, Skillbotton, TRUE);//能力発動ボタンの描画
@@ -1069,10 +1091,80 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 				}
 			}
 
+			//データ受け取り
+			//通信確認用
 			if (UserNum != -1)
 			{
-				int Tempnum = 0;
-				NetWorkSendUDP(NetUDPHandle, Ip, UserNum, &Tempnum, sizeof(int));
+				SendData[0] = 1;
+				SendData[1] = charaselect;
+				NetWorkSendUDP(NetUDPHandle, Ip, UserNum, SendData, sizeof(SendData));
+				for (int i = 0; i < 10; i++)
+					SendData[i] = 0;
+			}
+
+			//データ受信部分
+			if (CheckNetWorkRecvUDP(NetUDPHandle) == TRUE)
+			{
+				NetWorkRecvUDP(NetUDPHandle, &Ip, &UserNum, RecvData, sizeof(RecvData), FALSE);
+				if (RecvData[0] != 0)
+				{
+					if (turn == false && (RecvData[2] + RecvData[3] + RecvData[4] + RecvData[5]) != 0)
+					{
+						int movebepiece = -1;
+						int latemove = -1;//駒の配列番号の保存
+						for (int i = 0; i < 28; i++)
+						{
+							if (RecvData[2] == piecetable[i].posX && RecvData[3] == piecetable[i].posY)
+							{
+								movebepiece = i;
+							}
+							if (RecvData[4] == piecetable[i].posX && RecvData[5] == piecetable[i].posY)
+							{
+								latemove = i;
+							}
+						}
+						if (latemove != -1)
+						{//駒同士が重なったときの処理
+							if (piecetable[movebepiece].MeorEne != piecetable[latemove].MeorEne || piecetable[latemove].type == 0)
+							{
+								piecetable[movebepiece].posX = movePos.x;
+								piecetable[movebepiece].posY = movePos.y;
+								if (piecetable[latemove].type == 6)//相手の王を取ったら勝ちのフラグをtrueに
+									win_flag = true;
+								if (piecetable[latemove].type == 5)//自分の王を取られたら負けのフラグをtrueに
+									lose_flag = true;
+								//if (piecetable[latemove].type == 7)//壁には通れなくさせる。
+								//	movepiece = -1;
+
+								piecetable[latemove].type = 0;//何もない場所には空白
+								movepiece = -1;//移動前の駒は非表示に
+							}
+							//移動先が壁なら進めない
+							//else if(piecetable[])
+						}
+						//重ならなかったとき
+						else
+						{
+							piecetable[movebepiece].posX = movePos.x;
+							piecetable[movebepiece].posY = movePos.y;
+							movepiece = -1;
+						}
+
+						turn = true;
+
+					}
+					connecttime = 0;
+				}
+				else
+				{
+					connecttime++;
+					if (connecttime == 60)
+					{
+						//対戦相手が消えたため接続に戻る
+						//初期化は任せた
+						scene = CONNECT;
+					}
+				}
 			}
 
 			if (win_flag == true)

@@ -135,7 +135,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	//wall=DerivationGraph(0,0, 64, 64, Wall);//壁の画像の切り取り
 
 
-
+	//移動範囲の読み込み
 	int GreenFilter = LoadGraph("image\\greenfilter.png");//駒の移動範囲の描画
 	int RedFilter = LoadGraph("image\\redfilter.png");//壁の出現範囲の描画
 
@@ -255,21 +255,22 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	SetDrawScreen(DX_SCREEN_BACK);
 
 	bool Click_flag = 0;
-
+	//送信するIPアドレス
 	Ip.d1 = 172;
 	Ip.d2 = 17;
 	Ip.d3 = 60;
-	Ip.d4 = 255;
+	Ip.d4 = 122;
 
 	NetUDPHandle = MakeUDPSocket(42);//ソケットハンドル
 
 	char RecvData[10] = {0};
 	char SendData[10] = {0};
+	int Data = 0;
 	int UserNum = -1;
 	int connecttime = 0;
 
 	//データ送信用
-	//NetWorkSendUDP(NetUDPHandle, Ip, 41, &connecttime, sizeof(int));
+	NetWorkSendUDP(NetUDPHandle, Ip, 41, &connecttime, sizeof(int));
 
 	//DXライブラリを初期化
 	if (DxLib_Init() == -1)
@@ -454,7 +455,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 					{
 						SendData[0] = 1;
 						NetWorkSendUDP(NetUDPHandle, Ip, 30, SendData, sizeof(SendData));
-						scene = CONNECT;
+						scene = SELECT;
 					}
 					else if (300 <= clickpos.posX&&clickpos.posX <= 500 && 300 <= clickpos.posY&&clickpos.posY <= 350)
 					{
@@ -495,7 +496,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 				scene = SELECT;
 			}
 			break;
-
+			//キャラセレクト画面
 		case SELECT:
 			//初期化
 			GetMousePoint(&Mx, &My);//カーソルの現在位置を取得
@@ -859,7 +860,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 				{
 					clickflag = false;
 				}
-
+				//ここまでが相手の手番
 			
 				//---------------壁の生成処理----------------------------------
 				//キャラの必殺ボタンをクリックしたとき

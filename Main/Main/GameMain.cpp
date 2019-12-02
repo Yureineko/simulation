@@ -261,7 +261,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	Ip.d3 = 60;
 	Ip.d4 = 255;
 
-	NetUDPHandle = MakeUDPSocket(42);
+	NetUDPHandle = MakeUDPSocket(42);//ソケットハンドル
 
 	char RecvData[10] = {0};
 	char SendData[10] = {0};

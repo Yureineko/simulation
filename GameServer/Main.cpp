@@ -16,11 +16,17 @@ struct Pos
 //プレイヤー情報
 struct Player
 {
+	//IPアドレスそれぞれ格納するための変数
 	IPDATA IpAddress;
+	//今繋がっている状態かどうか
 	bool connectnow;
+	//ペアになってるかどうか
 	bool pairflg;
+	//ペアがいる場合そのナンバーは何処か
 	int enemynumber;
+	//ネットハンドル(基本40 * iの数値)
 	int NetUDPHandle;
+	//繋がらないときの猶予時間(1秒程度繋がらなければデータを初期化)
 	int NoConetime;
 	int scenenumber;
 	char RecvData[10];
@@ -28,25 +34,19 @@ struct Player
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
-	IPDATA Ip;//送信用IPアドレスデータ
-	int port = -1; //接続ポート
-	char StrBuf[256] = { 0,0,-1 };//データバッファ
-	int NetUDPHandleData;//ネットワークハンドル
 	int NetUDPHandleConnect;//ネットワークハンドル
 	int RecvHandle;//設定用
-	char STR[256] = { NULL };//送信データ用
 	Player user[10];//通信するIPアドレスを保存しておくための場所
 	int pair[5][2];//お互いのペアを保存しておく
-	int connectmachine = 0;//繋げたマシン数
-	int pearcount = 0;
 
-	SetMainWindowText("受信側");//windowの名前
+	SetMainWindowText("サーバー用");//windowの名前
 	ChangeWindowMode(TRUE);//windowモード
 	SetGraphMode(640, 480, 32);//windowサイズ
 	SetAlwaysRunFlag(TRUE);//バックグラウンドでも動くように設定
 
 	if (DxLib_Init() == -1) return -1;//エラーが起きたら終了
 
+	//ユーザー情報の初期化
 	for (int i = 0; i < 10; i++)
 	{
 		user[i].IpAddress.d1 = 0;
@@ -65,15 +65,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		}
 	}
 
+	//描画設定
 	SetDrawScreen(DX_SCREEN_BACK);
 
 	//UDP通信用のソケットハンドルの設定
-	NetUDPHandleData = MakeUDPSocket(50);
 	NetUDPHandleConnect = MakeUDPSocket(30);
 
+	//ウインドウ閉じない限り続行
 	while (ProcessMessage() != -1)
 	{
-		
 		for (int i = 0; i < 10; i++)
 		{
 			//繋いでいるマシンの数だけ回す
@@ -85,6 +85,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 					char data[10] = { 0 };
 					NetWorkRecvUDP(user[i].NetUDPHandle, &user[i].IpAddress, NULL, &data, sizeof(data), FALSE);
 
+					//ペアであるかどうかで返信を変える
+					int connect;
 					if (user[i].pairflg == true)
 					{
 						for (int j = 0; j < 10; j++)
@@ -103,6 +105,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				}
 				else
 				{
+					//繋がってないときは猶予時間までカウントする
 					user[i].NoConetime++;
 					if (user[i].connectnow == true)
 					{
@@ -119,6 +122,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 						user[i].connectnow = false;
 						if (user[i].pairflg == true)
 						{
+							//ペアになっていた場合相手のペア情報も消す
 							user[i].pairflg = false;
 							user[user[i].enemynumber].pairflg = false;
 							user[user[i].enemynumber].enemynumber = -1;
@@ -131,23 +135,26 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 						}
 					}
 				}
+				//分かりやすくするために文字列描画
 				DrawString(0, 32 * i, "マシンと接続できました", GetColor(255, 255, 255));
 			}
 		}
 
-		//受信処理
+		//接続処理
 		if (CheckNetWorkRecvUDP(NetUDPHandleConnect) == TRUE)
 		{
+			//接続するマシンがあればその情報を取得する
 			for (int i = 0; i < 10; i++)
 			{
 				if (user[i].connectnow == false)
 				{
+					//空データを受け取る
 					int data = 0;
 					NetWorkRecvUDP(NetUDPHandleConnect, &user[i].IpAddress, NULL, &data, sizeof(int), FALSE);
 					//データの送信
 					NetWorkSendUDP(user[i].NetUDPHandle, user[i].IpAddress, 99, &data, sizeof(int));
+					//繋がってるフラグを立てる
 					user[i].connectnow = true;
-					connectmachine++;
 					break;
 				}
 			}
@@ -155,15 +162,20 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		//ペアづくり
 		for (int i = 0, count = 0, pairnum = -1; i < 10; i++)
 		{
+			//ペアがいないマシンが2つある場合
 			if (user[i].connectnow == true && user[i].pairflg == false)
 			{
+				//カウント
 				count++;
+				//一回目のカウントの場合
 				if (count == 1)
 				{
+					//そのナンバーを一度保存
 					pairnum = i;
 				}
 				else
 				{
+					//２台見つかった場合そのマシン同士でペアを組ませる
 					user[pairnum].pairflg = true;
 					user[i].pairflg = true;
 					user[pairnum].enemynumber = i;
@@ -182,7 +194,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	//ソケットハンドルの削除
 	for(int i = 0; i < 10; i++)
 		DeleteUDPSocket(user[i].NetUDPHandle);
-	DeleteUDPSocket(NetUDPHandleData);
 	DeleteUDPSocket(NetUDPHandleConnect);
 
 	DxLib_End();//DXライブラリ使用の終了処理

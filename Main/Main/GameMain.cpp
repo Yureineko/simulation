@@ -50,10 +50,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	DxLib_Init();
 	//ウィンドウ名設定
 	SetMainWindowText("SimulatioN GamE");
+	//バックグラウンドでも動くように設定
+	SetAlwaysRunFlag(TRUE);
 	//ゲームウインドウサイズ
 	SetGraphMode(832, 448, 32);
 	//フォント確定
 	ChangeFontType(DX_FONTTYPE_ANTIALIASING_EDGE);
+
+	//UDP通信用のソケットハンドルの設定
+	int NetUDPHandle = MakeUDPSocket(99);
 
 	//先攻後攻の判定(仮置き　一旦コメントアウト中)
 	int Random[1];
@@ -135,7 +140,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	//wall=DerivationGraph(0,0, 64, 64, Wall);//壁の画像の切り取り
 
 
-
+	//移動範囲の読み込み
 	int GreenFilter = LoadGraph("image\\greenfilter.png");//駒の移動範囲の描画
 	int RedFilter = LoadGraph("image\\redfilter.png");//壁の出現範囲の描画
 
@@ -273,15 +278,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 	fclose(fp);
 
-	NetUDPHandle = MakeUDPSocket(42);
+	NetUDPHandle = MakeUDPSocket(42);//ソケットハンドル
 
 	char RecvData[10] = {0};
 	char SendData[10] = {0};
+	int Data = 0;
 	int UserNum = -1;
 	int connecttime = 0;
 
 	//データ送信用
-	//NetWorkSendUDP(NetUDPHandle, Ip, 41, &connecttime, sizeof(int));
+	NetWorkSendUDP(NetUDPHandle, Ip, 41, &connecttime, sizeof(int));
 
 	//DXライブラリを初期化
 	if (DxLib_Init() == -1)
@@ -466,7 +472,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 					{
 						SendData[0] = 1;
 						NetWorkSendUDP(NetUDPHandle, Ip, 30, SendData, sizeof(SendData));
-						scene = CONNECT;
+						scene = SELECT;
 					}
 					else if (300 <= clickpos.posX&&clickpos.posX <= 500 && 300 <= clickpos.posY&&clickpos.posY <= 350)
 					{
@@ -516,7 +522,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 				scene = SELECT;
 			}
 			break;
-
+			//キャラセレクト画面
 		case SELECT:
 			//初期化
 			GetMousePoint(&Mx, &My);//カーソルの現在位置を取得
@@ -880,7 +886,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 				{
 					clickflag = false;
 				}
-
+				//ここまでが相手の手番
 			
 				//---------------壁の生成処理----------------------------------
 				//キャラの必殺ボタンをクリックしたとき
@@ -1460,6 +1466,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			break;
 		}
 	}
+	//ソケットハンドルの削除
+	DeleteUDPSocket(NetUDPHandle);
 
 	//Dxライブラリ終了処理
 	DxLib_End();

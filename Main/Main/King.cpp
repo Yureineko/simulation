@@ -59,3 +59,4 @@ void KING::Draw()
 //‰¤‚Ìî•ñæ“¾
 int KING::GetX() { return x; }
 int KING::GetY() { return y; }
+//int KING::

@@ -28,6 +28,8 @@ struct Player
 	int NetUDPHandle;
 	//繋がらないときの猶予時間(1秒程度繋がらなければデータを初期化)
 	int NoConetime;
+	int scenenumber;
+	char RecvData[10];
 };
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
@@ -56,6 +58,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		user[i].enemynumber = -1;
 		user[i].NetUDPHandle = MakeUDPSocket(40 + i);
 		user[i].NoConetime = 0;
+		user[i].scenenumber = 0;
+		for (int j = 0; j < 10; j++)
+		{
+			user[i].RecvData[j] = 0;
+		}
 	}
 
 	//描画設定
@@ -75,31 +82,37 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				//受信処理
 				if (CheckNetWorkRecvUDP(user[i].NetUDPHandle) == TRUE)
 				{
-					//仮受け取り用変数
-					int data = 0;
-					//時間初期化
-					user[i].NoConetime = 0;
-					//空データを受け取る(繋がってるかどうかを確認するため)
+					char data[10] = { 0 };
 					NetWorkRecvUDP(user[i].NetUDPHandle, &user[i].IpAddress, NULL, &data, sizeof(int), FALSE);
 
 					//ペアであるかどうかで返信を変える
 					int connect;
 					if (user[i].pairflg == true)
 					{
-						connect = 2;
+						for (int j = 0; j < 10; j++)
+							user[user[i].enemynumber].RecvData[j] = data[j];
+
+						user[i].RecvData[0] = 2;
+						//データの送信
+						NetWorkSendUDP(user[i].NetUDPHandle, user[i].IpAddress, 99, user[i].RecvData, sizeof(user[i].RecvData));
 					}
 					else
 					{
-						connect = 1;
+						user[i].RecvData[0] = 1;
+						//データの送信
+						NetWorkSendUDP(user[i].NetUDPHandle, user[i].IpAddress, 99, user[i].RecvData, sizeof(user[i].RecvData));
 					}
-					//データの送信
-					NetWorkSendUDP(user[i].NetUDPHandle, user[i].IpAddress, 99, &connect, sizeof(int));
 				}
 				else
 				{
 					//繋がってないときは猶予時間までカウントする
 					user[i].NoConetime++;
-					//１秒経っても繋がらない場合データ初期化
+					if (user[i].connectnow = true)
+					{
+						for (int j = 0; j < 10; j++)
+							user[user[i].enemynumber].RecvData[j] = 0;
+					}
+
 					if (user[i].NoConetime >= 60)
 					{
 						user[i].IpAddress.d1 = 0;
@@ -116,6 +129,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 							user[i].enemynumber = -1;
 						}
 						user[i].NoConetime = 0;
+						for (int j = 0; j < 10; j++)
+						{
+							user[i].RecvData[j] = 0;
+						}
 					}
 				}
 				//分かりやすくするために文字列描画
@@ -163,6 +180,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 					user[i].pairflg = true;
 					user[pairnum].enemynumber = i;
 					user[i].enemynumber = pairnum;
+					user[i].RecvData[0] = 1;
 					break;
 				}
 			}

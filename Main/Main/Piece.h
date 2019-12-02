@@ -25,6 +25,8 @@ struct Move_POS
 };
 
 
+
+
 class SOLDIER //兵士のクラス
 {
 public:
@@ -118,6 +120,7 @@ public:
 	 void Draw();//描画
 	 int GetX();
 	 int GetY();
+
 
 	//void king_Animation();//王のアニメーション
 

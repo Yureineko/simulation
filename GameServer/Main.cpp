@@ -83,7 +83,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				if (CheckNetWorkRecvUDP(user[i].NetUDPHandle) == TRUE)
 				{
 					char data[10] = { 0 };
-					NetWorkRecvUDP(user[i].NetUDPHandle, &user[i].IpAddress, NULL, &data, sizeof(int), FALSE);
+					NetWorkRecvUDP(user[i].NetUDPHandle, &user[i].IpAddress, NULL, &data, sizeof(data), FALSE);
 
 					if (user[i].pairflg == true)
 					{
@@ -104,7 +104,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				else
 				{
 					user[i].NoConetime++;
-					if (user[i].connectnow = true)
+					if (user[i].connectnow == true)
 					{
 						for (int j = 0; j < 10; j++)
 							user[user[i].enemynumber].RecvData[j] = 0;

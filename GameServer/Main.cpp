@@ -22,6 +22,8 @@ struct Player
 	int enemynumber;
 	int NetUDPHandle;
 	int NoConetime;
+	int scenenumber;
+	char RecvData[10];
 };
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
@@ -57,6 +59,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		user[i].enemynumber = -1;
 		user[i].NetUDPHandle = MakeUDPSocket(40 + i);
 		user[i].NoConetime = 0;
+		user[i].scenenumber = 0;
+		for (int j = 0; j < 10; j++)
+		{
+			user[i].RecvData[j] = 0;
+		}
 	}
 
 	SetDrawScreen(DX_SCREEN_BACK);
@@ -76,26 +83,34 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				//受信処理
 				if (CheckNetWorkRecvUDP(user[i].NetUDPHandle) == TRUE)
 				{
-					int data = 0;
-					user[i].NoConetime = 0;
+					char data[10] = { 0 };
 					NetWorkRecvUDP(user[i].NetUDPHandle, &user[i].IpAddress, NULL, &data, sizeof(int), FALSE);
 
 					if (user[i].pairflg == true)
 					{
-						int trueconnect = 2;
+						for (int j = 0; j < 10; j++)
+							user[user[i].enemynumber].RecvData[j] = data[j];
+
+						user[i].RecvData[0] = 2;
 						//データの送信
-						NetWorkSendUDP(user[i].NetUDPHandle, user[i].IpAddress, 99, &trueconnect, sizeof(int));
+						NetWorkSendUDP(user[i].NetUDPHandle, user[i].IpAddress, 99, user[i].RecvData, sizeof(user[i].RecvData));
 					}
 					else
 					{
-						int falseconnect = 1;
+						user[i].RecvData[0] = 1;
 						//データの送信
-						NetWorkSendUDP(user[i].NetUDPHandle, user[i].IpAddress, 99, &falseconnect, sizeof(int));
+						NetWorkSendUDP(user[i].NetUDPHandle, user[i].IpAddress, 99, user[i].RecvData, sizeof(user[i].RecvData));
 					}
 				}
 				else
 				{
 					user[i].NoConetime++;
+					if (user[i].connectnow = true)
+					{
+						for (int j = 0; j < 10; j++)
+							user[user[i].enemynumber].RecvData[j] = 0;
+					}
+
 					if (user[i].NoConetime >= 60)
 					{
 						user[i].IpAddress.d1 = 0;
@@ -111,6 +126,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 							user[i].enemynumber = -1;
 						}
 						user[i].NoConetime = 0;
+						for (int j = 0; j < 10; j++)
+						{
+							user[i].RecvData[j] = 0;
+						}
 					}
 				}
 				DrawString(0, 32 * i, "マシンと接続できました", GetColor(255, 255, 255));
@@ -150,6 +169,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 					user[i].pairflg = true;
 					user[pairnum].enemynumber = i;
 					user[i].enemynumber = pairnum;
+					user[i].RecvData[0] = 1;
 					break;
 				}
 			}

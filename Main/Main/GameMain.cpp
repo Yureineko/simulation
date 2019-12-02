@@ -28,10 +28,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	DxLib_Init();
 	//ウィンドウ名設定
 	SetMainWindowText("SimulatioN GamE");
+	//バックグラウンドでも動くように設定
+	SetAlwaysRunFlag(TRUE);
 	//ゲームウインドウサイズ
 	SetGraphMode(832, 448, 32);
 	//フォント確定
 	ChangeFontType(DX_FONTTYPE_ANTIALIASING_EDGE);
+
+	//UDP通信用のソケットハンドルの設定
+	int NetUDPHandle = MakeUDPSocket(99);
 
 	//先攻後攻の判定(仮置き　一旦コメントアウト中)
 	int Random[1];
@@ -266,7 +271,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	bool lose_flag = false;//負けた時のフラグ
 	bool gameend_flag = false;//ゲーム終了する際に使うフラグ
 
-
+	//ネット関係で使用中
+	int interim = 1;
+	int UserNum = -1;
+	IPDATA Ip;//送信用IPアドレスデータ
+	Ip.d1 = 172;
+	Ip.d2 = 17;
+	Ip.d3 = 60;
+	Ip.d4 = 122;
 
 	//---------マウス操作の変数--------
 	
@@ -309,6 +321,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			else if (CheckHitKey(KEY_INPUT_DOWN))
 			{
 				gameend_flag = true;
+				//データの送信
+				NetWorkSendUDP(NetUDPHandle, Ip, 30, &interim, sizeof(int));
 				break;
 			}
 			break;
@@ -317,7 +331,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			//初期化タイミング
 			DrawString(0, 48, "十字キー右で始める", GetColor(255, 255, 255));
 			DrawString(0, 64, "十字キー左で終わる", GetColor(255, 255, 255));
-			if (CheckHitKey(KEY_INPUT_RIGHT))
+
+			//受信処理
+			if (CheckNetWorkRecvUDP(NetUDPHandle) == TRUE)
+			{
+				NetWorkRecvUDP(NetUDPHandle, &Ip, &UserNum, &interim, sizeof(int), FALSE);
+			}
+
+			if (CheckHitKey(KEY_INPUT_RIGHT) || UserNum != -1)
 			{
 				scene = GAME;
 				break;
@@ -330,6 +351,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			break;
 
 		case GAME:
+
+			NetWorkSendUDP(NetUDPHandle, Ip, UserNum, &interim, sizeof(int));
 
 			//ここでゲームのメイン部分構築
 			//マウスの状態を確認する
@@ -585,6 +608,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			break;
 		}
 	}
+	//ソケットハンドルの削除
+	DeleteUDPSocket(NetUDPHandle);
 
 	//Dxライブラリ終了処理
 	DxLib_End();

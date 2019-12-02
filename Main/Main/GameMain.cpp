@@ -50,10 +50,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	DxLib_Init();
 	//ウィンドウ名設定
 	SetMainWindowText("SimulatioN GamE");
+	//バックグラウンドでも動くように設定
+	SetAlwaysRunFlag(TRUE);
 	//ゲームウインドウサイズ
 	SetGraphMode(832, 448, 32);
 	//フォント確定
 	ChangeFontType(DX_FONTTYPE_ANTIALIASING_EDGE);
+
+	//UDP通信用のソケットハンドルの設定
+	int NetUDPHandle = MakeUDPSocket(99);
 
 	//先攻後攻の判定(仮置き　一旦コメントアウト中)
 	int Random[1];
@@ -1440,6 +1445,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			break;
 		}
 	}
+	//ソケットハンドルの削除
+	DeleteUDPSocket(NetUDPHandle);
 
 	//Dxライブラリ終了処理
 	DxLib_End();

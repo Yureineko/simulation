@@ -43,6 +43,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	SetGraphMode(640, 480, 32);//windowサイズ
 	SetAlwaysRunFlag(TRUE);//バックグラウンドでも動くように設定
 
+
 	if (DxLib_Init() == -1) return -1;//エラーが起きたら終了
 
 	for (int i = 0; i < 10; i++)

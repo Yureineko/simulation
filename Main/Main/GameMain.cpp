@@ -258,13 +258,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	Ip.d1 = 172;
 	Ip.d2 = 17;
 	Ip.d3 = 60;
-	Ip.d4 = 122;
+	Ip.d4 = 120;
 
-	NetUDPHandle = MakeUDPSocket(99);
+	//UDP通信用のソケットハンドルの設定
+	NetUDPHandle = MakeUDPSocket(42);
 
 	int Data = 0;
 	int UserNum = -1;
 	int connecttime = 0;
+
+	//データの送信
+	NetWorkSendUDP(NetUDPHandle, Ip, 50, &connecttime, sizeof(int));
 
 	//DXライブラリを初期化
 	if (DxLib_Init() == -1)
@@ -272,6 +276,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 		return -1;//エラーが出たら強制終了
 
 	}
+
+	//仮置きここから
+	char StrBuf[256] = { 0,0,-1 };//データバッファ
+	char STR[256] = { NULL };
+
+	//初回データ送信	16 416 4 10
+	sprintf_s(STR, 256, "%d,%d,%d,%d,%d,%d"
+	);
+	//ここまで
 
 	while (ProcessMessage() != -1)
 	{
@@ -455,8 +468,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 					if (300 <= clickpos.posX&&clickpos.posX <= 500 && 200 <= clickpos.posY&&clickpos.posY <= 250)
 					{
 						int num = 1;
-						NetWorkSendUDP(NetUDPHandle, Ip, 30, &num, sizeof(int));
-						scene = SELECT;
+						//データ送信するやつNetWorkSendUDP
+						NetWorkSendUDP(NetUDPHandle, Ip, 50, &num, sizeof(int));
+						//scene = SELECT;
+						scene = CONNECT;
 					}
 					else if (300 <= clickpos.posX&&clickpos.posX <= 500 && 300 <= clickpos.posY&&clickpos.posY <= 350)
 					{

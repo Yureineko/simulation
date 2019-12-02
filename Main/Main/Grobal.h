@@ -44,6 +44,17 @@ int DwallMap[7][7] =
 	0
 };
 
+//サーバーに送信するデータ
+struct Data 
+{
+	//駒の位置データ
+	POS p;
+	//自分の手番なのかのフラグ
+	int trun;
+	//自分の王が生きているかのフラグ
+	int Myking;
+};
+
 //壁設定
 typedef struct Wall
 {

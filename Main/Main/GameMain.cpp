@@ -39,8 +39,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	//接続ポート
 	int port = -1;
 	char Strbuf[256] = { 0,0,-1 };//データバッファ
-	//ネットワークハンドル
-	//int NetUDPHandle;
 	char STR[256] = { NULL };
 	DATA d;//送信用データ(構造体)
 
@@ -278,16 +276,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 	fclose(fp);
 
-	NetUDPHandle = MakeUDPSocket(42);//ソケットハンドル
-
 	char RecvData[10] = {0};
 	char SendData[10] = {0};
 	int Data = 0;
 	int UserNum = -1;
 	int connecttime = 0;
-
-	//データ送信用
-	//NetWorkSendUDP(NetUDPHandle, Ip, 41, &connecttime, sizeof(int));
 
 	//DXライブラリを初期化
 	if (DxLib_Init() == -1)
@@ -694,7 +687,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 						for (int i = 0; i < 28; i++)
 						{
 							//該当する駒があり、その駒が生きていれば
-							if (SavePos.x == piecetable[i].posX && SavePos.y == piecetable[i].posY && piecetable[i].type != 0)
+							if (SavePos.x == piecetable[i].posX && SavePos.y == piecetable[i].posY && piecetable[i].type != 0 && piecetable[i].MeorEne == true)
 							{
 								//その駒の対応ナンバーを一時保存する
 								movepiece = i;
@@ -756,6 +749,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 								piecetable[movepiece].posX = movePos.x;
 								piecetable[movepiece].posY = movePos.y;
 								movepiece = -1;
+
+								//データ送る用保存
+								SendData[4] = 6 - piecetable[latemove].posX;
+								SendData[5] = 6 - piecetable[latemove].posY;
 							}
 							clickflag = true;
 							moveflag = false;
@@ -1266,8 +1263,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 						{//駒同士が重なったときの処理
 							if (piecetable[movebepiece].MeorEne != piecetable[latemove].MeorEne || piecetable[latemove].type == 0)
 							{
-								piecetable[movebepiece].posX = movePos.x;
-								piecetable[movebepiece].posY = movePos.y;
+								piecetable[movebepiece].posX = RecvData[4];
+								piecetable[movebepiece].posY = RecvData[5];
 								if (piecetable[latemove].type == 6)//相手の王を取ったら勝ちのフラグをtrueに
 									win_flag = true;
 								if (piecetable[latemove].type == 5)//自分の王を取られたら負けのフラグをtrueに
@@ -1284,8 +1281,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 						//重ならなかったとき
 						else
 						{
-							piecetable[movebepiece].posX = movePos.x;
-							piecetable[movebepiece].posY = movePos.y;
+							piecetable[movebepiece].posX = RecvData[4];
+							piecetable[movebepiece].posY = RecvData[5];
 							movepiece = -1;
 						}
 

@@ -40,7 +40,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	int port = -1;
 	char Strbuf[256] = { 0,0,-1 };//データバッファ
 	//ネットワークハンドル
-	int NetUDPHandle;
+	//int NetUDPHandle;
 	char STR[256] = { NULL };
 	DATA d;//送信用データ(構造体)
 
@@ -58,7 +58,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	ChangeFontType(DX_FONTTYPE_ANTIALIASING_EDGE);
 
 	//UDP通信用のソケットハンドルの設定
-	int NetUDPHandle = MakeUDPSocket(99);
+	int NetUDPHandle = MakeUDPSocket(99);//配列で作るソケットハンドル
 
 	//先攻後攻の判定(仮置き　一旦コメントアウト中)
 	int Random[1];
@@ -140,7 +140,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	//wall=DerivationGraph(0,0, 64, 64, Wall);//壁の画像の切り取り
 
 
-
+	//移動範囲の読み込み
 	int GreenFilter = LoadGraph("image\\greenfilter.png");//駒の移動範囲の描画
 	int RedFilter = LoadGraph("image\\redfilter.png");//壁の出現範囲の描画
 
@@ -261,15 +261,28 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 	bool Click_flag = 0;
 
-	Ip.d1 = 172;
-	Ip.d2 = 17;
-	Ip.d3 = 60;
-	Ip.d4 = 255;
+	//IPAdress取得
+	FILE *fp;
+	char ipstr[256] = {0};
 
-	NetUDPHandle = MakeUDPSocket(42);
+	fopen_s(&fp, "IPAdress.txt", "r");
+
+	fgets(ipstr, 255, fp);
+	Ip.d1 = atoi(ipstr);
+	fgets(ipstr, 255, fp);
+	Ip.d2 = atoi(ipstr);
+	fgets(ipstr, 255, fp);
+	Ip.d3 = atoi(ipstr);
+	fgets(ipstr, 255, fp);
+	Ip.d4 = atoi(ipstr);
+
+	fclose(fp);
+
+	NetUDPHandle = MakeUDPSocket(42);//ソケットハンドル
 
 	char RecvData[10] = {0};
 	char SendData[10] = {0};
+	int Data = 0;
 	int UserNum = -1;
 	int connecttime = 0;
 
@@ -476,6 +489,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 				NetWorkRecvUDP(NetUDPHandle, &Ip, &UserNum, RecvData, sizeof(RecvData), FALSE);
 			}
 
+			//通信確認用
+			if (UserNum != -1)
+			{
+				SendData[0] = 1;
+				NetWorkSendUDP(NetUDPHandle, Ip, UserNum, SendData, sizeof(SendData));
+				for (int i = 0; i < 10; i++)
+					SendData[i] = 0;
+			}
+
 			if (RecvData[0] >= 1)
 			{
 				if (RecvData[0] == 1)
@@ -500,7 +522,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 				scene = SELECT;
 			}
 			break;
-
+			//キャラセレクト画面
 		case SELECT:
 			//初期化
 			GetMousePoint(&Mx, &My);//カーソルの現在位置を取得
@@ -864,7 +886,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 				{
 					clickflag = false;
 				}
-
+				//ここまでが相手の手番
 			
 				//---------------壁の生成処理----------------------------------
 				//キャラの必殺ボタンをクリックしたとき

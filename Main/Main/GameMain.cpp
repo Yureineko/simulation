@@ -223,6 +223,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	//ゲームメインの音楽再生
 	int  Mainbgm = LoadSoundMem("sound\\");
 
+	//駒が動いた場合の効果音
+	int  Movebgm = LoadSoundMem("sound\\nc184661.mp3");
+
 	//アニメーション登録サンプル
 	int MovieGraphHandle;
 
@@ -259,7 +262,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	Ip.d1 = 172;
 	Ip.d2 = 17;
 	Ip.d3 = 60;
-	Ip.d4 = 255;
+	Ip.d4 = 122;
 
 	NetUDPHandle = MakeUDPSocket(42);
 
@@ -280,7 +283,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 	//仮置きここから
 	char StrBuf[256] = { 0,0,-1 };//データバッファ
-	char STR[256] = { NULL };
 
 	//初回データ送信	16 416 4 10
 	sprintf_s(STR, 256, "%d,%d,%d,%d,%d,%d"
@@ -332,8 +334,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			{
 				for (int j = 0; j < 7; j++)
 				{
-					
-
 					//0じゃない(そこに駒がある)場合
 					if (MainMap[i][j] >= 1 && MainMap[i][j] <= 7)
 					{
@@ -596,6 +596,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 						{
 							charaselect = 3;
 							clickflag = true;
+							scene = GAME;
 						}
 					}
 				}
@@ -701,6 +702,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 						//クリックした場所と駒の位置があっていれば
 						if (clickpos.posX >= POPUP_X && clickpos.posX <= POPUP_X + 64 * 7 && CanMoveMap[movePos.y][movePos.x] == 1)
 						{
+							PlaySoundMem(Movebgm, DX_PLAYTYPE_BACK);
 							int latemove = -1;//駒の配列番号の保存
 							for (int i = 0; i < 28; i++)
 							{
@@ -809,6 +811,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 						//クリックした場所と駒の位置があっていれば
 						if (clickpos.posX >= POPUP_X && clickpos.posX <= POPUP_X + 64 * 7 && CanMoveMap[movePos.y][movePos.x] == 1)
 						{
+							PlaySoundMem(Movebgm, DX_PLAYTYPE_BACK);
 							int latemove = -1;//駒の配列番号の保存
 							for (int i = 0; i < 28; i++)
 							{

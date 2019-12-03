@@ -40,7 +40,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	int port = -1;
 	char Strbuf[256] = { 0,0,-1 };//データバッファ
 	//ネットワークハンドル
-	int NetUDPHandle;
+	//int NetUDPHandle;
 	char STR[256] = { NULL };
 	DATA d;//送信用データ(構造体)
 
@@ -58,7 +58,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	ChangeFontType(DX_FONTTYPE_ANTIALIASING_EDGE);
 
 	//UDP通信用のソケットハンドルの設定
-	int NetUDPHandle = MakeUDPSocket(99);
+	int NetUDPHandle = MakeUDPSocket(99);//配列で作るソケットハンドル
 
 	//先攻後攻の判定(仮置き　一旦コメントアウト中)
 	int Random[1];
@@ -275,7 +275,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	int connecttime = 0;
 
 	//データ送信用
-	NetWorkSendUDP(NetUDPHandle, Ip, 41, &connecttime, sizeof(int));
+	//NetWorkSendUDP(NetUDPHandle, Ip, 41, &connecttime, sizeof(int));
 
 	//DXライブラリを初期化
 	if (DxLib_Init() == -1)
@@ -460,7 +460,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 					{
 						SendData[0] = 1;
 						NetWorkSendUDP(NetUDPHandle, Ip, 30, SendData, sizeof(SendData));
-						scene = SELECT;
+						scene = CONNECT;
 					}
 					else if (300 <= clickpos.posX&&clickpos.posX <= 500 && 300 <= clickpos.posY&&clickpos.posY <= 350)
 					{

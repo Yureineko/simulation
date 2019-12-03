@@ -260,11 +260,23 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	SetDrawScreen(DX_SCREEN_BACK);
 
 	bool Click_flag = 0;
-	//送信するIPアドレス
-	Ip.d1 = 172;
-	Ip.d2 = 17;
-	Ip.d3 = 60;
-	Ip.d4 = 122;
+
+	//IPAdress取得
+	FILE *fp;
+	char ipstr[256] = {0};
+
+	fopen_s(&fp, "IPAdress.txt", "r");
+
+	fgets(ipstr, 255, fp);
+	Ip.d1 = atoi(ipstr);
+	fgets(ipstr, 255, fp);
+	Ip.d2 = atoi(ipstr);
+	fgets(ipstr, 255, fp);
+	Ip.d3 = atoi(ipstr);
+	fgets(ipstr, 255, fp);
+	Ip.d4 = atoi(ipstr);
+
+	fclose(fp);
 
 	NetUDPHandle = MakeUDPSocket(42);//ソケットハンドル
 
@@ -475,6 +487,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			if (CheckNetWorkRecvUDP(NetUDPHandle) == TRUE)
 			{
 				NetWorkRecvUDP(NetUDPHandle, &Ip, &UserNum, RecvData, sizeof(RecvData), FALSE);
+			}
+
+			//通信確認用
+			if (UserNum != -1)
+			{
+				SendData[0] = 1;
+				NetWorkSendUDP(NetUDPHandle, Ip, UserNum, SendData, sizeof(SendData));
+				for (int i = 0; i < 10; i++)
+					SendData[i] = 0;
 			}
 
 			if (RecvData[0] >= 1)

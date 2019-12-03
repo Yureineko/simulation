@@ -83,7 +83,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				if (CheckNetWorkRecvUDP(user[i].NetUDPHandle) == TRUE)
 				{
 					char data[10] = { 0 };
-					NetWorkRecvUDP(user[i].NetUDPHandle, &user[i].IpAddress, NULL, &data, sizeof(int), FALSE);
+					NetWorkRecvUDP(user[i].NetUDPHandle, &user[i].IpAddress, NULL, &data, sizeof(data), FALSE);
 
 					//ペアであるかどうかで返信を変える
 					int connect;
@@ -107,7 +107,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				{
 					//繋がってないときは猶予時間までカウントする
 					user[i].NoConetime++;
-					if (user[i].connectnow = true)
+					if (user[i].connectnow == true)
 					{
 						for (int j = 0; j < 10; j++)
 							user[user[i].enemynumber].RecvData[j] = 0;

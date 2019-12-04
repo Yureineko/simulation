@@ -35,9 +35,7 @@ struct Player
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
 	int NetUDPHandleConnect;//ネットワークハンドル
-	int RecvHandle;//設定用
 	Player user[10];//通信するIPアドレスを保存しておくための場所
-	int pair[5][2];//お互いのペアを保存しておく
 
 	SetMainWindowText("サーバー用");//windowの名前
 	ChangeWindowMode(TRUE);//windowモード
@@ -83,31 +81,26 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				if (CheckNetWorkRecvUDP(user[i].NetUDPHandle) == TRUE)
 				{
 					char data[10] = { 0 };
-					NetWorkRecvUDP(user[i].NetUDPHandle, &user[i].IpAddress, NULL, &data, sizeof(data), FALSE);
+					NetWorkRecvUDP(user[i].NetUDPHandle, &user[i].IpAddress, NULL, data, sizeof(data), FALSE);
 
 					//ペアであるかどうかで返信を変える
-					int connect;
 					if (user[i].pairflg == true)
 					{
 						for (int j = 0; j < 10; j++)
+						{
 							user[user[i].enemynumber].RecvData[j] = data[j];
-
-						user[i].RecvData[0] = 2;
-						//データの送信
-						NetWorkSendUDP(user[i].NetUDPHandle, user[i].IpAddress, 99, user[i].RecvData, sizeof(user[i].RecvData));
+						}
 					}
 					else
 					{
 						user[i].RecvData[0] = 1;
-						//データの送信
-						NetWorkSendUDP(user[i].NetUDPHandle, user[i].IpAddress, 99, user[i].RecvData, sizeof(user[i].RecvData));
 					}
 				}
 				else
 				{
 					//繋がってないときは猶予時間までカウントする
 					user[i].NoConetime++;
-					if (user[i].connectnow == true)
+					if (user[i].pairflg == true)
 					{
 						for (int j = 0; j < 10; j++)
 							user[user[i].enemynumber].RecvData[j] = 0;
@@ -137,6 +130,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				}
 				//分かりやすくするために文字列描画
 				DrawString(0, 32 * i, "マシンと接続できました", GetColor(255, 255, 255));
+
+				//データの送信
+				if (user[i].connectnow == true)
+					NetWorkSendUDP(user[i].NetUDPHandle, user[i].IpAddress, 99, user[i].RecvData, sizeof(user[i].RecvData));
 			}
 		}
 
@@ -149,10 +146,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				if (user[i].connectnow == false)
 				{
 					//空データを受け取る
-					int data = 0;
-					NetWorkRecvUDP(NetUDPHandleConnect, &user[i].IpAddress, NULL, &data, sizeof(int), FALSE);
+					char data[10] = { 0 };
+					NetWorkRecvUDP(NetUDPHandleConnect, &user[i].IpAddress, NULL, data, sizeof(data), FALSE);
 					//データの送信
-					NetWorkSendUDP(user[i].NetUDPHandle, user[i].IpAddress, 99, &data, sizeof(int));
+					NetWorkSendUDP(user[i].NetUDPHandle, user[i].IpAddress, 99, data, sizeof(data));
 					//繋がってるフラグを立てる
 					user[i].connectnow = true;
 					break;

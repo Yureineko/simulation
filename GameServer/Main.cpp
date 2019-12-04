@@ -149,10 +149,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				if (user[i].connectnow == false)
 				{
 					//空データを受け取る
-					int data = 0;
-					NetWorkRecvUDP(NetUDPHandleConnect, &user[i].IpAddress, NULL, &data, sizeof(int), FALSE);
+					char data[10] = { 0 };
+					NetWorkRecvUDP(NetUDPHandleConnect, &user[i].IpAddress, NULL, data, sizeof(data), FALSE);
 					//データの送信
-					NetWorkSendUDP(user[i].NetUDPHandle, user[i].IpAddress, 99, &data, sizeof(int));
+					data[0] = 1;
+					NetWorkSendUDP(user[i].NetUDPHandle, user[i].IpAddress, 99, data, sizeof(data));
 					//繋がってるフラグを立てる
 					user[i].connectnow = true;
 					break;

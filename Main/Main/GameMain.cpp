@@ -278,7 +278,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 	fclose(fp);
 
-	NetUDPHandle = MakeUDPSocket(42);//ソケットハンドル
+	
 
 	char RecvData[10] = {0};
 	char SendData[10] = {0};
@@ -286,8 +286,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	int UserNum = -1;
 	int connecttime = 0;
 
-	//データ送信用
-	//NetWorkSendUDP(NetUDPHandle, Ip, 41, &connecttime, sizeof(int));
+
+	bool MeorEne;//自軍の駒を触れる
+
 
 	//DXライブラリを初期化
 	if (DxLib_Init() == -1)
@@ -356,11 +357,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 						{
 							//自軍
 							piecetable[count].MeorEne = false;
+							MeorEne = false;
 						}
 						else
 						{
 							//敵軍
 							piecetable[count].MeorEne = true;
+							MeorEne = true;
 						}
 						//移動
 						//役職をもとに移動設定を入れていく(クラス化予定あり)
@@ -684,7 +687,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			if (turn == true)
 			{
 				//クリックしたとき
-				if (clickflag == false && saveclickflag == true)
+				if (clickflag == false && saveclickflag == true&&MeorEne==false)
 				{
 					//キャラを選択し緑色のマス(行動できる範囲)を描画
 					if (moveflag == false)
@@ -719,7 +722,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 						//クリックした場所と駒の位置があっていれば
 						if (clickpos.posX >= POPUP_X && clickpos.posX <= POPUP_X + 64 * 7 && CanMoveMap[movePos.y][movePos.x] == 1)
 						{
-							int latemove = -1;//駒の配列番号の保存
+							int latemove = -1;//駒の配列番号の保存 動いた後の駒
 							for (int i = 0; i < 28; i++)
 							{
 								if (movePos.x == piecetable[i].posX && movePos.y == piecetable[i].posY && i != movepiece)
@@ -727,7 +730,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 									latemove = i;
 								}
 							}
-							if (latemove != -1)
+							if (latemove != -1)//Mapの外でないとき
 							{//駒同士が重なったときの処理
 								if (piecetable[movepiece].MeorEne != piecetable[latemove].MeorEne || piecetable[latemove].type == 0)
 								{
@@ -743,6 +746,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 									piecetable[latemove].type = 0;//何もない場所には空白
 									movepiece = -1;//移動前の駒は非表示に
 
+									turn = false;
+
 									//データ送る用保存
 									SendData[4] = 6 - piecetable[latemove].posX;
 									SendData[5] = 6 - piecetable[latemove].posY;
@@ -756,11 +761,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 								piecetable[movepiece].posX = movePos.x;
 								piecetable[movepiece].posY = movePos.y;
 								movepiece = -1;
+								turn = false;
 							}
 							clickflag = true;
 							moveflag = false;
 
-							turn = false;
+							
 							//クリックした後の緑範囲を消す
 							for (int i = 0; i < 7; i++)
 							{
@@ -795,7 +801,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			if (turn == false)
 			{
 				//クリックしたとき
-				if (clickflag == false && saveclickflag == true)
+				if (clickflag == false && saveclickflag == true&&MeorEne==true)
 				{
 					//キャラを選択し緑色のマス(行動できる範囲)を描画
 					if (moveflag == false)
@@ -872,7 +878,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 							{
 								for (int j = 0; j < 7; j++)
 								{
-									CanMoveMap[i][j] = 0;
+									//CanMoveMap[i][j] = 0;
 
 									DwallMap[i][j]=0;
 									
@@ -1246,7 +1252,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			{
 				NetWorkRecvUDP(NetUDPHandle, &Ip, &UserNum, RecvData, sizeof(RecvData), FALSE);
 				if (RecvData[0] != 0)
-				{
+				{//相手のターンの時相手の処理が終わったらそのデータを受け取る。
 					if (turn == false && (RecvData[2] + RecvData[3] + RecvData[4] + RecvData[5]) != 0)
 					{
 						int movebepiece = -1;

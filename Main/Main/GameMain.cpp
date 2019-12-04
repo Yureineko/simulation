@@ -73,7 +73,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	int MainMap[7][7] =
 	{
 		{ 2,3,4,6,4,3,2 },
-		{ 7,7,7,7,7,7,7 },
+		{ 1,1,1,1,1,1,1 },
 		{ 0,0,0,0,0,0,0 },
 		{ 0,0,0,0,0,0,0 },
 		{ 0,0,0,0,0,0,0 },
@@ -299,7 +299,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			clickflag = false;
 			win_flag = false;//勝った時のフラグ
 			lose_flag = false;//負けた時のフラグ
-			turn = true;
+			turn = false;
 			time = false;
 
 			//マウスの状態を確認する
@@ -485,7 +485,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			//通信確認用
 			if (UserNum != -1)
 			{
-				SendData[0] = 1;
+				SendData[0] = 2;
 				NetWorkSendUDP(NetUDPHandle, Ip, UserNum, SendData, sizeof(SendData));
 				for (int i = 0; i < 10; i++)
 					SendData[i] = 0;
@@ -705,13 +705,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 					{
 						//選んだマスを取得
 						movePos = HitPos(clickpos.posX, clickpos.posY);
-						//データ送る用保存
-						SendData[2] = 6 - piecetable[movepiece].posX;
-						SendData[3] = 6 - piecetable[movepiece].posY;
+						
 						//そのマスが範囲内
 						//クリックした場所と駒の位置があっていれば
 						if (clickpos.posX >= POPUP_X && clickpos.posX <= POPUP_X + 64 * 7 && CanMoveMap[movePos.y][movePos.x] == 1)
 						{
+							//データ送る用保存
+						SendData[2] = 6 - piecetable[movepiece].posX;
+						SendData[3] = 6 - piecetable[movepiece].posY;
+
 							int latemove = -1;//駒の配列番号の保存
 							for (int i = 0; i < 28; i++)
 							{
@@ -789,100 +791,100 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 			//相手の手番の場合
 			//相手のターン以外は操作を不可能にする
-			if (turn == false)
-			{
-				//クリックしたとき
-				if (clickflag == false && saveclickflag == true)
-				{
-					//キャラを選択し緑色のマス(行動できる範囲)を描画
-					if (moveflag == false)
-					{
-						//クリックしたマスを取得しそのマスに該当する駒を探す
-						POS SavePos = HitPos(clickpos.posX, clickpos.posY);
-						for (int i = 0; i < 28; i++)
-						{
-							//該当する駒があり、その駒が生きていれば
-							if (SavePos.x == piecetable[i].posX && SavePos.y == piecetable[i].posY && piecetable[i].type != 0)
-							{
-								//その駒の対応ナンバーを一時保存する
-								movepiece = i;
-								//行動場所を選ぶようにする
-								moveflag = true;
-								clickflag = true;
-								//移動できる範囲を緑色で指定する
-								//マスに触れる所
-								CheckMoveRange(piecetable[i], piecetable);
-							}
-						}
-					}
-					//緑色のマスを選択し上記で選んだ駒をその場所に移動
-					else
-					{
-						//選んだマスを取得
-						movePos = HitPos(clickpos.posX, clickpos.posY);
-						//そのマスが範囲内
-						//クリックした場所と駒の位置があっていれば
-						if (clickpos.posX >= POPUP_X && clickpos.posX <= POPUP_X + 64 * 7 && CanMoveMap[movePos.y][movePos.x] == 1)
-						{
-							int latemove = -1;//駒の配列番号の保存
-							for (int i = 0; i < 28; i++)
-							{
-								if (movePos.x == piecetable[i].posX && movePos.y == piecetable[i].posY && i != movepiece)
-								{
-									latemove = i;
-								}
-							}
-							if (latemove != -1)
-							{//駒同士が重なったときの処理
-								if (piecetable[movepiece].MeorEne != piecetable[latemove].MeorEne || piecetable[latemove].type == 0)
-								{
-									piecetable[movepiece].posX = movePos.x;
-									piecetable[movepiece].posY = movePos.y;
-									if (piecetable[latemove].type == 6)//相手の王を取ったら勝ちのフラグをtrueに
-										win_flag = true;
-									if (piecetable[latemove].type == 5)//自分の王を取られたら負けのフラグをtrueに
-										lose_flag = true;
-									//if (piecetable[latemove].type == 7)//壁には通れなくさせる。
-									//	movepiece = -1;
+			//if (turn == false)
+			//{
+			//	//クリックしたとき
+			//	if (clickflag == false && saveclickflag == true)
+			//	{
+			//		//キャラを選択し緑色のマス(行動できる範囲)を描画
+			//		if (moveflag == false)
+			//		{
+			//			//クリックしたマスを取得しそのマスに該当する駒を探す
+			//			POS SavePos = HitPos(clickpos.posX, clickpos.posY);
+			//			for (int i = 0; i < 28; i++)
+			//			{
+			//				//該当する駒があり、その駒が生きていれば
+			//				if (SavePos.x == piecetable[i].posX && SavePos.y == piecetable[i].posY && piecetable[i].type != 0)
+			//				{
+			//					//その駒の対応ナンバーを一時保存する
+			//					movepiece = i;
+			//					//行動場所を選ぶようにする
+			//					moveflag = true;
+			//					clickflag = true;
+			//					//移動できる範囲を緑色で指定する
+			//					//マスに触れる所
+			//					CheckMoveRange(piecetable[i], piecetable);
+			//				}
+			//			}
+			//		}
+			//		//緑色のマスを選択し上記で選んだ駒をその場所に移動
+			//		else
+			//		{
+			//			//選んだマスを取得
+			//			movePos = HitPos(clickpos.posX, clickpos.posY);
+			//			//そのマスが範囲内
+			//			//クリックした場所と駒の位置があっていれば
+			//			if (clickpos.posX >= POPUP_X && clickpos.posX <= POPUP_X + 64 * 7 && CanMoveMap[movePos.y][movePos.x] == 1)
+			//			{
+			//				int latemove = -1;//駒の配列番号の保存
+			//				for (int i = 0; i < 28; i++)
+			//				{
+			//					if (movePos.x == piecetable[i].posX && movePos.y == piecetable[i].posY && i != movepiece)
+			//					{
+			//						latemove = i;
+			//					}
+			//				}
+			//				if (latemove != -1)
+			//				{//駒同士が重なったときの処理
+			//					if (piecetable[movepiece].MeorEne != piecetable[latemove].MeorEne || piecetable[latemove].type == 0)
+			//					{
+			//						piecetable[movepiece].posX = movePos.x;
+			//						piecetable[movepiece].posY = movePos.y;
+			//						if (piecetable[latemove].type == 6)//相手の王を取ったら勝ちのフラグをtrueに
+			//							win_flag = true;
+			//						if (piecetable[latemove].type == 5)//自分の王を取られたら負けのフラグをtrueに
+			//							lose_flag = true;
+			//						//if (piecetable[latemove].type == 7)//壁には通れなくさせる。
+			//						//	movepiece = -1;
 
-									piecetable[latemove].type = 0;//何もない場所には空白
-									movepiece = -1;//移動前の駒は非表示に
-									turn = true;
-								}
-								//移動先が壁なら進めない
-								//else if(piecetable[])
-							}
-							//重ならなかったとき
-							else
-							{
-								piecetable[movepiece].posX = movePos.x;
-								piecetable[movepiece].posY = movePos.y;
-								movepiece = -1;
-								turn = true;
-							}
-							clickflag = true;
-							moveflag = false;
+			//						piecetable[latemove].type = 0;//何もない場所には空白
+			//						movepiece = -1;//移動前の駒は非表示に
+			//						turn = true;
+			//					}
+			//					//移動先が壁なら進めない
+			//					//else if(piecetable[])
+			//				}
+			//				//重ならなかったとき
+			//				else
+			//				{
+			//					piecetable[movepiece].posX = movePos.x;
+			//					piecetable[movepiece].posY = movePos.y;
+			//					movepiece = -1;
+			//					turn = true;
+			//				}
+			//				clickflag = true;
+			//				moveflag = false;
 
-							turn = true;
-							//クリックした後の緑範囲を消す
-							for (int i = 0; i < 7; i++)
-							{
-								for (int j = 0; j < 7; j++)
-								{
-									CanMoveMap[i][j] = 0;
+			//				turn = true;
+			//				//クリックした後の緑範囲を消す
+			//				for (int i = 0; i < 7; i++)
+			//				{
+			//					for (int j = 0; j < 7; j++)
+			//					{
+			//						CanMoveMap[i][j] = 0;
 
-									DwallMap[i][j]=0;
-									
-								}
-							}
-							
-						}
-					}
-				}
-				else if (saveclickflag == false)
-				{
-					clickflag = false;
-				}
+			//						DwallMap[i][j]=0;
+			//						
+			//					}
+			//				}
+			//				
+			//			}
+			//		}
+			//	}
+			//	else if (saveclickflag == false)
+			//	{
+			//		clickflag = false;
+			//	}
 				//ここまでが相手の手番
 			
 				//---------------壁の生成処理----------------------------------
@@ -982,23 +984,23 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 				//
 
 				//-----------ここから赤い範囲の処理-------------
-				//赤いマス
-				if (skillredflag == true)
-				{
-					//MainMapの0の部分を探す
+			//	//赤いマス
+			//	if (skillredflag == true)
+			//	{
+			//		//MainMapの0の部分を探す
 
 
-				}
-			}
-			else
-			{
-				
-			}
+			//	}
+			//}
+			//else
+			//{
+			//	
+			//}
 	
 		//Zキーを押すと手番を自分に戻す。
 		if (CheckHitKey(KEY_INPUT_Z))
 		{
-			turn = true;
+			turn = false;
 		}
 
 	
@@ -1302,6 +1304,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 					}
 				}
 			}
+
+
 
 			if (win_flag == true)
 			{

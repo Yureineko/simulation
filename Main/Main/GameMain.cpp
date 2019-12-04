@@ -310,7 +310,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			clickflag = false;
 			win_flag = false;//勝った時のフラグ
 			lose_flag = false;//負けた時のフラグ
-			turn = false;
+			turn = true;
 			time = false;
 
 			//マウスの状態を確認する
@@ -617,7 +617,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 						{
 							charaselect = 3;
 							clickflag = true;
-							scene = GAME;
 						}
 					}
 				}
@@ -1565,25 +1564,87 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 				//敗北時敗北画面表示
 				else if (lose_flag == true)
 				{
-					WaitTimer(500);
+					if (time == false)
+					{
+						WaitTimer(500);
+					}
+					time = true;
 
 					SetFontSize(40);
-					DrawExtendGraphF(200, 200, 500, 300, textbox, TRUE);//テキストボックスの描画
-					DrawExtendGraphF(200, 350, 500, 450, textbox, TRUE);//テキストボックスの描画
 
-					DrawString(330, 50, "YOU WIN", GetColor(255, 0, 0));
-					DrawString(250, 250, "タイトルへ", GetColor(255, 0, 0));
-					DrawString(250, 400, "終了", GetColor(255, 0, 0));
-				}
+					DrawGraph(0, 0, t_charaB, TRUE);//プレイヤー1の背景の描画
+					DrawGraph(640, 0, t_charaB2, TRUE);//プレイヤー2の背景の描画
+					//DrawExtendGraphF(194, 398, 416, 448, textbox, TRUE);//テキストボックスの描画
+					//DrawExtendGraphF(417, 398, 639, 448, textbox, TRUE);//テキストボックスの描画
+					DrawExtendGraphF(194, 398, 639, 448, textbox, TRUE);//テキストボックスの描画
 
-				if (CheckHitKey(KEY_INPUT_RIGHT) && (win_flag == true || lose_flag == true))
-				{
-					scene = TITLE;
-					break;
-				}
-				else if (CheckHitKey(KEY_INPUT_LEFT) && (win_flag == true || lose_flag == true))
-				{
-					gameend_flag = true;
+					DrawString(340, 50, "YOU LOSE", GetColor(255, 0, 0));
+					/*DrawString(200, 403, "タイトルへ", GetColor(255, 0, 0));*/
+					/*DrawString(490, 403, "終了", GetColor(255, 0, 0));*/
+					DrawString(365, 403, "終了", GetColor(255, 0, 0));
+
+					if (charaselect == 1)
+					{
+						t_chara = LoadGraph("image\\キャラクター1\\キャラクター1敗北透過.png");
+						DrawGraph(0, 0, t_chara, TRUE);//プレイヤー1の描画
+						skillredflag = true;
+					}
+					else if (charaselect == 2)
+					{
+						t_chara2 = LoadGraph("image\\キャラクター2\\キャラクター2敗北.png");
+						DrawGraph(0, 0, t_chara2, TRUE);//プレイヤー1の描画
+						skillredflag = true;
+					}
+					else if (charaselect == 3)
+					{
+						t_chara3 = LoadGraph("image\\キャラクター3\\キャラクター3敗北.png");
+						DrawGraph(0, 0, t_chara3, TRUE);//プレイヤー1の描画
+						skillredflag = true;
+					}
+					if (enemychara == 1)
+					{
+						t_chara = LoadGraph("image\\キャラクター1\\キャラクター1勝利透過.png");
+						DrawGraph(640, 0, t_chara, TRUE);//プレイヤー2の描画
+						skillredflag = true;
+					}
+					else if (enemychara == 2)
+					{
+						t_chara2 = LoadGraph("image\\キャラクター2\\キャラクター2勝利.png");
+						DrawGraph(640, 0, t_chara2, TRUE);//プレイヤー2の描画
+						skillredflag = true;
+					}
+					else if (enemychara == 3)
+					{
+						t_chara3 = LoadGraph("image\\キャラクター3\\キャラクター3勝利.png");
+						DrawGraph(640, 0, t_chara3, TRUE);//プレイヤー2の描画
+						skillredflag = true;
+					}
+
+					if (saveclickflag == true)
+					{
+						if (clickflag == false)
+						{
+							/*if (194 <= clickpos.posX && clickpos.posX <= 416 && 398 <= clickpos.posY && clickpos.posY <= 448)
+							{
+							scene = TITLE;
+							clickflag = true;
+							}
+							else if (417 <= clickpos.posX && clickpos.posX <= 639 && 398 <= clickpos.posY && clickpos.posY <= 448)
+							{
+							gameend_flag = true;
+							clickflag = true;
+							}*/
+							if (194 <= clickpos.posX && clickpos.posX <= 639 && 398 <= clickpos.posY && clickpos.posY <= 448)
+							{
+								gameend_flag = true;
+								clickflag = true;
+							}
+						}
+						else
+						{
+							clickflag = false;
+						}
+					}
 					break;
 				}
 			break;

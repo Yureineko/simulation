@@ -237,7 +237,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	int se=LoadSoundMem("sound\\test.mp3");
 	
 	
-	bool turn=true;//ターン変数....0:自分のターン　1:相手のターン
+	bool turn=false;//ターン変数....0:自分のターン　1:相手のターン
 	int movepointX;//駒の移動の変数(MainMapと照らし合わせて使用する。)
 	int mx, my;//マウスの位置
 	int Mx, My;
@@ -349,13 +349,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 						{
 							//自軍
 							piecetable[count].MeorEne = false;
-							MeorEne = false;
+							
 						}
 						else
 						{
 							//敵軍
 							piecetable[count].MeorEne = true;
-							MeorEne = true;
+							
 						}
 						//移動
 						//役職をもとに移動設定を入れていく(クラス化予定あり)
@@ -680,7 +680,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			if (turn == true)
 			{
 				//クリックしたとき
-				if (clickflag == false && saveclickflag == true&&MeorEne==false)
+				if (clickflag == false && saveclickflag == true)
 				{
 					//キャラを選択し緑色のマス(行動できる範囲)を描画
 					if (moveflag == false)
@@ -1193,10 +1193,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 					{
 						DrawGraphF(j * 64 + 192, i * 64, GreenFilter, TRUE);
 					}
-					if (CanMoveMap[i][j] == 1 && turn == false)
+					/*if (CanMoveMap[i][j] == 1 && turn == false)
 					{
 						DrawGraphF(j * 64 + 192, i * 64, RedFilter, TRUE);
-					}
+					}*/
 				}
 			}
 

@@ -570,22 +570,22 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 			if (0 <= Mx && Mx <= 416 && 50 <= My && My <= 183)
 			{
-				DrawString(480, 180, "フェンス・オブ・ガイア", GetColor(255, 255, 255));
-				DrawString(480, 250, "任意のマスを中心に", GetColor(255, 255, 255));
-				DrawString(480, 266, "ユニットが侵入できない", GetColor(255, 255, 255));
-				DrawString(480, 282, "縦に1列横に3列の防壁を設置する", GetColor(255, 255, 255));
+				DrawString(480, 180, "光星羅", GetColor(255, 255, 255));
+				DrawString(480, 250, "ボードゲーム同好会初代会長", GetColor(255, 255, 255));
+				//DrawString(480, 266, "ユニットが侵入できない", GetColor(255, 255, 255));
+				//DrawString(480, 282, "縦に1列横に3列の防壁を設置する", GetColor(255, 255, 255));
 			}
 			else if (0 <= Mx && Mx <= 416 && 183 < My && My <= 316)
 			{
-				DrawString(480, 180, "マイン・オブ・ファイア", GetColor(255, 255, 255));
-				DrawString(480, 250, "任意のマスに相手からは見えない", GetColor(255, 255, 255));
-				DrawString(480, 266, "地雷を設置する", GetColor(255, 255, 255));
-				DrawString(480, 282, "地雷を踏んだユニットは即座に退場する", GetColor(255, 255, 255));
+				DrawString(480, 180, "不知火火燐", GetColor(255, 255, 255));
+				DrawString(480, 250, "ボードゲームエンジョイ勢", GetColor(255, 255, 255));
+				//DrawString(480, 266, "地雷を設置する", GetColor(255, 255, 255));
+				//DrawString(480, 282, "地雷を踏んだユニットは即座に退場する", GetColor(255, 255, 255));
 			}
 			else if (0 <= Mx && Mx <= 416 && My > 316)
 			{
-				DrawString(480, 180, "エターナルフォースブリザード", GetColor(255, 255, 255));
-				DrawString(480, 250, "相手プレイヤーは死ぬ", GetColor(255, 255, 255));
+				DrawString(480, 180, "藤堂氷華", GetColor(255, 255, 255));
+				DrawString(480, 250, "ボードゲーム初心者", GetColor(255, 255, 255));
 			}
 
 			if (saveclickflag == true)

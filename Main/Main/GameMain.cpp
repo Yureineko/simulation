@@ -526,7 +526,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			t_chara = LoadGraph("image\\キャラクター1\\キャラクター1リサイズ透過.png");
 			t_chara2 = LoadGraph("image\\キャラクター2\\キャラクター2メイン.png");
 			t_chara3 = LoadGraph("image\\キャラクター3\\キャラクター3立ち絵.png");
-			charaselect = 0;
 
 			//初期化タイミング
 			//マウスの状態を確認する
@@ -738,11 +737,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 									//	movepiece = -1;
 
 									piecetable[latemove].type = 0;//何もない場所には空白
-									movepiece = -1;//移動前の駒は非表示に
 
 									//データ送る用保存
-									SendData[4] = 6 - piecetable[latemove].posX;
-									SendData[5] = 6 - piecetable[latemove].posY;
+									SendData[4] = (6 - piecetable[movepiece].posX);
+									SendData[5] = (6 - piecetable[movepiece].posY);
 								}
 								//移動先が壁なら進めない
 								//else if(piecetable[])
@@ -752,14 +750,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 							{
 								piecetable[movepiece].posX = movePos.x;
 								piecetable[movepiece].posY = movePos.y;
-								movepiece = -1;
 
 								//データ送る用保存
-								SendData[4] = 6 - piecetable[latemove].posX;
-								SendData[5] = 6 - piecetable[latemove].posY;
+								SendData[4] = (6 - piecetable[movepiece].posX);
+								SendData[5] = (6 - piecetable[movepiece].posY);
 							}
 							clickflag = true;
 							moveflag = false;
+							movepiece = -1;
 
 							turn = false;
 							//クリックした後の緑範囲を消す

@@ -81,6 +81,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				if (CheckNetWorkRecvUDP(user[i].NetUDPHandle) == TRUE)
 				{
 					char data[10] = { 0 };
+					user[i].NoConetime = 0;
 					NetWorkRecvUDP(user[i].NetUDPHandle, &user[i].IpAddress, NULL, data, sizeof(data), FALSE);
 
 					//ÉyÉAÇ≈Ç†ÇÈÇ©Ç«Ç§Ç©Ç≈ï‘êMÇïœÇ¶ÇÈ

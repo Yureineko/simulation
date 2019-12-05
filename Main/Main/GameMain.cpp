@@ -833,7 +833,77 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 			}//ここまでが自分の手番
 
+			 //データ受け取り
+			 //通信確認用
+			if (UserNum != -1)
+			{
+				SendData[ISCONNECT] = 1;
+				SendData[SELECTCHARA] = charaselect;
+				NetWorkSendUDP(NetUDPHandle, Ip, UserNum, SendData, sizeof(SendData));
+				for (int i = 0; i < 10; i++)
+					SendData[i] = 0;
+			}
 
+			//データ受信部分
+			if (CheckNetWorkRecvUDP(NetUDPHandle) == TRUE)
+			{
+				NetWorkRecvUDP(NetUDPHandle, &Ip, &UserNum, RecvData, sizeof(RecvData), FALSE);
+				if (RecvData[ISCONNECT] != 0)
+				{//相手のターンの時相手の処理が終わったらそのデータを受け取る。
+					if (turn == false && (RecvData[MOVEBEFOREPOSX] + RecvData[MOVEBEFOREPOSY] + RecvData[LATEMOVEPOSX] + RecvData[LATEMOVEPOSY]) != 0)
+					{
+						int movebepiece = -1;
+						int latemove = -1;//駒の配列番号の保存
+						for (int i = 0; i < 28; i++)
+						{
+							if (RecvData[MOVEBEFOREPOSX] == piecetable[i].posX && RecvData[MOVEBEFOREPOSY] == piecetable[i].posY&& piecetable[i].type == 0)
+							{
+								movebepiece = i;
+							}
+							if (RecvData[LATEMOVEPOSX] == piecetable[i].posX && RecvData[LATEMOVEPOSY] == piecetable[i].posY && piecetable[i].type == 0)
+							{
+								latemove = i;
+							}
+						}
+						if (latemove != -1 && (piecetable[movebepiece].MeorEne != piecetable[latemove].MeorEne || piecetable[latemove].type == 0))
+						{
+							//駒同士が重なったときの処理
+							piecetable[movebepiece].posX = RecvData[LATEMOVEPOSX];
+							piecetable[movebepiece].posY = RecvData[LATEMOVEPOSY];
+							if (piecetable[latemove].type == 6)//相手の王を取ったら勝ちのフラグをtrueに
+								win_flag = true;
+							if (piecetable[latemove].type == 5)//自分の王を取られたら負けのフラグをtrueに
+								lose_flag = true;
+							//if (piecetable[latemove].type == 7)//壁には通れなくさせる。
+							//	movepiece = -1;
+
+							piecetable[latemove].type = 0;//何もない場所には空白
+														  //移動先が壁なら進めない
+														  //else if(piecetable[])
+						}
+						//重ならなかったとき
+						else
+						{
+							piecetable[movebepiece].posX = RecvData[LATEMOVEPOSX];
+							piecetable[movebepiece].posY = RecvData[LATEMOVEPOSY];
+						}
+
+						turn = true;
+
+					}
+					connecttime = 0;
+				}
+				else
+				{
+					connecttime++;
+					if (connecttime == 60)
+					{
+						//対戦相手が消えたため接続に戻る
+						//初期化は任せた
+						scene = CONNECT;
+					}
+				}
+			}
 
 			//相手の手番の場合
 			//相手のターン以外は操作を不可能にする
@@ -1375,84 +1445,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	//				}
 	//			}
 	//		}
-
-			//データ受け取り
-			//通信確認用
-			if (UserNum != -1)
-			{
-				SendData[ISCONNECT] = 1;
-				SendData[SELECTCHARA] = charaselect;
-				NetWorkSendUDP(NetUDPHandle, Ip, UserNum, SendData, sizeof(SendData));
-				for (int i = 0; i < 10; i++)
-				SendData[i] = 0;
-			}
-
-			//データ受信部分
-			if (CheckNetWorkRecvUDP(NetUDPHandle) == TRUE)
-			{
-				NetWorkRecvUDP(NetUDPHandle, &Ip, &UserNum, RecvData, sizeof(RecvData), FALSE);
-				if (RecvData[ISCONNECT] != 0)
-				{//相手のターンの時相手の処理が終わったらそのデータを受け取る。
-					if (turn == false && (RecvData[MOVEBEFOREPOSX] + RecvData[MOVEBEFOREPOSY] + RecvData[LATEMOVEPOSX] + RecvData[LATEMOVEPOSY]) != 0)
-					{
-						int movebepiece = -1;
-						int latemove = -1;//駒の配列番号の保存
-						for (int i = 0; i < 28; i++)
-						{
-							if (RecvData[MOVEBEFOREPOSX] == piecetable[i].posX && RecvData[MOVEBEFOREPOSY] == piecetable[i].posY)
-							{
-								movebepiece = i;
-							}
-							if (RecvData[LATEMOVEPOSX] == piecetable[i].posX && RecvData[LATEMOVEPOSY] == piecetable[i].posY)
-							{
-								latemove = i;
-							}
-						}
-						if (latemove != -1)
-						{//駒同士が重なったときの処理
-							if (piecetable[movebepiece].MeorEne != piecetable[latemove].MeorEne || piecetable[latemove].type == 0)
-							{
-								piecetable[movebepiece].posX = RecvData[LATEMOVEPOSX];
-								piecetable[movebepiece].posY = RecvData[LATEMOVEPOSY];
-								if (piecetable[latemove].type == 6)//相手の王を取ったら勝ちのフラグをtrueに
-									win_flag = true;
-								if (piecetable[latemove].type == 5)//自分の王を取られたら負けのフラグをtrueに
-									lose_flag = true;
-								//if (piecetable[latemove].type == 7)//壁には通れなくさせる。
-								//	movepiece = -1;
-
-								piecetable[latemove].type = 0;//何もない場所には空白
-								movepiece = -1;//移動前の駒は非表示に
-							}
-							//移動先が壁なら進めない
-							//else if(piecetable[])
-						}
-						//重ならなかったとき
-						else
-						{
-							piecetable[movebepiece].posX = RecvData[LATEMOVEPOSX];
-							piecetable[movebepiece].posY = RecvData[LATEMOVEPOSY];
-							movepiece = -1;
-						}
-
-						turn = true;
-
-					}
-					connecttime = 0;
-				}
-				else
-				{
-					connecttime++;
-					if (connecttime == 60)
-					{
-						//対戦相手が消えたため接続に戻る
-						//初期化は任せた
-						scene = CONNECT;
-					}
-				}
-			}
-
-
 
 			if (win_flag == true)
 			{

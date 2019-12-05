@@ -749,7 +749,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 							int latemove = -1;//‹î‚Ì”z—ñ”Ô†‚Ì•Û‘¶
 							for (int i = 0; i < 28; i++)
 							{
-								if (movePos.x == piecetable[i].posX && movePos.y == piecetable[i].posY && i != movepiece)
+								if (movePos.x == piecetable[i].posX && movePos.y == piecetable[i].posY && i != movepiece && piecetable[i].type != 0)
 								{									
 									latemove = i;
 								}

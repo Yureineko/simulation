@@ -243,6 +243,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	
 	
 	bool turn;//ターン変数....0:自分のターン　1:相手のターン
+
 	int movepointX;//駒の移動の変数(MainMapと照らし合わせて使用する。)
 	int mx, my;//マウスの位置
 	int Mx, My;
@@ -360,11 +361,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 						{
 							//敵軍
 							piecetable[count].MeorEne = false;
+							
 						}
 						else
 						{
 							//自軍
 							piecetable[count].MeorEne = true;
+							
 						}
 						//移動
 						//役職をもとに移動設定を入れていく(クラス化予定あり)
@@ -441,6 +444,19 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 							piecetable[count].diaru = 1;
 							piecetable[count].diard = 1;
 						}
+						//自陣王
+						if (MainMap[i][j] == 6)
+						{
+							piecetable[count].movelimit = 0;
+							piecetable[count].moveleft = 1;
+							piecetable[count].moveright = 1;
+							piecetable[count].movefront = 1;
+							piecetable[count].moveback = 1;
+							piecetable[count].dialu = 1;
+							piecetable[count].diald = 1;
+							piecetable[count].diaru = 1;
+							piecetable[count].diard = 1;
+						}
 						//敵の兵士
 						/*if (MainMap[i][j] == 7)
 						{
@@ -453,8 +469,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 							piecetable[count].diald = 0;
 							piecetable[count].diaru = 0;
 							piecetable[count].diard = 0;
-						}
-*/
+						}*/
+
 						count++;
 					}
 				}
@@ -734,7 +750,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 									latemove = i;
 								}
 							}
-							if (latemove != -1)
+							if (latemove != -1)//Mapの外でないとき
 							{//駒同士が重なったときの処理
 								if (piecetable[movepiece].MeorEne != piecetable[latemove].MeorEne || piecetable[latemove].type == 0)
 								{
@@ -778,9 +794,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 								for (int j = 0; j < 7; j++)
 								{
 									CanMoveMap[i][j] = 0;
-
-									//DwallMap[i][j] = 0;
-
 								}
 							}
 
@@ -903,7 +916,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 				//キャラの必殺ボタンをクリックしたとき
 
 
-				int Mouse;//クリックしたときの制御をするための変数
+				//int Mouse;//クリックしたときの制御をするための変数
 				//必殺技の箇所にマウスがあるとき
 				//ボタンの領域内でかつ
 				//if (mx <CLDOWN_X&&mx>CLUP_X&&my<CLDOWN_Y&&my>CLUP_Y)
@@ -1206,23 +1219,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			{
 				for (int j = 0; j < 7; j++)
 				{
-					if (CanMoveMap[i][j] == 1&&turn==true)
+					if (CanMoveMap[i][j] == 1)
 					{
 						DrawGraphF(j * 64 + 192, i * 64, GreenFilter, TRUE);
-					}
-					if (CanMoveMap[i][j] == 1 && turn == false)
-					{
-						DrawGraphF(j * 64 + 192, i * 64, RedFilter, TRUE);
 					}
 				}
 			}
 
-		
-			
-			/*if (DwallMap[i][j] == 1)
-			{
-				DrawGraphF(j * 64 + 192, i * 64, RedFilter, TRUE);
-			}*/
 	////-------------能力ボタン描画---------
 	//		//能力ボタンの場所を待機中にする
 	//		if (skillclickflag == true&&skillflagremove==false)
@@ -1360,7 +1363,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 				SendData[1] = charaselect;
 				NetWorkSendUDP(NetUDPHandle, Ip, UserNum, SendData, sizeof(SendData));
 				for (int i = 0; i < 10; i++)
-					SendData[i] = 0;
+				SendData[i] = 0;
 			}
 
 			//データ受信部分
@@ -1368,7 +1371,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			{
 				NetWorkRecvUDP(NetUDPHandle, &Ip, &UserNum, RecvData, sizeof(RecvData), FALSE);
 				if (RecvData[0] != 0)
-				{
+				{//相手のターンの時相手の処理が終わったらそのデータを受け取る。
 					if (turn == false && (RecvData[2] + RecvData[3] + RecvData[4] + RecvData[5]) != 0)
 					{
 						int movebepiece = -1;

@@ -125,16 +125,18 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	int Skillwaite = LoadGraph("image\\能力待機.png");//能力発動待機ボタンを表示
 
 
-	int Soldier=LoadGraph("image\\Soldier(64).png");//ここに兵士の画像
-	int Sorcerer=LoadGraph("image\\Sorcerer(64).png");//ここに魔導士の画像
-	int Espionage =LoadGraph("image\\Espionage(64).png");//ここに諜報員の画像
-	int Knight =LoadGraph("image\\Knight(64).png");//ここに騎士の画像
-	int King =LoadGraph("image\\King(64).png");//ここに王の画像
-	int EKing = LoadGraph("image\\King(64).png");//ここに王の画像
+	int Soldier=LoadGraph("image\\ユニット\\Soldier(64).png");//ここに兵士の画像
+	int Sorcerer=LoadGraph("image\\ユニット\\Sorcerer(64).png");//ここに魔導士の画像
+	int Espionage =LoadGraph("image\\ユニット\\Espionage(64).png");//ここに諜報員の画像
+	int Knight =LoadGraph("image\\ユニット\\Knight(64).png");//ここに騎士の画像
+	int King =LoadGraph("image\\ユニット\\King(64).png");//ここに王の画像
+	int EKing = LoadGraph("image\\ユニット\\King(64).png");//ここに王の画像
+	int BB = LoadGraph("image\\BB.png");//自軍下敷き
+	int RB = LoadGraph("image\\RB.png");//敵軍下敷き
 
 	//駒が通行できない壁
 	//int wall;//切り取った壁
-	int Wall = LoadGraph("image\\King(仮).png");//ここに必殺技(壁)の画像登録
+	int Wall = LoadGraph("image\\ユニット\\King(仮).png");//ここに必殺技(壁)の画像登録
 	//wall=DerivationGraph(0,0, 64, 64, Wall);//壁の画像の切り取り
 
 
@@ -172,7 +174,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	outclickpos.posX = -1;
 	outclickpos.posY = -1;
 	saveclickflag = false;
-	clickflag = false;
 
 	//壁
 	skillpos.posX = -1;
@@ -225,6 +226,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 	//ゲームメインの音楽再生
 	int  Mainbgm = LoadSoundMem("sound\\");
+
+	//駒が動いた場合の効果音
+	int  Movebgm = LoadSoundMem("sound\\nc184661.mp3");
 
 	//アニメーション登録サンプル
 	int MovieGraphHandle;
@@ -290,6 +294,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 	}
 
+	//仮置きここから
+	char StrBuf[256] = { 0,0,-1 };//データバッファ
+
+	//初回データ送信	16 416 4 10
+	sprintf_s(STR, 256, "%d,%d,%d,%d,%d,%d"
+	);
+	//ここまで
+
 	while (ProcessMessage() != -1)
 	{
 		switch (scene)
@@ -300,7 +312,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			clickflag = false;
 			win_flag = false;//勝った時のフラグ
 			lose_flag = false;//負けた時のフラグ
-			turn = false;
+			turn = true;//先行後攻のフラグ
 			time = false;
 
 			//マウスの状態を確認する
@@ -335,8 +347,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			{
 				for (int j = 0; j < 7; j++)
 				{
-					
-
 					//0じゃない(そこに駒がある)場合
 					if (MainMap[i][j] >= 1 && MainMap[i][j] <= 6)
 					{
@@ -348,13 +358,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 						//半分より上なら敵駒、下なら自陣の駒という風に設定する
 						if (i < 4)
 						{
-							//自軍
+							//敵軍
 							piecetable[count].MeorEne = false;
 							
 						}
 						else
 						{
-							//敵軍
+							//自軍
 							piecetable[count].MeorEne = true;
 							
 						}
@@ -693,6 +703,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 				}
 			}
 
+
 		//自分のターン以外は操作を不可能にする
 			if (turn == true)
 			{
@@ -743,7 +754,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 									latemove = i;
 								}
 							}
-							if (latemove != -1)//Mapの外でないとき
+							if (latemove != -1)
 							{//駒同士が重なったときの処理
 								if (piecetable[movepiece].MeorEne != piecetable[latemove].MeorEne || piecetable[latemove].type == 0)
 								{
@@ -757,15 +768,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 									//	movepiece = -1;
 
 									piecetable[latemove].type = 0;//何もない場所には空白
-
-									turn = false;
+									//movepiece = -1;//移動前の駒は非表示に
 
 									//データ送る用保存
 									SendData[LATEMOVEPOSX] = (6 - piecetable[movepiece].posX);
 									SendData[LATEMOVEPOSY] = (6 - piecetable[movepiece].posY);
 								}
-								//移動先が壁なら進めない
-								//else if(piecetable[])
+								
 							}
 							//重ならなかったとき
 							else
@@ -777,11 +786,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 								SendData[LATEMOVEPOSX] = (6 - piecetable[movepiece].posX);
 								SendData[LATEMOVEPOSY] = (6 - piecetable[movepiece].posY);
 							}
+
+
+
 							clickflag = true;
 							moveflag = false;
-							movepiece = -1;
+							movepiece = -1;//移動前の駒は非表示に
 
-							
+							turn = false;
 							//クリックした後の緑範囲を消す
 							for (int i = 0; i < 7; i++)
 							{
@@ -792,8 +804,23 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 							}
 
 						}
+						//駒の場所とあっていなければ
+						else
+						{
+							clickflag = true;
+							moveflag = false;
+							//緑範囲を消す
+							for (int i = 0; i < 7; i++)
+							{
+								for (int j = 0; j < 7; j++)
+								{
+									CanMoveMap[i][j] = 0;
+								}
+							}
+						}
 					}
 				}
+				//クリックしなかったとき
 				else if (saveclickflag == false)
 				{
 					clickflag = false;
@@ -1160,6 +1187,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			//上2行と下2行
 			for (int i = 0; i < 28; i++)
 			{
+				if (piecetable[i].type != 0)
+				{
+					if (piecetable[i].MeorEne == true)
+					{
+						DrawGraphF(piecetable[i].posX * 64 + 192, piecetable[i].posY * 64, BB, TRUE);
+					}
+					else
+					{
+						DrawGraphF(piecetable[i].posX * 64 + 192, piecetable[i].posY * 64, RB, TRUE);
+					}
+				}
 				switch (piecetable[i].type)
 				{
 				case 1:
@@ -1195,7 +1233,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 					DrawGraphF(piecetable[i].posX * 64 + 192, piecetable[i].posY * 64, Soldier, TRUE);
 					break;
 				}
-				
+
 			}
 			//緑の範囲描画
 			for (int i = 0; i < 7; i++)
@@ -1562,25 +1600,87 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 				//敗北時敗北画面表示
 				else if (lose_flag == true)
 				{
-					WaitTimer(500);
+					if (time == false)
+					{
+						WaitTimer(500);
+					}
+					time = true;
 
 					SetFontSize(40);
-					DrawExtendGraphF(200, 200, 500, 300, textbox, TRUE);//テキストボックスの描画
-					DrawExtendGraphF(200, 350, 500, 450, textbox, TRUE);//テキストボックスの描画
 
-					DrawString(330, 50, "YOU WIN", GetColor(255, 0, 0));
-					DrawString(250, 250, "タイトルへ", GetColor(255, 0, 0));
-					DrawString(250, 400, "終了", GetColor(255, 0, 0));
-				}
+					DrawGraph(0, 0, t_charaB, TRUE);//プレイヤー1の背景の描画
+					DrawGraph(640, 0, t_charaB2, TRUE);//プレイヤー2の背景の描画
+					//DrawExtendGraphF(194, 398, 416, 448, textbox, TRUE);//テキストボックスの描画
+					//DrawExtendGraphF(417, 398, 639, 448, textbox, TRUE);//テキストボックスの描画
+					DrawExtendGraphF(194, 398, 639, 448, textbox, TRUE);//テキストボックスの描画
 
-				if (CheckHitKey(KEY_INPUT_RIGHT) && (win_flag == true || lose_flag == true))
-				{
-					scene = TITLE;
-					break;
-				}
-				else if (CheckHitKey(KEY_INPUT_LEFT) && (win_flag == true || lose_flag == true))
-				{
-					gameend_flag = true;
+					DrawString(340, 50, "YOU LOSE", GetColor(255, 0, 0));
+					/*DrawString(200, 403, "タイトルへ", GetColor(255, 0, 0));*/
+					/*DrawString(490, 403, "終了", GetColor(255, 0, 0));*/
+					DrawString(365, 403, "終了", GetColor(255, 0, 0));
+
+					if (charaselect == 1)
+					{
+						t_chara = LoadGraph("image\\キャラクター1\\キャラクター1敗北透過.png");
+						DrawGraph(0, 0, t_chara, TRUE);//プレイヤー1の描画
+						skillredflag = true;
+					}
+					else if (charaselect == 2)
+					{
+						t_chara2 = LoadGraph("image\\キャラクター2\\キャラクター2敗北.png");
+						DrawGraph(0, 0, t_chara2, TRUE);//プレイヤー1の描画
+						skillredflag = true;
+					}
+					else if (charaselect == 3)
+					{
+						t_chara3 = LoadGraph("image\\キャラクター3\\キャラクター3敗北.png");
+						DrawGraph(0, 0, t_chara3, TRUE);//プレイヤー1の描画
+						skillredflag = true;
+					}
+					if (enemychara == 1)
+					{
+						t_chara = LoadGraph("image\\キャラクター1\\キャラクター1勝利透過.png");
+						DrawGraph(640, 0, t_chara, TRUE);//プレイヤー2の描画
+						skillredflag = true;
+					}
+					else if (enemychara == 2)
+					{
+						t_chara2 = LoadGraph("image\\キャラクター2\\キャラクター2勝利.png");
+						DrawGraph(640, 0, t_chara2, TRUE);//プレイヤー2の描画
+						skillredflag = true;
+					}
+					else if (enemychara == 3)
+					{
+						t_chara3 = LoadGraph("image\\キャラクター3\\キャラクター3勝利.png");
+						DrawGraph(640, 0, t_chara3, TRUE);//プレイヤー2の描画
+						skillredflag = true;
+					}
+
+					if (saveclickflag == true)
+					{
+						if (clickflag == false)
+						{
+							/*if (194 <= clickpos.posX && clickpos.posX <= 416 && 398 <= clickpos.posY && clickpos.posY <= 448)
+							{
+							scene = TITLE;
+							clickflag = true;
+							}
+							else if (417 <= clickpos.posX && clickpos.posX <= 639 && 398 <= clickpos.posY && clickpos.posY <= 448)
+							{
+							gameend_flag = true;
+							clickflag = true;
+							}*/
+							if (194 <= clickpos.posX && clickpos.posX <= 639 && 398 <= clickpos.posY && clickpos.posY <= 448)
+							{
+								gameend_flag = true;
+								clickflag = true;
+							}
+						}
+						else
+						{
+							clickflag = false;
+						}
+					}
 					break;
 				}
 			break;

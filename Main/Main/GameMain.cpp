@@ -172,7 +172,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	outclickpos.posX = -1;
 	outclickpos.posY = -1;
 	saveclickflag = false;
-	clickflag = false;
 
 	//壁
 	skillpos.posX = -1;
@@ -300,7 +299,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			clickflag = false;
 			win_flag = false;//勝った時のフラグ
 			lose_flag = false;//負けた時のフラグ
-			turn = false;
+			turn = true;//先行後攻のフラグ
 			time = false;
 
 			//マウスの状態を確認する
@@ -542,7 +541,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			t_chara = LoadGraph("image\\キャラクター1\\キャラクター1リサイズ透過.png");
 			t_chara2 = LoadGraph("image\\キャラクター2\\キャラクター2メイン.png");
 			t_chara3 = LoadGraph("image\\キャラクター3\\キャラクター3立ち絵.png");
-			charaselect = 0;
 
 			//初期化タイミング
 			//マウスの状態を確認する
@@ -690,6 +688,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 				}
 			}
 
+
 		//自分のターン以外は操作を不可能にする
 			if (turn == true)
 			{
@@ -740,7 +739,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 									latemove = i;
 								}
 							}
-							if (latemove != -1)//Mapの外でないとき
+							if (latemove != -1)
 							{//駒同士が重なったときの処理
 								if (piecetable[movepiece].MeorEne != piecetable[latemove].MeorEne || piecetable[latemove].type == 0)
 								{
@@ -754,32 +753,35 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 									//	movepiece = -1;
 
 									piecetable[latemove].type = 0;//何もない場所には空白
-									movepiece = -1;//移動前の駒は非表示に
 
 									turn = false;
 
 									//データ送る用保存
-									SendData[4] = 6 - piecetable[latemove].posX;
-									SendData[5] = 6 - piecetable[latemove].posY;
+									SendData[4] = (6 - piecetable[latemove].posX);
+									SendData[5] = (6 - piecetable[latemove].posY);
 								}
-								//移動先が壁なら進めない
-								//else if(piecetable[])
+								
 							}
 							//重ならなかったとき
 							else
 							{
 								piecetable[movepiece].posX = movePos.x;
 								piecetable[movepiece].posY = movePos.y;
-								movepiece = -1;
+								
 
 								//データ送る用保存
-								SendData[4] = 6 - piecetable[latemove].posX;
-								SendData[5] = 6 - piecetable[latemove].posY;
+								SendData[4] = (6 - piecetable[latemove].posX);
+								SendData[5] = (6 - piecetable[latemove].posY);
 
 								turn = false;
 							}
+
+
+
 							clickflag = true;
 							moveflag = false;
+							movepiece = -1;//移動前の駒は非表示に
+							
 
 							
 							//クリックした後の緑範囲を消す
@@ -792,8 +794,23 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 							}
 
 						}
+						//駒の場所とあっていなければ
+						else
+						{
+							clickflag = true;
+							moveflag = false;
+							//緑範囲を消す
+							for (int i = 0; i < 7; i++)
+							{
+								for (int j = 0; j < 7; j++)
+								{
+									CanMoveMap[i][j] = 0;
+								}
+							}
+						}
 					}
 				}
+				//クリックしなかったとき
 				else if (saveclickflag == false)
 				{
 					clickflag = false;
@@ -1376,6 +1393,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 							{
 								piecetable[movebepiece].posX = RecvData[4];
 								piecetable[movebepiece].posY = RecvData[5];
+
 								if (piecetable[latemove].type == 6)//相手の王を取ったら勝ちのフラグをtrueに
 									win_flag = true;
 								if (piecetable[latemove].type == 5)//自分の王を取られたら負けのフラグをtrueに

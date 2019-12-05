@@ -33,6 +33,11 @@ enum Scenes
 {
 	TITLE,CONNECT,SELECT,GAME,GAMEEND,
 };
+//‘—‚éƒf[ƒ^ˆê——
+enum SendDataTag
+{
+	ISCONNECT, SELECTCHARA, TURNFAST, MOVEBEFOREPOSX, MOVEBEFOREPOSY, LATEMOVEPOSX, LATEMOVEPOSY,
+};
 //‹î‚Ì“®‚¯‚éMap
 int CanMoveMap[7][7] =
 {

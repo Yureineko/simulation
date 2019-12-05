@@ -91,6 +91,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 						{
 							user[user[i].enemynumber].RecvData[j] = data[j];
 						}
+						if (GetRand(1) == 1)
+							user[i].RecvData[2] = 1;
+						else
+							user[i].RecvData[2] = 2;
 					}
 					else
 					{

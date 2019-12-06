@@ -1,4 +1,6 @@
 #include "Grobal.h"
+#include "Piece.h"
+#include "Animation.h"
 
 //クリックの領域をチェックする関数
 bool HitClick(int Cx, int Cy, int x1, int y1);
@@ -191,8 +193,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 	int movepiece = -1;  //動かす駒のナンバーを保存しておく用
 	int Enemovepiece = -1; //敵の動かす駒のナンバーを保存しておく用
+	int latemove = -1;//駒の配列番号の保存
+	Pos latemovepos;
 	bool moveflag = false;//動かす駒を選ぶのか、動いてほしい場所を選ぶのか
 
+	bool movingflag = false;
+	int graphmovex = 0;
+	int graphmovey = 0;
+	int graphtotalmovex = 0;
+	int graphtotalmovey = 0;
 
 	int appearanceWall = -1;//出現
 	bool appearanceflag = false;//出現する場所を選ぶ
@@ -751,19 +760,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 							//データ送る用保存
 							SendData[MOVEBEFOREPOSX] = 6 - piecetable[movepiece].posX;
 							SendData[MOVEBEFOREPOSY] = 6 - piecetable[movepiece].posY;
-							int latemove = -1;//駒の配列番号の保存
-							Pos latemovepos = { movePos.x ,movePos.y };
-							for (int i = 0; i < 28; i++)
-							{
-								if (movePos.x == piecetable[i].posX && movePos.y == piecetable[i].posY && i != movepiece && piecetable[i].type != 0)
-								{									
-									latemove = i;
-								}
-							}
+							latemovepos.posX = movePos.x; 
+							latemovepos.posY = movePos.y;
 							//地雷チェック
 							//移動方向を保存(x方向に-2,xに-1yに-1等々)
 							int movex = latemovepos.posX - piecetable[movepiece].posX;
 							int movey = latemovepos.posY - piecetable[movepiece].posY;
+							graphmovex = movex * 64;
+							graphmovey = movey * 64;
 							//途中で地雷があったらその場所で止まるようにする
 							for (; movex != 0 || movey != 0;)
 							{
@@ -771,7 +775,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 								for (int i = 0; i < 2; i++)
 								{
 									//そこに地雷があればそこで強制的に止まるようにする
-									if (abilityinfo[i][0] == piecetable[movepiece].posX + movex && abilityinfo[i][1] == piecetable[movepiece].posY + movey && abilityinfo[i][2] == 1)
+									if (abilityinfo[i][0] == piecetable[movepiece].posX + movex && abilityinfo[i][1] == piecetable[movepiece].posY + movey && abilityinfo[i][2] == 1 && piecetable[Enemovepiece].type != 3)
 									{
 										latemove = -1;
 										latemovepos.posX = piecetable[movepiece].posX + movex;
@@ -790,64 +794,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 								else if (movey < 0)
 									movey++;
 							}
-							if (latemove != -1)
-							{//駒同士が重なったときの処理
-								if (piecetable[movepiece].MeorEne != piecetable[latemove].MeorEne || piecetable[latemove].type == 0)
-								{
-									piecetable[movepiece].posX = latemovepos.posX;
-									piecetable[movepiece].posY = latemovepos.posY;
-									if (piecetable[latemove].type == 6)//相手の王を取ったら勝ちのフラグをtrueに
-										win_flag = true;
-									if (piecetable[latemove].type == 5)//自分の王を取られたら負けのフラグをtrueに
-										lose_flag = true;
-									//if (piecetable[latemove].type == 7)//壁には通れなくさせる。
-									//	movepiece = -1;
-									//王以外の駒全部取られた場合も負けの為ここで判定
-									int Ene = 0;
-									int Me = 0;
-									for (int i = 0; i < 28; i++)
-									{
-										//自軍敵軍の駒数カウント
-										if (piecetable[i].MeorEne == true)
-											Me++;
-										else
-											Ene++;
-									}
-
-									piecetable[latemove].type = 0;//何もない場所には空白
-									//movepiece = -1;//移動前の駒は非表示に
-
-									//データ送る用保存
-									SendData[LATEMOVEPOSX] = (6 - piecetable[movepiece].posX);
-									SendData[LATEMOVEPOSY] = (6 - piecetable[movepiece].posY);
-								}
-								
-							}
-							//重ならなかったとき
-							else
-							{
-								piecetable[movepiece].posX = latemovepos.posX;
-								piecetable[movepiece].posY = latemovepos.posY;
-
-								for (int i = 0; i < 2; i++)
-								{
-									if (abilityinfo[i][0] == piecetable[movepiece].posX && abilityinfo[i][1] == piecetable[movepiece].posY && abilityinfo[i][2] == 1)
-									{
-										piecetable[movepiece].type = 0;
-										abilityinfo[i][2] = -1;
-									}
-								}
-
-								//データ送る用保存
-								SendData[LATEMOVEPOSX] = (6 - piecetable[movepiece].posX);
-								SendData[LATEMOVEPOSY] = (6 - piecetable[movepiece].posY);
-							}
-
-
-
 							clickflag = true;
 							moveflag = false;
-							movepiece = -1;//移動前の駒は非表示に
 
 							turn = false;
 							//クリックした後の緑範囲を消す
@@ -858,7 +806,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 									CanMoveMap[i][j] = 0;
 								}
 							}
-
+							movingflag = true;
 						}
 						//駒の場所とあっていなければ
 						else
@@ -910,8 +858,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 				{//相手のターンの時相手の処理が終わったらそのデータを受け取る。
 					if (turn == false && (RecvData[MOVEBEFOREPOSX] + RecvData[MOVEBEFOREPOSY] + RecvData[LATEMOVEPOSX] + RecvData[LATEMOVEPOSY]) != 0)
 					{
-						int latemove = -1;//駒の配列番号の保存
-						Pos latemovepos = { RecvData[LATEMOVEPOSX] ,RecvData[LATEMOVEPOSY] };
+						latemovepos.posX = RecvData[LATEMOVEPOSX];
+						latemovepos.posY = RecvData[LATEMOVEPOSY];
 						for (int i = 0; i < 28; i++)
 						{
 							if (RecvData[MOVEBEFOREPOSX] == piecetable[i].posX && RecvData[MOVEBEFOREPOSY] == piecetable[i].posY&& piecetable[i].type != 0)
@@ -927,6 +875,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 						//移動方向を保存(x方向に-2,xに-1yに-1等々)
 						int movex = latemovepos.posX - piecetable[Enemovepiece].posX;
 						int movey = latemovepos.posY - piecetable[Enemovepiece].posY;
+						graphmovex = movex * 64;
+						graphmovey = movey * 64;
 						//途中で地雷があったらその場所で止まるようにする
 						for (; movex != 0 || movey != 0;)
 						{
@@ -934,7 +884,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 							for (int i = 0; i < 2; i++)
 							{
 								//そこに地雷があればそこで強制的に止まるようにする
-								if (abilityinfo[i][0] == piecetable[Enemovepiece].posX + movex && abilityinfo[i][1] == piecetable[Enemovepiece].posY + movey && abilityinfo[i][2] == 1)
+								if (abilityinfo[i][0] == piecetable[Enemovepiece].posX + movex && abilityinfo[i][1] == piecetable[Enemovepiece].posY + movey && abilityinfo[i][2] == 1 && piecetable[Enemovepiece].type != 3)
 								{
 									latemove = -1;
 									latemovepos.posX = piecetable[Enemovepiece].posX + movex;
@@ -953,7 +903,104 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 							else if (movey < 0)
 								movey++;
 						}
+						movingflag = true;
 
+					}
+					connecttime = 0;
+				}
+				else
+				{
+					connecttime++;
+					if (connecttime == 60)
+					{
+						//対戦相手が消えたため接続に戻る
+						//初期化は任せた
+						//scene = CONNECT;
+					}
+				}
+			}
+
+			//移動処理
+			if (movingflag == true)
+			{
+				//移動演出用
+				graphtotalmovex += graphmovex / 64;
+				graphtotalmovey += graphmovey / 64;
+				//移動終わり次第その後の処理を行う
+				if (graphtotalmovex == graphmovex && graphtotalmovey == graphmovey)
+				{
+					//自分が動かした場合
+					if (movepiece != -1)
+					{
+						for (int i = 0; i < 28; i++)
+						{
+							if (movePos.x == piecetable[i].posX && movePos.y == piecetable[i].posY && i != movepiece && piecetable[i].type != 0)
+							{
+								latemove = i;
+							}
+						}
+						if (latemove != -1)
+						{//駒同士が重なったときの処理
+							if (piecetable[movepiece].MeorEne != piecetable[latemove].MeorEne || piecetable[latemove].type == 0)
+							{
+								piecetable[movepiece].posX = latemovepos.posX;
+								piecetable[movepiece].posY = latemovepos.posY;
+								if (piecetable[latemove].type == 6)//相手の王を取ったら勝ちのフラグをtrueに
+									win_flag = true;
+								if (piecetable[latemove].type == 5)//自分の王を取られたら負けのフラグをtrueに
+									lose_flag = true;
+								//if (piecetable[latemove].type == 7)//壁には通れなくさせる。
+								//	movepiece = -1;
+								//王以外の駒全部取られた場合も負けの為ここで判定
+								int Ene = 0;
+								int Me = 0;
+								for (int i = 0; i < 28; i++)
+								{
+									//自軍敵軍の駒数カウント
+									if (piecetable[i].MeorEne == true)
+										Me++;
+									else
+										Ene++;
+								}
+
+								piecetable[latemove].type = 0;//何もない場所には空白
+															  //movepiece = -1;//移動前の駒は非表示に
+
+															  //データ送る用保存
+								SendData[LATEMOVEPOSX] = (6 - piecetable[movepiece].posX);
+								SendData[LATEMOVEPOSY] = (6 - piecetable[movepiece].posY);
+							}
+
+						}
+						//重ならなかったとき
+						else
+						{
+							piecetable[movepiece].posX = latemovepos.posX;
+							piecetable[movepiece].posY = latemovepos.posY;
+
+							for (int i = 0; i < 2; i++)
+							{
+								if (abilityinfo[i][0] == piecetable[movepiece].posX && abilityinfo[i][1] == piecetable[movepiece].posY && abilityinfo[i][2] == 1)
+								{
+									piecetable[movepiece].type = 0;
+									abilityinfo[i][2] = -1;
+								}
+							}
+
+							//データ送る用保存
+							SendData[LATEMOVEPOSX] = (6 - piecetable[movepiece].posX);
+							SendData[LATEMOVEPOSY] = (6 - piecetable[movepiece].posY);
+						}
+						//初期化
+						movepiece = -1;//移動前の駒は非表示に
+						latemove = -1;
+						latemovepos.posX = -1;
+						latemovepos.posY = -1;
+
+					}
+					//敵が動かした場合
+					else if (Enemovepiece)
+					{
 						if (latemove != -1 && (piecetable[Enemovepiece].MeorEne != piecetable[latemove].MeorEne || piecetable[latemove].type == 0))
 						{
 							//駒同士が重なったときの処理
@@ -966,7 +1013,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 							//if (piecetable[latemove].type == 7)//壁には通れなくさせる。
 							//	movepiece = -1;
 							//王以外の駒全部取られた場合も負けの為ここで判定
-							int Ene = 0; 
+							int Ene = 0;
 							int Me = 0;
 							for (int i = 0; i < 28; i++)
 							{
@@ -997,22 +1044,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 									piecetable[latemove].type = 0;
 							}
 						}
-
+						Enemovepiece = -1;
 						turn = true;
-
 					}
-					connecttime = 0;
+					movingflag = false;
+					graphmovex = 0;
+					graphmovey = 0;
+					graphtotalmovex = 0;
+					graphtotalmovey = 0;
 				}
-				else
-				{
-					connecttime++;
-					if (connecttime == 60)
-					{
-						//対戦相手が消えたため接続に戻る
-						//初期化は任せた
-						//scene = CONNECT;
-					}
-				}
+				
 			}
 
 			//相手の手番の場合
@@ -1377,53 +1418,110 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			//上2行と下2行
 			for (int i = 0; i < 28; i++)
 			{
-				if (piecetable[i].type != 0)
+				if (i != movepiece && i != Enemovepiece || movingflag == false)
 				{
-					if (piecetable[i].MeorEne == true)
+					if (piecetable[i].type != 0)
 					{
-						DrawGraphF(piecetable[i].posX * 64 + 192, piecetable[i].posY * 64, BB, TRUE);
+						if (piecetable[i].MeorEne == true)
+						{
+							DrawGraphF(piecetable[i].posX * 64 + 192, piecetable[i].posY * 64, BB, TRUE);
+						}
+						else
+						{
+							DrawGraphF(piecetable[i].posX * 64 + 192, piecetable[i].posY * 64, RB, TRUE);
+						}
 					}
-					else
+					switch (piecetable[i].type)
 					{
-						DrawGraphF(piecetable[i].posX * 64 + 192, piecetable[i].posY * 64, RB, TRUE);
+					case 1:
+						//兵士の生成
+						DrawGraphF(piecetable[i].posX * 64 + 192, piecetable[i].posY * 64, Soldier, TRUE);
+						break;
+					case 2:
+						//魔導士の生成
+						DrawGraphF(piecetable[i].posX * 64 + 192, piecetable[i].posY * 64, Sorcerer, TRUE);
+						break;
+					case 3:
+						//諜報員の生成
+						DrawGraphF(piecetable[i].posX * 64 + 192, piecetable[i].posY * 64, Espionage, TRUE);
+						break;
+					case 4:
+						//騎士の生成
+						DrawGraphF(piecetable[i].posX * 64 + 192, piecetable[i].posY * 64, Knight, TRUE);
+						break;
+					case 5:
+						//王の生成
+						DrawGraphF(piecetable[i].posX * 64 + 192, piecetable[i].posY * 64, King, TRUE);
+						break;
+					case 6:
+						//敵王の生成
+						DrawRotaGraph(piecetable[i].posX * 64 + 224, piecetable[i].posY * 64 + 32, 1.0f, PI, EKing, TRUE);
+						break;
+					case 7:
+						//敵兵士の生成
+						DrawGraphF(piecetable[i].posX * 64 + 192, piecetable[i].posY * 64, Soldier, TRUE);
+						break;
 					}
 				}
-				switch (piecetable[i].type)
+
+			}
+			//動いている駒の描画おいている駒に負けたくないため
+			if (movingflag == true)
+			{
+				int piecetype = 0;
+				if (movepiece != -1)
+				{
+					piecetype = piecetable[movepiece].type;
+				}
+				else
+				{
+					piecetype = piecetable[Enemovepiece].type;
+				}
+				//下敷きの描画(敵なら赤、味方なら青)
+				if (piecetable[movepiece].MeorEne == true)
+				{
+					DrawGraphF(piecetable[movepiece].posX * 64 + 192 + graphtotalmovex, piecetable[movepiece].posY * 64 + graphtotalmovey, BB, TRUE);
+				}
+				else
+				{
+					DrawGraphF(piecetable[movepiece].posX * 64 + 192 + graphtotalmovex, piecetable[movepiece].posY * 64 + graphtotalmovey, RB, TRUE);
+				}
+				//駒の描画
+				switch (piecetype)
 				{
 				case 1:
 					//兵士の生成
-					DrawGraphF(piecetable[i].posX * 64 + 192, piecetable[i].posY * 64, Soldier, TRUE);
+					DrawGraphF(piecetable[movepiece].posX * 64 + 192 + graphtotalmovex, piecetable[movepiece].posY * 64 + graphtotalmovey, Soldier, TRUE);
 					break;
 				case 2:
 					//魔導士の生成
-					DrawGraphF(piecetable[i].posX * 64 + 192, piecetable[i].posY * 64, Sorcerer, TRUE);
+					DrawGraphF(piecetable[movepiece].posX * 64 + 192 + graphtotalmovex, piecetable[movepiece].posY * 64 + graphtotalmovey, Sorcerer, TRUE);
 					break;
 				case 3:
 					//諜報員の生成
-					DrawGraphF(piecetable[i].posX * 64 + 192, piecetable[i].posY * 64, Espionage, TRUE);
+					DrawGraphF(piecetable[movepiece].posX * 64 + 192 + graphtotalmovex, piecetable[movepiece].posY * 64 + graphtotalmovey, Espionage, TRUE);
 					break;
 
 				case 4:
 					//騎士の生成
-					DrawGraphF(piecetable[i].posX * 64 + 192, piecetable[i].posY * 64, Knight, TRUE);
+					DrawGraphF(piecetable[movepiece].posX * 64 + 192 + graphtotalmovex, piecetable[movepiece].posY * 64 + graphtotalmovey, Knight, TRUE);
 					break;
 
 				case 5:
 					//王の生成
-					DrawGraphF(piecetable[i].posX * 64 + 192, piecetable[i].posY * 64, King, TRUE);
+					DrawGraphF(piecetable[movepiece].posX * 64 + 192 + graphtotalmovex, piecetable[movepiece].posY * 64 + graphtotalmovey, King, TRUE);
 					break;
 
 				case 6:
 					//敵王の生成
-					DrawRotaGraph(piecetable[i].posX * 64 + 224, piecetable[i].posY * 64 + 32, 1.0f, PI, EKing, TRUE);
+					DrawRotaGraph(piecetable[movepiece].posX * 64 + 224 + graphtotalmovex, piecetable[movepiece].posY * 64 + 32 + graphtotalmovey, 1.0f, PI, EKing, TRUE);
 					break;
 
 				case 7:
 					//敵兵士の生成
-					DrawGraphF(piecetable[i].posX * 64 + 192, piecetable[i].posY * 64, Soldier, TRUE);
+					DrawGraphF(piecetable[movepiece].posX * 64 + 192, piecetable[movepiece].posY * 64, Soldier, TRUE);
 					break;
 				}
-
 			}
 			//緑の範囲描画
 			for (int i = 0; i < 7; i++)

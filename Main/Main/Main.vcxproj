@@ -126,6 +126,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Animation.cpp" />
     <ClCompile Include="EnemyKING.cpp" />
     <ClCompile Include="Espionage.cpp" />
     <ClCompile Include="GameMain.cpp" />
@@ -135,6 +136,7 @@
     <ClCompile Include="Sorcerer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Animation.h" />
     <ClInclude Include="Grobal.h" />
     <ClInclude Include="Piece.h" />
     <ClInclude Include="Player1.h" />

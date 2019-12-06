@@ -1,25 +1,4 @@
-#include "DxLib.h"
-#include "Piece.h"
 #include "Grobal.h"
-#include<stdio.h>
-
-#define SCREEN_PIXWIDTH		832//画面サイズ　X
-#define SCREEN_PIXHEIGHT	448//画面サイズ　Y
-
-//MainMapの範囲
-#define POPUP_X 192//左↑の点
-#define POPUP_Y 0//右↑
-#define POPDOWN_X 64//
-#define POPDOWN_Y 64
-
-//左側のキャラの能力ボタンの範囲
-#define CLUP_X 40//左　点
-#define CLUP_Y 280//上　点
-#define CLDOWN_X 150//右　点
-#define CLDOWN_Y 380//下　点
-
-
-#define PI	3.1415926535897932384626433832795f
 
 //クリックの領域をチェックする関数
 bool HitClick(int Cx, int Cy, int x1, int y1);
@@ -163,6 +142,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	bool saveclickflag;//クリックポジション取得の制御を行う為のフラグ
 	bool clickflag;    //クリック制御を行う為のフラグ
 
+	//能力使用時保存配列
+	int abilityinfo[2][3] = { {0}, {0} };
+
 	//壁と地雷の能力ボタン
 	Pos skillpos;//クリックした能力ボタン部分
 	Pos outskillpos;//クリック離した能力ボタン部分
@@ -205,6 +187,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	POS wallPos = { 0,0 };//壁を表示出来る場所
 
 	int movepiece = -1;  //動かす駒のナンバーを保存しておく用
+	int Enemovepiece = -1; //敵の動かす駒のナンバーを保存しておく用
 	bool moveflag = false;//動かす駒を選ぶのか、動いてほしい場所を選ぶのか
 
 
@@ -503,7 +486,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 					{
 						SendData[ISCONNECT] = 1;
 						NetWorkSendUDP(NetUDPHandle, Ip, 30, SendData, sizeof(SendData));
-						scene = CONNECT;
+						//デバッグなう
+						scene = GAME;
+						abilityinfo[0][0] = 2;
+						abilityinfo[0][1] = 2;
+						abilityinfo[0][2] = 1;
+						abilityinfo[1][0] = 5;
+						abilityinfo[1][1] = 3;
+						abilityinfo[1][2] = 1;
 					}
 					else if (300 <= clickpos.posX&&clickpos.posX <= 500 && 300 <= clickpos.posY&&clickpos.posY <= 350)
 					{
@@ -759,6 +749,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 							SendData[MOVEBEFOREPOSX] = 6 - piecetable[movepiece].posX;
 							SendData[MOVEBEFOREPOSY] = 6 - piecetable[movepiece].posY;
 							int latemove = -1;//駒の配列番号の保存
+							Pos latemovepos = { movePos.x ,movePos.y };
 							for (int i = 0; i < 28; i++)
 							{
 								if (movePos.x == piecetable[i].posX && movePos.y == piecetable[i].posY && i != movepiece && piecetable[i].type != 0)
@@ -766,18 +757,59 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 									latemove = i;
 								}
 							}
+							//地雷チェック
+							//移動方向を保存(x方向に-2,xに-1yに-1等々)
+							int movex = latemovepos.posX - piecetable[movepiece].posX;
+							int movey = latemovepos.posY - piecetable[movepiece].posY;
+							//途中で地雷があったらその場所で止まるようにする
+							for (; movex != 0 || movey != 0;)
+							{
+								//相手の地雷も自分の地雷も踏んだら死なので二回回す
+								for (int i = 0; i < 2; i++)
+								{
+									//そこに地雷があればそこで強制的に止まるようにする
+									if (abilityinfo[i][0] == piecetable[movepiece].posX + movex && abilityinfo[i][1] == piecetable[movepiece].posY + movey && abilityinfo[i][2] == 1)
+									{
+										latemove = -1;
+										latemovepos.posX = piecetable[movepiece].posX + movex;
+										latemovepos.posY = piecetable[movepiece].posY + movey;
+									}
+								}
+
+								//for終わらせるための減少増加
+								if (movex > 0)
+									movex--;
+								else if (movex < 0)
+									movex++;
+
+								if (movey > 0)
+									movey--;
+								else if (movey < 0)
+									movey++;
+							}
 							if (latemove != -1)
 							{//駒同士が重なったときの処理
 								if (piecetable[movepiece].MeorEne != piecetable[latemove].MeorEne || piecetable[latemove].type == 0)
 								{
-									piecetable[movepiece].posX = movePos.x;
-									piecetable[movepiece].posY = movePos.y;
+									piecetable[movepiece].posX = latemovepos.posX;
+									piecetable[movepiece].posY = latemovepos.posY;
 									if (piecetable[latemove].type == 6)//相手の王を取ったら勝ちのフラグをtrueに
 										win_flag = true;
 									if (piecetable[latemove].type == 5)//自分の王を取られたら負けのフラグをtrueに
 										lose_flag = true;
 									//if (piecetable[latemove].type == 7)//壁には通れなくさせる。
 									//	movepiece = -1;
+									//王以外の駒全部取られた場合も負けの為ここで判定
+									int Ene = 0;
+									int Me = 0;
+									for (int i = 0; i < 28; i++)
+									{
+										//自軍敵軍の駒数カウント
+										if (piecetable[i].MeorEne == true)
+											Me++;
+										else
+											Ene++;
+									}
 
 									piecetable[latemove].type = 0;//何もない場所には空白
 									//movepiece = -1;//移動前の駒は非表示に
@@ -791,8 +823,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 							//重ならなかったとき
 							else
 							{
-								piecetable[movepiece].posX = movePos.x;
-								piecetable[movepiece].posY = movePos.y;
+								piecetable[movepiece].posX = latemovepos.posX;
+								piecetable[movepiece].posY = latemovepos.posY;
+
+								for (int i = 0; i < 2; i++)
+								{
+									if (abilityinfo[i][0] == piecetable[movepiece].posX && abilityinfo[i][1] == piecetable[movepiece].posY && abilityinfo[i][2] == 1)
+									{
+										piecetable[movepiece].type = 0;
+										abilityinfo[i][2] = -1;
+									}
+								}
 
 								//データ送る用保存
 								SendData[LATEMOVEPOSX] = (6 - piecetable[movepiece].posX);
@@ -844,6 +885,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 			}//ここまでが自分の手番
 
+			//デバッグ用ターンの引き渡し
+			turn = true;
+
 			 //データ受け取り
 			 //通信確認用
 			if (UserNum != -1)
@@ -863,30 +907,77 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 				{//相手のターンの時相手の処理が終わったらそのデータを受け取る。
 					if (turn == false && (RecvData[MOVEBEFOREPOSX] + RecvData[MOVEBEFOREPOSY] + RecvData[LATEMOVEPOSX] + RecvData[LATEMOVEPOSY]) != 0)
 					{
-						int movebepiece = -1;
 						int latemove = -1;//駒の配列番号の保存
+						Pos latemovepos = { RecvData[LATEMOVEPOSX] ,RecvData[LATEMOVEPOSY] };
 						for (int i = 0; i < 28; i++)
 						{
 							if (RecvData[MOVEBEFOREPOSX] == piecetable[i].posX && RecvData[MOVEBEFOREPOSY] == piecetable[i].posY&& piecetable[i].type != 0)
 							{
-								movebepiece = i;
+								Enemovepiece = i;
 							}
 							if (RecvData[LATEMOVEPOSX] == piecetable[i].posX && RecvData[LATEMOVEPOSY] == piecetable[i].posY && piecetable[i].type != 0)
 							{
 								latemove = i;
 							}
 						}
-						if (latemove != -1 && (piecetable[movebepiece].MeorEne != piecetable[latemove].MeorEne || piecetable[latemove].type == 0))
+						//地雷チェック
+						//移動方向を保存(x方向に-2,xに-1yに-1等々)
+						int movex = latemovepos.posX - piecetable[Enemovepiece].posX;
+						int movey = latemovepos.posY - piecetable[Enemovepiece].posY;
+						//途中で地雷があったらその場所で止まるようにする
+						for (; movex != 0 || movey != 0;)
+						{
+							//相手の地雷も自分の地雷も踏んだら死なので二回回す
+							for (int i = 0; i < 2; i++)
+							{
+								//そこに地雷があればそこで強制的に止まるようにする
+								if (abilityinfo[i][0] == piecetable[Enemovepiece].posX + movex && abilityinfo[i][1] == piecetable[Enemovepiece].posY + movey && abilityinfo[i][2] == 1)
+								{
+									latemove = -1;
+									latemovepos.posX = piecetable[Enemovepiece].posX + movex;
+									latemovepos.posY = piecetable[Enemovepiece].posY + movey;
+								}
+							}
+
+							//for終わらせるための減少増加
+							if (movex > 0)
+								movex--;
+							else if (movex < 0)
+								movex++;
+
+							if (movey > 0)
+								movey--;
+							else if (movey < 0)
+								movey++;
+						}
+
+						if (latemove != -1 && (piecetable[Enemovepiece].MeorEne != piecetable[latemove].MeorEne || piecetable[latemove].type == 0))
 						{
 							//駒同士が重なったときの処理
-							piecetable[movebepiece].posX = RecvData[LATEMOVEPOSX];
-							piecetable[movebepiece].posY = RecvData[LATEMOVEPOSY];
+							piecetable[Enemovepiece].posX = latemovepos.posX;
+							piecetable[Enemovepiece].posY = latemovepos.posY;
 							if (piecetable[latemove].type == 6)//相手の王を取ったら勝ちのフラグをtrueに
 								win_flag = true;
 							if (piecetable[latemove].type == 5)//自分の王を取られたら負けのフラグをtrueに
 								lose_flag = true;
 							//if (piecetable[latemove].type == 7)//壁には通れなくさせる。
 							//	movepiece = -1;
+							//王以外の駒全部取られた場合も負けの為ここで判定
+							int Ene = 0; 
+							int Me = 0;
+							for (int i = 0; i < 28; i++)
+							{
+								//自軍敵軍の駒数カウント
+								if (piecetable[i].MeorEne == true)
+									Me++;
+								else
+									Ene++;
+							}
+							//抜けた時にMeもしくはEneが1なら王しかいないということなので
+							if (Me == 1)
+								lose_flag = true;
+							if (Ene == 1)
+								win_flag = true;
 
 							piecetable[latemove].type = 0;//何もない場所には空白
 														  //移動先が壁なら進めない
@@ -895,8 +986,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 						//重ならなかったとき
 						else
 						{
-							piecetable[movebepiece].posX = RecvData[LATEMOVEPOSX];
-							piecetable[movebepiece].posY = RecvData[LATEMOVEPOSY];
+							piecetable[Enemovepiece].posX = latemovepos.posX;
+							piecetable[Enemovepiece].posY = latemovepos.posY;
+							for (int i = 0; i < 2; i++)
+							{
+								if (abilityinfo[i][0] == piecetable[Enemovepiece].posX && abilityinfo[i][1] == piecetable[Enemovepiece].posY && abilityinfo[i][2] == 1)
+									piecetable[latemove].type = 0;
+							}
 						}
 
 						turn = true;
@@ -911,7 +1007,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 					{
 						//対戦相手が消えたため接続に戻る
 						//初期化は任せた
-						scene = CONNECT;
+						//scene = CONNECT;
 					}
 				}
 			}

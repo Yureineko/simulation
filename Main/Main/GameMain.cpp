@@ -112,6 +112,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	int EKing = LoadGraph("image\\ユニット\\King(64).png");//ここに王の画像
 	int BB = LoadGraph("image\\BB.png");//自軍下敷き
 	int RB = LoadGraph("image\\RB.png");//敵軍下敷き
+	int Turn = LoadGraph("image\\ユニット\\TURN WINDOW.png");//ターンプレイヤーをわかりやすくするための画像
 
 	//駒が通行できない壁
 	//int wall;//切り取った壁
@@ -462,9 +463,20 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			DrawExtendGraphF(-50, -50, 882, 498, title, TRUE);//タイトルの描画
 			DrawExtendGraphF(300, 200, 500, 250, textbox, TRUE);//テキストボックスの描画
 			DrawExtendGraphF(300, 300, 500, 350, textbox, TRUE);//テキストボックスの描画
-			DrawString(0, 32, "タイトル(仮)", GetColor(255, 255, 255));
+			DrawString(250, 165, "BATTLE・OF・WARGAMES", GetColor(255, 255, 255));
 			DrawString(375, 215, "始める", GetColor(255, 255, 255));
 			DrawString(375, 315, "終わる", GetColor(255, 255, 255));
+
+			//確認用の画像表示
+			//t_chara = LoadGraph("image\\キャラクター1\\キャラクター1リサイズ透過.png");
+			//t_chara2 = LoadGraph("image\\キャラクター2\\キャラクター2メイン.png");
+			//t_chara3 = LoadGraph("image\\キャラクター3\\キャラクター3立ち絵.png");
+			//DrawGraph(0, 0, t_charaB, TRUE);//プレイヤー1の背景の描画
+			//DrawGraph(640, 0, t_charaB2, TRUE);//プレイヤー2の背景の描画
+			//DrawGraph(0, 0, t_chara3, TRUE);//プレイヤー1の描画
+			//DrawGraph(640, 0, t_chara2, TRUE);//プレイヤー2の描画
+			//DrawExtendGraphF(20, 260, 170, 330, Turn, TRUE);
+			//DrawExtendGraphF(662, 260, 812, 330, Turn, TRUE);
 
 			if (saveclickflag == true)
 			{
@@ -1346,6 +1358,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			else if (enemychara == 3)
 			{
 				DrawGraph(640, 0, t_chara3, TRUE);//プレイヤー2の描画
+			}
+
+			//ターンプレイヤーをわかりやすくするための画像表示
+			if (turn == true)
+			{
+				DrawExtendGraphF(20, 260, 170, 330, Turn, TRUE);
+			}
+			else
+			{
+				DrawExtendGraphF(662, 260, 812, 330, Turn, TRUE);
 			}
 			
 			//DrawExtendGraphF(40, 280, 150, 380, Skillbotton, TRUE);//能力発動ボタンの描画

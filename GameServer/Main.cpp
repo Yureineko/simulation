@@ -29,6 +29,8 @@ struct Player
 	//Œq‚ª‚ç‚È‚¢‚Æ‚«‚Ì—P—\ŠÔ(1•b’ö“xŒq‚ª‚ç‚È‚¯‚ê‚Îƒf[ƒ^‚ğ‰Šú‰»)
 	int NoConetime;
 	int scenenumber;
+	//æUŒãU•Û‘¶—p
+	bool turnfast;
 	char RecvData[10];
 };
 
@@ -58,6 +60,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		user[i].NetUDPHandle = MakeUDPSocket(40 + i);
 		user[i].NoConetime = 0;
 		user[i].scenenumber = 0;
+		user[i].turnfast = true;
 		for (int j = 0; j < 10; j++)
 		{
 			user[i].RecvData[j] = 0;
@@ -92,10 +95,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 						{
 							user[user[i].enemynumber].RecvData[j] = data[j];
 						}
-						if (GetRand(1) == 1)
+						if (user[i].turnfast == true)
 							user[i].RecvData[2] = 1;
 						else
 							user[i].RecvData[2] = 2;
+
 					}
 					else
 					{
@@ -184,6 +188,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 					user[pairnum].enemynumber = i;
 					user[i].enemynumber = pairnum;
 					user[i].RecvData[0] = 1;
+					if (GetRand(1) == 1)
+					{
+						user[i].turnfast = true;
+						user[pairnum].turnfast = false;
+					}
+					else
+					{
+						user[i].turnfast = false;
+						user[pairnum].turnfast = true;
+					}
 					break;
 				}
 			}

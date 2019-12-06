@@ -479,7 +479,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			DrawExtendGraphF(-50, -50, 882, 498, title, TRUE);//タイトルの描画
 			DrawExtendGraphF(300, 200, 500, 250, textbox, TRUE);//テキストボックスの描画
 			DrawExtendGraphF(300, 300, 500, 350, textbox, TRUE);//テキストボックスの描画
-			DrawString(0, 32, "タイトル(仮)", GetColor(255, 255, 255));
+			DrawString(250, 165, "BATTLE・OF・WARGAMES", GetColor(255, 255, 255));
 			DrawString(375, 215, "始める", GetColor(255, 255, 255));
 			DrawString(375, 315, "終わる", GetColor(255, 255, 255));
 
@@ -749,7 +749,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 							int latemove = -1;//駒の配列番号の保存
 							for (int i = 0; i < 28; i++)
 							{
-								if (movePos.x == piecetable[i].posX && movePos.y == piecetable[i].posY && i != movepiece)
+								if (movePos.x == piecetable[i].posX && movePos.y == piecetable[i].posY && i != movepiece && piecetable[i].type != 0)
 								{									
 									latemove = i;
 								}

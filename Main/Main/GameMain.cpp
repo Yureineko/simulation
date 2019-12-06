@@ -143,6 +143,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	bool clickflag;    //クリック制御を行う為のフラグ
 
 	//能力使用時保存配列
+	//[0][]に自軍の情報を、[1][]に敵軍の情報を入れる
+	//[][0] = スキル発動のX位置情報、[][1] = スキル発動のY位置情報
+	//[][2] = スキルの種類情報(1には地雷を入れてます)
 	int abilityinfo[2][3] = { {0}, {0} };
 
 	//壁と地雷の能力ボタン

@@ -737,8 +737,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 						//選んだマスを取得
 						movePos = HitPos(clickpos.posX, clickpos.posY);
 						////データ送る用保存
-						//SendData[2] = 6 - piecetable[movepiece].posX;
-						//SendData[3] = 6 - piecetable[movepiece].posY;
+						SendData[2] = (6 - piecetable[movepiece].posX);
+						SendData[3] = (6 - piecetable[movepiece].posY);
 						//そのマスが範囲内
 						//クリックした場所と駒の位置があっていれば
 						if (clickpos.posX >= POPUP_X && clickpos.posX <= POPUP_X + 64 * 7 && CanMoveMap[movePos.y][movePos.x] == 1)
@@ -809,6 +809,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 						{
 							clickflag = true;
 							moveflag = false;
+
 							//緑範囲を消す
 							for (int i = 0; i < 7; i++)
 							{
@@ -826,112 +827,51 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 					clickflag = false;
 				}
 
-
-
 				GetMousePoint(&mx, &my);
+
+				//この辺りで壁の処理
+				////スキルのボタンをクリックしたら
+				//if (mx <CLDOWN_X&&mx>CLUP_X&&my<CLDOWN_Y&&my>CLUP_Y)
+				//{
+				//	//スキルのフラグ
+				//	//クリックしたとき
+				//	if (clickflag == false && saveclickflag == true)
+				//	{
+				//		//スキルのボタンの時
+				//		if (skillclickflag ==false)
+				//		{
+				//			//クリックしたマスを取得しそのマスが0であるかを探す
+				//			POS ZeroPos = HitPos(clickpos.posX, clickpos.posY);
+				//				for (int i = 0; i < 49; i++)
+				//				{
+				//					//該当する駒が無いとき
+				//					if (ZeroPos.x == piecetable[i].posX && ZeroPos.y == piecetable[i].posY && piecetable[i].type == 0)
+				//					{
+				//						//その場所の対応ナンバーを0で保存する
+				//						movepiece = 0;
+				//						//描画場所を選ぶようにする
+				//						skillbuttonflag = true;
+				//						clickflag = true;
+				//						//移動できる範囲を緑色で指定する
+				//						//マスに触れる所
+				//						//CheckMoveRange(piecetable[i], piecetable);
+				//					}
+				//				}
+				//		}
+				//	}
+				//	else
+				//	{
+
+				//	}
+
+				//}
+
+				
 
 
 			}//ここまでが自分の手番
 
 
-
-			//相手の手番の場合
-			//相手のターン以外は操作を不可能にする
-			//if (turn == false)
-			//{
-			//	//クリックしたとき
-			//	if (clickflag == false && saveclickflag == true)
-			//	{
-			//		//キャラを選択し緑色のマス(行動できる範囲)を描画
-			//		if (moveflag == false)
-			//		{
-			//			//クリックしたマスを取得しそのマスに該当する駒を探す
-			//			POS SavePos = HitPos(clickpos.posX, clickpos.posY);
-			//			for (int i = 0; i < 28; i++)
-			//			{
-			//				//該当する駒があり、その駒が生きていれば
-			//				if (SavePos.x == piecetable[i].posX && SavePos.y == piecetable[i].posY && piecetable[i].type != 0)
-			//				{
-			//					//その駒の対応ナンバーを一時保存する
-			//					movepiece = i;
-			//					//行動場所を選ぶようにする
-			//					moveflag = true;
-			//					clickflag = true;
-			//					//移動できる範囲を緑色で指定する
-			//					//マスに触れる所
-			//					CheckMoveRange(piecetable[i], piecetable);
-			//				}
-			//			}
-			//		}
-			//		//緑色のマスを選択し上記で選んだ駒をその場所に移動
-			//		else
-			//		{
-			//			//選んだマスを取得
-			//			movePos = HitPos(clickpos.posX, clickpos.posY);
-			//			//そのマスが範囲内
-			//			//クリックした場所と駒の位置があっていれば
-			//			if (clickpos.posX >= POPUP_X && clickpos.posX <= POPUP_X + 64 * 7 && CanMoveMap[movePos.y][movePos.x] == 1)
-			//			{
-			//				int latemove = -1;//駒の配列番号の保存
-			//				for (int i = 0; i < 28; i++)
-			//				{
-			//					if (movePos.x == piecetable[i].posX && movePos.y == piecetable[i].posY && i != movepiece)
-			//					{
-			//						latemove = i;
-			//					}
-			//				}
-			//				if (latemove != -1)
-			//				{//駒同士が重なったときの処理
-			//					if (piecetable[movepiece].MeorEne != piecetable[latemove].MeorEne || piecetable[latemove].type == 0)
-			//					{
-			//						piecetable[movepiece].posX = movePos.x;
-			//						piecetable[movepiece].posY = movePos.y;
-			//						if (piecetable[latemove].type == 6)//相手の王を取ったら勝ちのフラグをtrueに
-			//							win_flag = true;
-			//						if (piecetable[latemove].type == 5)//自分の王を取られたら負けのフラグをtrueに
-			//							lose_flag = true;
-			//						//if (piecetable[latemove].type == 7)//壁には通れなくさせる。
-			//						//	movepiece = -1;
-
-			//						piecetable[latemove].type = 0;//何もない場所には空白
-			//						movepiece = -1;//移動前の駒は非表示に
-			//						turn = true;
-			//					}
-			//					//移動先が壁なら進めない
-			//					//else if(piecetable[])
-			//				}
-			//				//重ならなかったとき
-			//				else
-			//				{
-			//					piecetable[movepiece].posX = movePos.x;
-			//					piecetable[movepiece].posY = movePos.y;
-			//					movepiece = -1;
-			//					turn = true;
-			//				}
-			//				clickflag = true;
-			//				moveflag = false;
-
-			//				turn = true;
-			//				//クリックした後の緑範囲を消す
-			//				for (int i = 0; i < 7; i++)
-			//				{
-			//					for (int j = 0; j < 7; j++)
-			//					{
-			//						CanMoveMap[i][j] = 0;
-
-			//						DwallMap[i][j]=0;
-			//						
-			//					}
-			//				}
-			//				
-			//			}
-			//		}
-			//	}
-			//	else if (saveclickflag == false)
-			//	{
-			//		clickflag = false;
-			//	}
-				//ここまでが相手の手番
 			
 				//---------------壁の生成処理----------------------------------
 				//キャラの必殺ボタンをクリックしたとき
@@ -1182,7 +1122,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 				DrawGraph(640, 0, t_chara3, TRUE);//プレイヤー2の描画
 			}
 			
-			//DrawExtendGraphF(40, 280, 150, 380, Skillbotton, TRUE);//能力発動ボタンの描画
+			DrawExtendGraphF(40, 280, 150, 380, Skillbotton, TRUE);//能力発動ボタンの描画
 			//駒の描画ひとしきり
 			//上2行と下2行
 			for (int i = 0; i < 28; i++)
@@ -1247,134 +1187,116 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 				}
 			}
 
-	////-------------能力ボタン描画---------
-	//		//能力ボタンの場所を待機中にする
-	//		if (skillclickflag == true&&skillflagremove==false)
-	//		{
-	//			//それぞれのキャラの描画と能力内容処理
-	//			//キャラ1の場合
-	//			if (charaselect == 1)
-	//			{
-	//				DrawExtendGraphF(0, 230, 200, 430, Skillwaite, TRUE);//能力待機中の描画
-	//				t_chara = LoadGraph("image\\キャラクター1\\キャラクター1スキル透過.PNG");//スキル待機中のキャラ1
-	//				skillbuttonflag = true;
-	//				//駒が通れない壁を作る(横向き)
-	//				//赤い範囲を描画する
-	//				//MainMapの中にある0の場所を探す
-	//				/*switch (MainMap[i][j])
-	//				{
-	//				case 0:
+	//-------------能力ボタン描画---------
+			//能力ボタンの場所を待機中にする
+			if (skillclickflag == true&&skillflagremove==false)
+			{
+				//それぞれのキャラの描画と能力内容処理
+				//キャラ1の場合
+				if (charaselect == 1)
+				{
+					DrawExtendGraphF(0, 230, 200, 430, Skillwaite, TRUE);//能力待機中の描画
+					t_chara = LoadGraph("image\\キャラクター1\\キャラクター1スキル透過.PNG");//スキル待機中のキャラ1
+					skillbuttonflag = true;
+					//駒が通れない壁を作る(横向き)
+					//赤い範囲を描画する
+					//MainMapの中にある0の場所を探す
+					for (int i = 0; i < 7; i++)
+					{
+						for (int j = 0; j < 7; j++)
+						{
+							if (CanMoveMap[i][j] == 0)
+							{
+								DrawGraphF(j * 64 + 192, i * 64, RedFilter, TRUE);
+							}
+						}
+					}
+				}
+				//キャラ2の場合
+				else if (charaselect == 2)
+				{
+					//敵に見えない地雷を設定する
 
-	//					break;
-	//				}*/
+					DrawExtendGraphF(0, 230, 200, 430, Skillwaite, TRUE);//能力待機中の描画
+					t_chara2 = LoadGraph("image\\キャラクター2\\キャラクター2スキル.PNG");//スキル待機中のキャラ2
+					skillbuttonflag = true;
+					for (int x = 0; x < 7; x++)
+					{
+						for (int y = 0; y < 7; y++)
+						{
+							if (MainMap[x][y] == 0)
+							{
 
-	//				for (int y=0; y < 7; y++)
-	//				{
-	//					for (int x=0; x < 7; x++)
-	//					{
-	//						//MainMapの初期化
-	//						MainMap[y][x] = DwallMap[y][x];
+								//赤い範囲を描画する
+								DrawGraphF(y * 64 + 192, x * 64, RedFilter, TRUE);
 
-	//						//描画している、またはした後のMapから
-	//						if (DwallMap[y][x]==0)
-	//						{
-
-	//						//赤い範囲を描画する
-	//						DrawGraphF(y * 64 + 192, x* 64, RedFilter, TRUE);
-	//						wallskill1 = true;
-	//						}
-	//						else
-	//						{
-	//							wallskill1 = false;
-	//						}
-	//					}
-	//				}
-	//			}
-	//			//キャラ2の場合
-	//			else if (charaselect == 2)
-	//			{
-	//				//敵に見えない地雷を設定する
-
-	//				DrawExtendGraphF(0, 230, 200, 430, Skillwaite, TRUE);//能力待機中の描画
-	//				t_chara2 = LoadGraph("image\\キャラクター2\\キャラクター2スキル.PNG");//スキル待機中のキャラ2
-	//				skillbuttonflag = true;
-	//				for (int x = 0; x < 7; x++)
-	//				{
-	//					for (int y = 0; y < 7; y++)
-	//					{
-	//						if (MainMap[x][y] == 0)
-	//						{
-
-	//							//赤い範囲を描画する
-	//							DrawGraphF(y * 64 + 192, x * 64, RedFilter, TRUE);
-
-	//						}
-	//					}
-	//				}
+							}
+						}
+					}
 
 
 
-	//			}
-	//			//キャラ3の場合
-	//			else if (charaselect == 3)
-	//			{
+				}
+				//キャラ3の場合
+				else if (charaselect == 3)
+				{
 
-	//				//駒が通れない壁を作る(縦向き)
+					//駒が通れない壁を作る(縦向き)
 
-	//				DrawExtendGraphF(0, 230, 200, 430, Skillwaite, TRUE);//能力待機中の描画
-	//				t_chara3 = LoadGraph("image\\キャラクター3\\キャラクター3スキル.PNG");//スキル待機中のキャラ3
-	//				skillbuttonflag = true;
+					DrawExtendGraphF(0, 230, 200, 430, Skillwaite, TRUE);//能力待機中の描画
+					t_chara3 = LoadGraph("image\\キャラクター3\\キャラクター3スキル.PNG");//スキル待機中のキャラ3
+					skillbuttonflag = true;
 
-	//				//MainMapの中にある0の場所を探す
-	//				for (int x = 0; x < 7; x++)
-	//				{
-	//					for (int y = 0; y < 7; y++)
-	//					{
-	//						if (MainMap[x][y] == 0)
-	//						{
+					//MainMapの中にある0の場所を探す
+					for (int x = 0; x < 7; x++)
+					{
+						for (int y = 0; y < 7; y++)
+						{
+							if (MainMap[x][y] == 0)
+							{
 
-	//							//赤い範囲を描画する
-	//							DrawGraphF(y * 64 + 192, x * 64, RedFilter, TRUE);
+								//赤い範囲を描画する
+								DrawGraphF(y * 64 + 192, x * 64, RedFilter, TRUE);
 
-	//						}
-	//					}
-	//				}
+							}
+						}
+					}
 
 
-	//			}
-	//		}
-	//		//待機中に再度ボタンをクリックすると能力発動可能状態に戻る
-	//		else
-	//		{
-	//			if (skillbuttonflag == true)
-	//			{
-	//				if (charaselect == 1)
-	//				{
-	//					DrawExtendGraphF(40, 280, 150, 380, Skillbotton, TRUE);//能力発動ボタンの描画
-	//					t_chara = LoadGraph("image\\キャラクター1\\キャラクター1リサイズ透過.png");
-	//					skillclickflag = false;
-	//					skillflagremove = false;
-	//					skillbuttonflag = false;
-	//				}
-	//				else if (charaselect == 2)
-	//				{
-	//					DrawExtendGraphF(40, 280, 150, 380, Skillbotton, TRUE);//能力発動ボタンの描画
-	//					t_chara2 = LoadGraph("image\\キャラクター2\\キャラクター2メイン.png");
-	//					skillclickflag = false;
-	//					skillflagremove = false;
-	//					skillbuttonflag = false;
-	//				}
-	//				else if (charaselect == 3)
-	//				{
-	//					DrawExtendGraphF(40, 280, 150, 380, Skillbotton, TRUE);//能力発動ボタンの描画
-	//					t_chara3 = LoadGraph("image\\キャラクター3\\キャラクター3立ち絵.png");
-	//					skillclickflag = false;
-	//					skillflagremove = false;
-	//					skillbuttonflag = false;
+				}
+			}
+			//待機中に再度ボタンをクリックすると能力発動可能状態に戻る
+			else
+			{
+				if (skillbuttonflag == true)
+				{
+					if (charaselect == 1)
+					{
+						DrawExtendGraphF(40, 280, 150, 380, Skillbotton, TRUE);//能力発動ボタンの描画
+						t_chara = LoadGraph("image\\キャラクター1\\キャラクター1リサイズ透過.png");
+						skillclickflag = false;
+						skillflagremove = false;
+						skillbuttonflag = false;
+					}
+					else if (charaselect == 2)
+					{
+						DrawExtendGraphF(40, 280, 150, 380, Skillbotton, TRUE);//能力発動ボタンの描画
+						t_chara2 = LoadGraph("image\\キャラクター2\\キャラクター2メイン.png");
+						skillclickflag = false;
+						skillflagremove = false;
+						skillbuttonflag = false;
+					}
+					else if (charaselect == 3)
+					{
+						DrawExtendGraphF(40, 280, 150, 380, Skillbotton, TRUE);//能力発動ボタンの描画
+						t_chara3 = LoadGraph("image\\キャラクター3\\キャラクター3立ち絵.png");
+						skillclickflag = false;
+						skillflagremove = false;
+						skillbuttonflag = false;
 
-	//				}
-	//			}
-	//		}
+					}
+				}
+			}
 
 			//データ受け取り
 			//通信確認用
@@ -1779,6 +1701,8 @@ POS ZeroPos(int ZposX, int ZposY)
 	return nullpos;
 }
 
+
+//
 
 //行動範囲領域判定
 void CheckMoveRange(Piece piece, Piece AllPiece[])

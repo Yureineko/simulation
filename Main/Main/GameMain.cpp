@@ -781,7 +781,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 								for (int i = 0; i < 2; i++)
 								{
 									//そこに地雷があればそこで強制的に止まるようにする
-									if (abilityinfo[i][0] == piecetable[movepiece].posX + movex && abilityinfo[i][1] == piecetable[movepiece].posY + movey && abilityinfo[i][2] == 1 && piecetable[Enemovepiece].type != 3)
+									if (abilityinfo[i][0] == piecetable[movepiece].posX + movex && abilityinfo[i][1] == piecetable[movepiece].posY + movey && abilityinfo[i][2] == 1 && piecetable[movepiece].type != 3)
 									{
 										latemove = -1;
 										latemovepos.posX = piecetable[movepiece].posX + movex;
@@ -934,8 +934,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			if (movingflag == true)
 			{
 				//移動演出用
-				graphtotalmovex += graphmovex / 64;
-				graphtotalmovey += graphmovey / 64;
+				graphtotalmovex += graphmovex / MOVESPEED;
+				graphtotalmovey += graphmovey / MOVESPEED;
 				//移動終わり次第その後の処理を行う
 				if (graphtotalmovex == graphmovex && graphtotalmovey == graphmovey)
 				{

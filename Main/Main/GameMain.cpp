@@ -126,6 +126,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	int GreenFilter = LoadGraph("image\\greenfilter.png");//駒の移動範囲の描画
 	int RedFilter = LoadGraph("image\\redfilter.png");//壁の出現範囲の描画
 
+	Animation Ani_Explosion;
+	Ani_Explosion.Add("image\\Explosion_1.png");
+	Ani_Explosion.Add("image\\Explosion_2.png");
+	Ani_Explosion.Add("image\\Explosion_3.png");
+	Ani_Explosion.Add("image\\Explosion_4.png");
+	Ani_Explosion.Settimelimit(10);
 
 	//一旦ここで位置移動する。後で消すかも。
 	int SoldX = 1, SoldY = 1;//兵士の位置X,Y
@@ -780,6 +786,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 										latemove = -1;
 										latemovepos.posX = piecetable[movepiece].posX + movex;
 										latemovepos.posY = piecetable[movepiece].posY + movey;
+										graphmovex = movex * 64;
+										graphmovey = movey * 64;
 									}
 								}
 
@@ -889,6 +897,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 									latemove = -1;
 									latemovepos.posX = piecetable[Enemovepiece].posX + movex;
 									latemovepos.posY = piecetable[Enemovepiece].posY + movey;
+									graphmovex = movex * 64;
+									graphmovey = movey * 64;
 								}
 							}
 
@@ -984,6 +994,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 								{
 									piecetable[movepiece].type = 0;
 									abilityinfo[i][2] = -1;
+									Ani_Explosion.SetPosition(piecetable[movepiece].posX * 64 + 192, piecetable[movepiece].posY * 64);
+									Ani_Explosion.Active(false);
 								}
 							}
 
@@ -1041,7 +1053,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 							for (int i = 0; i < 2; i++)
 							{
 								if (abilityinfo[i][0] == piecetable[Enemovepiece].posX && abilityinfo[i][1] == piecetable[Enemovepiece].posY && abilityinfo[i][2] == 1)
+								{
 									piecetable[latemove].type = 0;
+									Ani_Explosion.SetPosition(piecetable[Enemovepiece].posX * 64 + 192, piecetable[Enemovepiece].posY * 64);
+									Ani_Explosion.Active(false);
+								}
 							}
 						}
 						Enemovepiece = -1;
@@ -1534,6 +1550,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 					}
 				}
 			}
+
+			//アニメーション描画
+			Ani_Explosion.Update();
 
 	//-------------能力ボタン描画---------
 			//能力ボタンの場所を待機中にする

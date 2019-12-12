@@ -114,7 +114,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	int EKing = LoadGraph("image\\ユニット\\King(64).png");//ここに王の画像
 	int BB = LoadGraph("image\\BB.png");//自軍下敷き
 	int RB = LoadGraph("image\\RB.png");//敵軍下敷き
-	int Turn = LoadGraph("image\\ユニット\\TURN WINDOW.png");//ターンプレイヤーをわかりやすくするための画像
+	int YTurn = LoadGraph("image\\YOUR TURN.png");//ターンプレイヤーをわかりやすくするための画像
+	int ETurn = LoadGraph("image\\ENEMY TURN.png");//ターンプレイヤーをわかりやすくするための画像
+	int Window = LoadGraph("image\\avg2.png");//ウィンドウ
 
 	//駒が通行できない壁
 	//int wall;//切り取った壁
@@ -144,6 +146,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	int charaselect = 0;
 	int enemychara = 0;
 
+	//キャラの名前
+	char NAME[13];//自分の名前
+	char ENAME[13];//相手の名前
+
 	//ボタン管理座標用
 	Pos clickpos;     //クリック位置保存用
 	Pos outclickpos;  //クリック離した位置保存用
@@ -161,6 +167,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	Pos outskillpos;//クリック離した能力ボタン部分
 	bool saveskillflag;//クリックポジション取得の制御を行う為のフラグ スキル
 	bool Sclickflag;    //クリック制御を行う為のフラグ
+
+	//名前の入力確認フラグ
+	bool name = false; //必要ないかも
 
 	//初期化
 	clickpos.posX = -1;
@@ -340,7 +349,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 					GetMousePoint(&outclickpos.posX, &outclickpos.posY);
 				}
 			}//ここまでクリックの処理
-			
+
 
 			//駒保存用
 			//ここで駒の移動距離やクラスの初期化を行う
@@ -364,13 +373,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 						{
 							//敵軍
 							piecetable[count].MeorEne = false;
-							
+
 						}
 						else
 						{
 							//自軍
 							piecetable[count].MeorEne = true;
-							
+
 						}
 						//移動
 						//役職をもとに移動設定を入れていく(クラス化予定あり)
@@ -473,8 +482,49 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			DrawString(375, 215, "始める", GetColor(255, 255, 255));
 			DrawString(375, 315, "終わる", GetColor(255, 255, 255));
 
-			
-			//タイトルから次のシーンへの移動
+			if (name == false)
+			{
+				while (1)
+				{
+					ScreenFlip();
+					ClearDrawScreen();
+
+					DrawExtendGraphF(-10, -25, 847, 488, Window, TRUE);//ウィンドウの描画
+					DrawExtendGraphF(138, 80, 692, 150, textbox, TRUE);//テキストボックスの描画
+					DrawExtendGraphF(138, 200, 692, 270, textbox, TRUE);//テキストボックスの描画
+					DrawString(280, 105, "名前を入力してください(6文字まで)", GetColor(255, 255, 255));
+					KeyInputString(350, 225, 12, NAME, true);
+
+					ClearDrawScreen();
+
+					DrawExtendGraphF(-10, -25, 847, 488, Window, TRUE);//ウィンドウの描画
+					DrawExtendGraphF(138, 80, 692, 280, textbox, TRUE);//テキストボックスの描画
+					DrawExtendGraphF(138, 330, 410, 400, textbox, TRUE);//テキストボックスの描画
+					DrawExtendGraphF(420, 330, 692, 400, textbox, TRUE);//テキストボックスの描画
+					DrawString(345, 135, "あなたの名前は", GetColor(255, 255, 255));
+					DrawString(350, 175, NAME, GetColor(255, 255, 255));
+					DrawString(330, 215, "でよろしいですか？", GetColor(255, 255, 255));
+					DrawString(233, 355, "0...いいえ", GetColor(255, 255, 255));
+					DrawString(525, 355, "1...はい", GetColor(255, 255, 255));
+					if (KeyInputNumber(-50, -50, 1, 0, FALSE))
+						break;
+				}
+			}
+
+			name = true;
+
+			//確認用の画像表示
+			//t_chara = LoadGraph("image\\キャラクター1\\キャラクター1リサイズ透過.png");
+			//t_chara2 = LoadGraph("image\\キャラクター2\\キャラクター2メイン.png");
+			//t_chara3 = LoadGraph("image\\キャラクター3\\キャラクター3立ち絵.png");
+			//DrawGraph(0, 0, t_charaB, TRUE);//プレイヤー1の背景の描画
+			//DrawGraph(640, 0, t_charaB2, TRUE);//プレイヤー2の背景の描画
+			//DrawGraph(0, 0, t_chara3, TRUE);//プレイヤー1の描画
+			//DrawGraph(640, 0, t_chara2, TRUE);//プレイヤー2の描画
+			//DrawExtendGraphF(20, 260, 170, 330, Turn, TRUE);
+			//DrawExtendGraphF(662, 260, 812, 330, Turn, TRUE);
+
+			//
 			if (saveclickflag == true)
 			{
 				if (clickflag == false)
@@ -537,6 +587,37 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			break;
 			//キャラセレクト画面
 		case SELECT:
+			if (name == false)
+			{
+				while (1)
+				{
+					ScreenFlip();
+					ClearDrawScreen();
+
+					DrawExtendGraphF(0, 0, 832, 448, Window, TRUE);//テキストボックスの描画
+					DrawExtendGraphF(70, 30, 220, 100, textbox, TRUE);//テキストボックスの描画
+					DrawExtendGraphF(50, 120, 240, 200, textbox, TRUE);//テキストボックスの描画
+					DrawString(70, 32, "名前を入力してください(6文字まで)", GetColor(255, 255, 255));
+					KeyInputString(50, 122, 6, NAME, true);
+
+					ClearDrawScreen();
+
+					DrawExtendGraphF(0, 0, 832, 448, Window, TRUE);//ウィンドウの描画
+					DrawExtendGraphF(70, 30, 220, 100, textbox, TRUE);//テキストボックスの描画
+					DrawExtendGraphF(50, 120, 240, 200, textbox, TRUE);//テキストボックスの描画
+					DrawString(70, 32, "あなたの名前は", GetColor(255, 255, 255));
+					DrawString(70, 50, NAME, GetColor(255, 255, 255));
+					DrawString(70, 68, "でよろしいですか？", GetColor(255, 255, 255));
+					DrawString(50, 122, "0...いいえ 1...はい", GetColor(255, 255, 255));
+					if (KeyInputNumber(0, 64, 1, 0, FALSE))
+						break;
+				}
+			}
+
+			name = true;
+
+			//ClearDrawScreen();
+
 			//初期化
 			GetMousePoint(&Mx, &My);//カーソルの現在位置を取得
 			clickpos.posX = -1;
@@ -1136,11 +1217,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			//ターンプレイヤーをわかりやすくするための画像表示
 			if (turn == true)
 			{
-				DrawExtendGraphF(20, 260, 170, 330, Turn, TRUE);
+				DrawExtendGraphF(20, 260, 170, 330, YTurn, TRUE);
 			}
 			else
 			{
-				DrawExtendGraphF(662, 260, 812, 330, Turn, TRUE);
+				DrawExtendGraphF(662, 260, 812, 330, ETurn, TRUE);
 			}
 			
 			DrawExtendGraphF(30, 350, 165, 400, Skillbotton, TRUE);//能力発動ボタンの描画

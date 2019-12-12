@@ -9,7 +9,7 @@ bool CheckButton(Pos pushclick, Pos outclick, Pos button, int sizex, int sizey);
 
 POS HitPos(int PosX, int PosY);//位置を取得
 
-POS ZeroPos(int ZposX, int ZposY);//位置を取得
+void ZeroCheck(skill Zero, skill AllZero[]);//位置を取得
 
 void CheckMoveRange(Piece piece, Piece AllPiece[]);
 
@@ -21,7 +21,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	int port = -1;
 	char Strbuf[256] = { 0,0,-1 };//データバッファ
 	char STR[256] = { NULL };
-	DATA d;//送信用データ(構造体)
+	//DATA d;//送信用データ(構造体)
 
 	//windowモードで起動
 	ChangeWindowMode(TRUE);
@@ -197,6 +197,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	POS movePos = {0,0}; //動く先のポジション
 	POS wallPos = { 0,0 };//壁を表示出来る場所
 
+	bool Skillflag = false;//表示するスキルの場所
+
+	int Nopiece = -1;//
+
 	int movepiece = -1;  //動かす駒のナンバーを保存しておく用
 	int Enemovepiece = -1; //敵の動かす駒のナンバーを保存しておく用
 	int latemove = -1;//駒の配列番号の保存
@@ -302,7 +306,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	//初回データ送信	16 416 4 10
 	sprintf_s(STR, 256, "%d,%d,%d,%d,%d,%d"
 	);
-	//ここまで
+	//ここまで送信データの準備
 
 	while (ProcessMessage() != -1)
 	{
@@ -317,7 +321,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			turn = true;//先行後攻のフラグ
 			time = false;
 
-			//マウスの状態を確認する
+			//マウスの状態を確認する　TITLE
 			if (GetMouseInput() & MOUSE_INPUT_LEFT)
 			{
 				//左クリックが押されたとき、押した場所を確認する
@@ -342,8 +346,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			//ここで駒の移動距離やクラスの初期化を行う
 			Piece piecetable[28];
 
-			//壁保存用
-			Walls wall[49];
 			//MainMapから値を取得し、その位置でその役職の情報を得る
 			for (int i = 0, count = 0; i < 7; i++)
 			{
@@ -458,20 +460,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 							piecetable[count].diaru = 1;
 							piecetable[count].diard = 1;
 						}
-						//敵の兵士
-						/*if (MainMap[i][j] == 7)
-						{
-							piecetable[count].movelimit = 0;
-							piecetable[count].moveleft = 0;
-							piecetable[count].moveright = 0;
-							piecetable[count].movefront = 0;
-							piecetable[count].moveback = 1;
-							piecetable[count].dialu = 0;
-							piecetable[count].diald = 0;
-							piecetable[count].diaru = 0;
-							piecetable[count].diard = 0;
-						}*/
-
 						count++;
 					}
 				}
@@ -485,18 +473,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			DrawString(375, 215, "始める", GetColor(255, 255, 255));
 			DrawString(375, 315, "終わる", GetColor(255, 255, 255));
 
-			//確認用の画像表示
-			//t_chara = LoadGraph("image\\キャラクター1\\キャラクター1リサイズ透過.png");
-			//t_chara2 = LoadGraph("image\\キャラクター2\\キャラクター2メイン.png");
-			//t_chara3 = LoadGraph("image\\キャラクター3\\キャラクター3立ち絵.png");
-			//DrawGraph(0, 0, t_charaB, TRUE);//プレイヤー1の背景の描画
-			//DrawGraph(640, 0, t_charaB2, TRUE);//プレイヤー2の背景の描画
-			//DrawGraph(0, 0, t_chara3, TRUE);//プレイヤー1の描画
-			//DrawGraph(640, 0, t_chara2, TRUE);//プレイヤー2の描画
-			//DrawExtendGraphF(20, 260, 170, 330, Turn, TRUE);
-			//DrawExtendGraphF(662, 260, 812, 330, Turn, TRUE);
-
-			//
+			
+			//タイトルから次のシーンへの移動
 			if (saveclickflag == true)
 			{
 				if (clickflag == false)
@@ -570,7 +548,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			t_chara3 = LoadGraph("image\\キャラクター3\\キャラクター3立ち絵.png");
 
 			//初期化タイミング
-			//マウスの状態を確認する
+			//マウスの状態を確認する SELECT
 			if (GetMouseInput() & MOUSE_INPUT_LEFT)
 			{
 				//左クリックが押されたとき、押した場所を確認する
@@ -699,7 +677,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 		case GAME:
 			//ここでゲームのメイン部分構築
-			//マウスの状態を確認する
+			//マウスの状態を確認する GAME　駒の選択用
 			if (GetMouseInput() & MOUSE_INPUT_LEFT)
 			{
 				//左クリックが押されたとき、押した場所を確認する
@@ -840,26 +818,48 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 				//30, 350, 165, 400,
 
-				//スキルのボタンをクリック
-					
-						if (30<=clickpos.posX&&clickpos.posX<=165&&350<=clickpos.posY&&400>=clickpos.posY)
+				//スキルのボタンをクリックすると地雷、又は壁を生成する場所を表示する。
+				//クリックしたとき
+				if (clickflag == false && saveclickflag == true)
+				{
+					if (Skillflag == false)
+					{
+						wallPos = HitPos(clickpos.posX, clickpos.posY);
+						//スキルのボタンをクリック
+						if (30 <= clickpos.posX&&clickpos.posX <= 165 && 350 <= clickpos.posY && 400 >= clickpos.posY)
 						{
-							PlaySoundMem(se,DX_PLAYTYPE_BACK);
-							/*POS Skillpos = HitPos(outclickpos.posX, outclickpos.posY);
+							//Map全域の0検索
 							for (int i = 0; i < 49; i++)
 							{
-								if()
-							}*/
+								//駒が無い所があった時
+								if (piecetable[i].type == 0)
+								{
+									//0の場所をいったん保存させる
+
+									//0の場所を選択させる。
+									Skillflag = true;
+									clickflag = true;
+
+									//
+
+								}
+							}
+							PlaySoundMem(se, DX_PLAYTYPE_BACK);
+
 						}
+				}
+					//赤い範囲を選択し、その場所に壁又は地雷を生成
+					//処理自体は各プレイヤー事態に持たせている。
+					else
+					{
+
+					}
+				
+			}
+						
 					
-				
 
-				
-
-
-
-
-			}//ここまでが自分の手番
+			}//ここまでが自分のターン
 
 
 			
@@ -1262,6 +1262,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 					{
 						DrawGraphF(j * 64 + 192, i * 64, GreenFilter, TRUE);
 					}
+					if (SkillMap[i][j] == 1)
+					{
+						DrawGraphF(j * 64 + 192, i * 64, RedFilter, TRUE);
+					}
 				}
 			}
 
@@ -1623,7 +1627,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 
 //クリックする領域の判定
-bool HitClick(int Cx,int Cy,int x1,int y1)
+bool HitClick(int Cx,int Cy,int x1,int y1)//ここで64*64のマス判定
 {
 	if (Cx < x1 + 64 && x1 < Cx + 64 && Cy < y1 + 64 && y1 < Cy + 64)
 	{
@@ -1668,36 +1672,28 @@ POS HitPos(int PosX, int PosY)
 			}
 		}
 	}
-	POS nullpos = {-1,-1};
+	POS nullpos = {-1,-1};//駒は死んでいる
 
 	return nullpos;
 }
 
-//能力ボタンを押したとき0の場所を調べる
-POS ZeroPos(int ZposX, int ZposY)
+//能力ボタンを押したとき0の場所を赤くするだけ
+void ZeroCheck(skill Zero, skill AllZero[])
 {
-	for (int i = 0; i < 7; i++)
+	//Mapの全域を検索(敵味方関係なし)
+	for (int i = 0; i < 49; i++)
 	{
-		for (int j = 0; j < 7; j++)
+		if (AllZero[i].posx == Zero.posx&&AllZero[i].posy == Zero.posy&&AllZero[i].type == 0)
 		{
-			if (HitClick(ZposX, ZposY, POPUP_X + POPDOWN_X * i, POPUP_Y + POPDOWN_Y * j) == 0)
-			{
-				//ここで壁の出現位置を返す
-				POS pos;
-				pos.x = i;
-				pos.y = j;
-
-				return pos;
-			}
+			SkillMap[Zero.posy][Zero.posx] = 1;//赤色範囲描画
+		}
+		else//
+		{
+			break;
 		}
 	}
-	POS nullpos = { -1,-1 };
-
-	return nullpos;
 }
 
-
-//
 
 //行動範囲領域判定
 void CheckMoveRange(Piece piece, Piece AllPiece[])

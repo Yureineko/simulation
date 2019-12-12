@@ -52,36 +52,18 @@ typedef struct PieceInfo
 	int spicialmoverange[8][2];
 }Piece;
 
-//壁設定
-typedef struct Wall
+//スキル設定
+typedef struct Skill
 {
 	int type;
 	int posx;
 	int posy;
 	bool MeorEne;
-	int movelimit;
-	int movefront;
-	int moveback;
-	int moveleft;
-	int moveright;
-	int dialu;
-	int diald;
-	int diaru;
-	int diard;
+	
+
+}skill;
 
 
-}Walls;
-
-//相手に送信するデータ
-struct DATA
-{
-	//駒の位置データ
-	POS p;
-	//自分の手番なのか相手の手番なのかのフラグ
-	int trun;
-	//自分の王が生きているかのフラグ
-	int Myking;
-};
 
 //シーン一覧
 enum Scenes
@@ -102,27 +84,8 @@ int CanMoveMap[7][7] =
 };
 
 //壁を発生させれる場所
-int DwallMap[7][7] =
+int SkillMap[7][7] =
 {
 	0
 };
 
-//クラス定義---------------------------------------------
-//ベースクラス
-class Base
-{
-private:
-
-public:
-	int ID;//デバッグ用
-	int flg;
-	virtual void Action() = 0;
-	virtual void Draw() = 0;//
-	virtual POS GetPos() = 0;//駒の位置
-	virtual int GetID() = 0;//相手のIPアドレス
-
-
-
-
-
-};

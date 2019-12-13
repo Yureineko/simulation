@@ -52,25 +52,16 @@ typedef struct PieceInfo
 	int spicialmoverange[8][2];
 }Piece;
 
-//壁設定
-typedef struct Wall
+//スキル設定
+typedef struct Skill
 {
 	int type;
 	int posx;
 	int posy;
 	bool MeorEne;
-	int movelimit;
-	int movefront;
-	int moveback;
-	int moveleft;
-	int moveright;
-	int dialu;
-	int diald;
-	int diaru;
-	int diard;
+	
 
-
-}Walls;
+}skill;
 
 //シーン一覧
 enum Scenes
@@ -91,7 +82,7 @@ int CanMoveMap[7][7] =
 };
 
 //壁を発生させれる場所
-int DwallMap[7][7] =
+int SkillMap[7][7] =
 {
 	0
 };

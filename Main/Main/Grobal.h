@@ -63,12 +63,10 @@ typedef struct Skill
 
 }skill;
 
-
-
 //シーン一覧
 enum Scenes
 {
-	TITLE,CONNECT,SELECT,GAME,GAMEEND,
+	TITLE,CONNECT,NAMESELECT,SELECT,GAME,GAMEEND,
 };
 //送るデータ一覧
 enum SendDataTag
@@ -88,4 +86,3 @@ int SkillMap[7][7] =
 {
 	0
 };
-

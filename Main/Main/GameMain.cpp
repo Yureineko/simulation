@@ -146,6 +146,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	int charaselect = 0;
 	int enemychara = 0;
 
+	//名前入力時に使う変数
+	int Enter = 0;
+
 	//キャラの名前
 	char NAME[13];//自分の名前
 	char ENAME[13];//相手の名前
@@ -267,6 +270,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 	bool gameend_flag = false;//ゲーム終了する際に使うフラグ
 	bool time = false;//タイムラグ発生用フラグ
+
+	//NAMESELECT用フラグ　ループするにはいるんや...
+	bool NameSelect = false;	//入力画面のフラグ
+	bool NameSelect2 = false;	//決定画面のフラグ
 
 	unsigned int cr;//辺り範囲の描画の
 
@@ -482,47 +489,52 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			DrawString(375, 215, "始める", GetColor(255, 255, 255));
 			DrawString(375, 315, "終わる", GetColor(255, 255, 255));
 
-			if (name == false)
-			{
-				while (1)
-				{
-					ScreenFlip();
-					ClearDrawScreen();
+			////仮置き
+			//if (name == false)
+			//{
+			//	while (1)
+			//	{
+			//		ScreenFlip();
+			//		ClearDrawScreen();
 
-					DrawExtendGraphF(-10, -25, 847, 488, Window, TRUE);//ウィンドウの描画
-					DrawExtendGraphF(138, 80, 692, 150, textbox, TRUE);//テキストボックスの描画
-					DrawExtendGraphF(138, 200, 692, 270, textbox, TRUE);//テキストボックスの描画
-					DrawString(280, 105, "名前を入力してください(6文字まで)", GetColor(255, 255, 255));
-					KeyInputString(350, 225, 12, NAME, true);
+			//		DrawExtendGraphF(-10, -25, 847, 488, Window, TRUE);//ウィンドウの描画
+			//		DrawExtendGraphF(138, 80, 692, 150, textbox, TRUE);//テキストボックスの描画
+			//		DrawExtendGraphF(138, 200, 692, 270, textbox, TRUE);//テキストボックスの描画
+			//		DrawString(280, 105, "名前を入力してください(6文字まで)", GetColor(255, 255, 255));
+			//		KeyInputString(350, 225, 12, NAME, true);
 
-					ClearDrawScreen();
+			//		ClearDrawScreen();
 
-					DrawExtendGraphF(-10, -25, 847, 488, Window, TRUE);//ウィンドウの描画
-					DrawExtendGraphF(138, 80, 692, 280, textbox, TRUE);//テキストボックスの描画
-					DrawExtendGraphF(138, 330, 410, 400, textbox, TRUE);//テキストボックスの描画
-					DrawExtendGraphF(420, 330, 692, 400, textbox, TRUE);//テキストボックスの描画
-					DrawString(345, 135, "あなたの名前は", GetColor(255, 255, 255));
-					DrawString(350, 175, NAME, GetColor(255, 255, 255));
-					DrawString(330, 215, "でよろしいですか？", GetColor(255, 255, 255));
-					DrawString(233, 355, "0...いいえ", GetColor(255, 255, 255));
-					DrawString(525, 355, "1...はい", GetColor(255, 255, 255));
-					if (KeyInputNumber(-50, -50, 1, 0, FALSE))
-						break;
-				}
-			}
+			//		DrawExtendGraphF(-10, -25, 847, 488, Window, TRUE);//ウィンドウの描画
+			//		DrawExtendGraphF(138, 80, 692, 280, textbox, TRUE);//テキストボックスの描画
+			//		DrawExtendGraphF(138, 330, 410, 400, textbox, TRUE);//テキストボックスの描画
+			//		DrawExtendGraphF(420, 330, 692, 400, textbox, TRUE);//テキストボックスの描画
+			//		DrawString(345, 135, "あなたの名前は", GetColor(255, 255, 255));
+			//		DrawString(350, 175, NAME, GetColor(255, 255, 255));
+			//		DrawString(330, 215, "でよろしいですか？", GetColor(255, 255, 255));
+			//		DrawString(243, 355, "いいえ", GetColor(255, 255, 255));
+			//		DrawString(540, 355, "はい", GetColor(255, 255, 255));
+			//		if (saveclickflag == true)
+			//		{
+			//			if (clickflag == false)
+			//			{
+			//				if (420 <= clickpos.posX&&clickpos.posX <= 692 && 330 <= clickpos.posY&&clickpos.posY <= 400)
+			//				{
+			//					/*SendData[ISCONNECT] = 1;
+			//					NetWorkSendUDP(NetUDPHandle, Ip, 30, SendData, sizeof(SendData));*/
+			//					scene = GAME;
+			//				}
+			//				else if (138 <= clickpos.posX&&clickpos.posX <= 410 && 330 <= clickpos.posY&&clickpos.posY <= 400)
+			//				{
+			//					gameend_flag = true;
+			//				}
+			//			}
+			//		}
+			//		break;
+			//	}
+			//}
 
-			name = true;
-
-			//確認用の画像表示
-			//t_chara = LoadGraph("image\\キャラクター1\\キャラクター1リサイズ透過.png");
-			//t_chara2 = LoadGraph("image\\キャラクター2\\キャラクター2メイン.png");
-			//t_chara3 = LoadGraph("image\\キャラクター3\\キャラクター3立ち絵.png");
-			//DrawGraph(0, 0, t_charaB, TRUE);//プレイヤー1の背景の描画
-			//DrawGraph(640, 0, t_charaB2, TRUE);//プレイヤー2の背景の描画
-			//DrawGraph(0, 0, t_chara3, TRUE);//プレイヤー1の描画
-			//DrawGraph(640, 0, t_chara2, TRUE);//プレイヤー2の描画
-			//DrawExtendGraphF(20, 260, 170, 330, Turn, TRUE);
-			//DrawExtendGraphF(662, 260, 812, 330, Turn, TRUE);
+			//name = true;
 
 			//
 			if (saveclickflag == true)
@@ -534,8 +546,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 						SendData[ISCONNECT] = 1;
 						NetWorkSendUDP(NetUDPHandle, Ip, 30, SendData, sizeof(SendData));
 						//デバッグなう
+						//scene = CONNECT;
+						scene = NAMESELECT;
 						//scene = SELECT;
-						scene = GAME;
+						//scene = GAME;
 					}
 					else if (300 <= clickpos.posX&&clickpos.posX <= 500 && 300 <= clickpos.posY&&clickpos.posY <= 350)
 					{
@@ -582,42 +596,97 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			if (connecttime == 60)
 			{
 				connecttime = 0;
-				scene = SELECT;
+				scene = NAMESELECT;
 			}
 			break;
 			//キャラセレクト画面
-		case SELECT:
-			if (name == false)
+
+		case NAMESELECT:
+			//仮置き
+			//マウスの状態を確認する　TITLE
+			if (GetMouseInput() & MOUSE_INPUT_LEFT)
 			{
-				while (1)
+				//左クリックが押されたとき、押した場所を確認する
+				if (saveclickflag == false)
 				{
-					ScreenFlip();
-					ClearDrawScreen();
-
-					DrawExtendGraphF(0, 0, 832, 448, Window, TRUE);//テキストボックスの描画
-					DrawExtendGraphF(70, 30, 220, 100, textbox, TRUE);//テキストボックスの描画
-					DrawExtendGraphF(50, 120, 240, 200, textbox, TRUE);//テキストボックスの描画
-					DrawString(70, 32, "名前を入力してください(6文字まで)", GetColor(255, 255, 255));
-					KeyInputString(50, 122, 6, NAME, true);
-
-					ClearDrawScreen();
-
-					DrawExtendGraphF(0, 0, 832, 448, Window, TRUE);//ウィンドウの描画
-					DrawExtendGraphF(70, 30, 220, 100, textbox, TRUE);//テキストボックスの描画
-					DrawExtendGraphF(50, 120, 240, 200, textbox, TRUE);//テキストボックスの描画
-					DrawString(70, 32, "あなたの名前は", GetColor(255, 255, 255));
-					DrawString(70, 50, NAME, GetColor(255, 255, 255));
-					DrawString(70, 68, "でよろしいですか？", GetColor(255, 255, 255));
-					DrawString(50, 122, "0...いいえ 1...はい", GetColor(255, 255, 255));
-					if (KeyInputNumber(0, 64, 1, 0, FALSE))
-						break;
+					saveclickflag = true;
+					GetMousePoint(&clickpos.posX, &clickpos.posY);
+				}
+			}
+			else
+			{
+				//左クリックが離されたとき、離した場所を確認する
+				if (saveclickflag == true)
+				{
+					saveclickflag = false;
+					GetMousePoint(&outclickpos.posX, &outclickpos.posY);
+				}
+			}//ここまでクリックの処理
+			
+			if (NameSelect == false)
+			{
+				saveclickflag = false;
+				clickflag = false;
+				Enter = 0;
+				DrawExtendGraphF(-10, -25, 847, 488, Window, TRUE);//ウィンドウの描画
+				DrawExtendGraphF(138, 80, 692, 150, textbox, TRUE);//テキストボックスの描画
+				DrawExtendGraphF(138, 200, 692, 270, textbox, TRUE);//テキストボックスの描画
+				DrawString(280, 105, "名前を入力してください(6文字まで)", GetColor(255, 255, 255));
+				KeyInputString(350, 225, 12, NAME, true);
+				if (CheckHitKey(KEY_INPUT_RETURN)==0)
+				{
+					if (Enter > 0)
+					{
+						Enter = -1;
+					}
+					else
+					{
+						Enter = 0;
+					}
+				}
+				else
+				{
+					Enter++;
+				}
+				if (Enter == 1)
+				{
+					NameSelect = true;
+					NameSelect2 = true;
 				}
 			}
 
-			name = true;
+			ClearDrawScreen();
 
-			//ClearDrawScreen();
-
+			if (NameSelect2 == true)
+			{
+				DrawExtendGraphF(-10, -25, 847, 488, Window, TRUE);//ウィンドウの描画
+				DrawExtendGraphF(138, 80, 692, 280, textbox, TRUE);//テキストボックスの描画
+				DrawExtendGraphF(138, 330, 410, 400, textbox, TRUE);//テキストボックスの描画
+				DrawExtendGraphF(420, 330, 692, 400, textbox, TRUE);//テキストボックスの描画
+				DrawString(345, 135, "あなたの名前は", GetColor(255, 255, 255));
+				DrawString(350, 175, NAME, GetColor(255, 255, 255));
+				DrawString(330, 215, "でよろしいですか？", GetColor(255, 255, 255));
+				DrawString(243, 355, "いいえ", GetColor(255, 255, 255));
+				DrawString(540, 355, "はい", GetColor(255, 255, 255));
+				if (saveclickflag == true)
+				{
+					if (clickflag == false)
+					{
+						if (420 <= clickpos.posX&&clickpos.posX <= 692 && 330 <= clickpos.posY&&clickpos.posY <= 400)
+						{
+							scene = SELECT;
+						}
+						else if (138 <= clickpos.posX&&clickpos.posX <= 410 && 330 <= clickpos.posY&&clickpos.posY <= 400)
+						{
+							NameSelect = false;
+							NameSelect2 = false;
+						}
+					}
+				}
+			}
+			break;
+			
+		case SELECT:
 			//初期化
 			GetMousePoint(&Mx, &My);//カーソルの現在位置を取得
 			clickpos.posX = -1;

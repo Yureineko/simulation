@@ -881,8 +881,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 						//選んだマスを取得
 						movePos = HitPos(clickpos.posX, clickpos.posY);
 						////データ送る用保存
-						SendData[2] = (6 - piecetable[movepiece].posX);
-						SendData[3] = (6 - piecetable[movepiece].posY);
+						SendData[MOVEBEFOREPOSX] = (6 - piecetable[movepiece].posX);
+						SendData[MOVEBEFOREPOSY] = (6 - piecetable[movepiece].posY);
 						//そのマスが範囲内
 						//クリックした場所と駒の位置があっていれば
 						if (clickpos.posX >= POPUP_X && clickpos.posX <= POPUP_X + 64 * 7 && CanMoveMap[movePos.y][movePos.x] == 1)
@@ -926,6 +926,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 								else if (movey < 0)
 									movey++;
 							}
+							SendData[LATEMOVEPOSX] = 6 - latemovepos.posX;
+							SendData[LATEMOVEPOSY] = 6 - latemovepos.posY;
 							clickflag = true;
 							moveflag = false;
 

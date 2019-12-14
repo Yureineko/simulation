@@ -1351,57 +1351,60 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			if (movingflag == true)
 			{
 				int piecetype = 0;
+				int piecenumber;
 				if (movepiece != -1)
 				{
 					piecetype = piecetable[movepiece].type;
+					piecenumber = movepiece;
 				}
 				else
 				{
 					piecetype = piecetable[Enemovepiece].type;
+					piecenumber = Enemovepiece;
 				}
 				//â∫ï~Ç´ÇÃï`âÊ(ìGÇ»ÇÁê‘ÅAñ°ï˚Ç»ÇÁê¬)
-				if (piecetable[movepiece].MeorEne == true)
+				if (piecetable[piecenumber].MeorEne == true)
 				{
-					DrawGraphF(piecetable[movepiece].posX * 64 + 192 + graphtotalmovex, piecetable[movepiece].posY * 64 + graphtotalmovey, BB, TRUE);
+					DrawGraphF(piecetable[piecenumber].posX * 64 + 192 + graphtotalmovex, piecetable[piecenumber].posY * 64 + graphtotalmovey, BB, TRUE);
 				}
 				else
 				{
-					DrawGraphF(piecetable[movepiece].posX * 64 + 192 + graphtotalmovex, piecetable[movepiece].posY * 64 + graphtotalmovey, RB, TRUE);
+					DrawGraphF(piecetable[piecenumber].posX * 64 + 192 + graphtotalmovex, piecetable[piecenumber].posY * 64 + graphtotalmovey, RB, TRUE);
 				}
 				//ãÓÇÃï`âÊ
 				switch (piecetype)
 				{
 				case 1:
 					//ï∫émÇÃê∂ê¨
-					DrawGraphF(piecetable[movepiece].posX * 64 + 192 + graphtotalmovex, piecetable[movepiece].posY * 64 + graphtotalmovey, Soldier, TRUE);
+					DrawGraphF(piecetable[piecenumber].posX * 64 + 192 + graphtotalmovex, piecetable[piecenumber].posY * 64 + graphtotalmovey, Soldier, TRUE);
 					break;
 				case 2:
 					//ñÇì±émÇÃê∂ê¨
-					DrawGraphF(piecetable[movepiece].posX * 64 + 192 + graphtotalmovex, piecetable[movepiece].posY * 64 + graphtotalmovey, Sorcerer, TRUE);
+					DrawGraphF(piecetable[piecenumber].posX * 64 + 192 + graphtotalmovex, piecetable[piecenumber].posY * 64 + graphtotalmovey, Sorcerer, TRUE);
 					break;
 				case 3:
 					//í≥ïÒàıÇÃê∂ê¨
-					DrawGraphF(piecetable[movepiece].posX * 64 + 192 + graphtotalmovex, piecetable[movepiece].posY * 64 + graphtotalmovey, Espionage, TRUE);
+					DrawGraphF(piecetable[piecenumber].posX * 64 + 192 + graphtotalmovex, piecetable[piecenumber].posY * 64 + graphtotalmovey, Espionage, TRUE);
 					break;
 
 				case 4:
 					//ãRémÇÃê∂ê¨
-					DrawGraphF(piecetable[movepiece].posX * 64 + 192 + graphtotalmovex, piecetable[movepiece].posY * 64 + graphtotalmovey, Knight, TRUE);
+					DrawGraphF(piecetable[piecenumber].posX * 64 + 192 + graphtotalmovex, piecetable[piecenumber].posY * 64 + graphtotalmovey, Knight, TRUE);
 					break;
 
 				case 5:
 					//â§ÇÃê∂ê¨
-					DrawGraphF(piecetable[movepiece].posX * 64 + 192 + graphtotalmovex, piecetable[movepiece].posY * 64 + graphtotalmovey, King, TRUE);
+					DrawGraphF(piecetable[piecenumber].posX * 64 + 192 + graphtotalmovex, piecetable[piecenumber].posY * 64 + graphtotalmovey, King, TRUE);
 					break;
 
 				case 6:
 					//ìGâ§ÇÃê∂ê¨
-					DrawRotaGraph(piecetable[movepiece].posX * 64 + 224 + graphtotalmovex, piecetable[movepiece].posY * 64 + 32 + graphtotalmovey, 1.0f, PI, EKing, TRUE);
+					DrawRotaGraph(piecetable[piecenumber].posX * 64 + 224 + graphtotalmovex, piecetable[piecenumber].posY * 64 + 32 + graphtotalmovey, 1.0f, PI, EKing, TRUE);
 					break;
 
 				case 7:
 					//ìGï∫émÇÃê∂ê¨
-					DrawGraphF(piecetable[movepiece].posX * 64 + 192, piecetable[movepiece].posY * 64, Soldier, TRUE);
+					DrawGraphF(piecetable[piecenumber].posX * 64 + 192, piecetable[piecenumber].posY * 64, Soldier, TRUE);
 					break;
 				}
 			}

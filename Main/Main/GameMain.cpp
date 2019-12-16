@@ -546,8 +546,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 						SendData[ISCONNECT] = 1;
 						NetWorkSendUDP(NetUDPHandle, Ip, 30, SendData, sizeof(SendData));
 						//デバッグなう
-						//scene = CONNECT;
-						scene = NAMESELECT;
+						scene = CONNECT;
+						//scene = NAMESELECT;
 						//scene = SELECT;
 						//scene = GAME;
 					}
@@ -596,7 +596,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			if (connecttime == 60)
 			{
 				connecttime = 0;
-				scene = NAMESELECT;
+				//scene = NAMESELECT;
+				scene = SELECT;
 			}
 			break;
 			//キャラセレクト画面

@@ -835,8 +835,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 						//‘I‚ñ‚¾ƒ}ƒX‚ðŽæ“¾
 						movePos = HitPos(clickpos.posX, clickpos.posY);
 						////ƒf[ƒ^‘—‚é—p•Û‘¶
-						SendData[2] = (6 - piecetable[movepiece].posX);
-						SendData[3] = (6 - piecetable[movepiece].posY);
+						SendData[MOVEBEFOREPOSX] = (6 - piecetable[movepiece].posX);
+						SendData[MOVEBEFOREPOSY] = (6 - piecetable[movepiece].posY);
 						//‚»‚Ìƒ}ƒX‚ª”ÍˆÍ“à
 						//ƒNƒŠƒbƒN‚µ‚½êŠ‚Æ‹î‚ÌˆÊ’u‚ª‚ ‚Á‚Ä‚¢‚ê‚Î
 						if (clickpos.posX >= POPUP_X && clickpos.posX <= POPUP_X + 64 * 7 && CanMoveMap[movePos.y][movePos.x] == 1)
@@ -880,6 +880,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 								else if (movey < 0)
 									movey++;
 							}
+							SendData[LATEMOVEPOSX] = 6 - latemovepos.posX;
+							SendData[LATEMOVEPOSY] = 6 - latemovepos.posY;
 							clickflag = true;
 							moveflag = false;
 
@@ -1297,57 +1299,60 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			if (movingflag == true)
 			{
 				int piecetype = 0;
+				int piecenumber;
 				if (movepiece != -1)
 				{
 					piecetype = piecetable[movepiece].type;
+					piecenumber = movepiece;
 				}
 				else
 				{
 					piecetype = piecetable[Enemovepiece].type;
+					piecenumber = Enemovepiece;
 				}
 				//‰º•~‚«‚Ì•`‰æ(“G‚È‚çÔA–¡•û‚È‚çÂ)
-				if (piecetable[movepiece].MeorEne == true)
+				if (piecetable[piecenumber].MeorEne == true)
 				{
-					DrawGraphF(piecetable[movepiece].posX * 64 + 192 + graphtotalmovex, piecetable[movepiece].posY * 64 + graphtotalmovey, BB, TRUE);
+					DrawGraphF(piecetable[piecenumber].posX * 64 + 192 + graphtotalmovex, piecetable[piecenumber].posY * 64 + graphtotalmovey, BB, TRUE);
 				}
 				else
 				{
-					DrawGraphF(piecetable[movepiece].posX * 64 + 192 + graphtotalmovex, piecetable[movepiece].posY * 64 + graphtotalmovey, RB, TRUE);
+					DrawGraphF(piecetable[piecenumber].posX * 64 + 192 + graphtotalmovex, piecetable[piecenumber].posY * 64 + graphtotalmovey, RB, TRUE);
 				}
 				//‹î‚Ì•`‰æ
 				switch (piecetype)
 				{
 				case 1:
 					//•ºŽm‚Ì¶¬
-					DrawGraphF(piecetable[movepiece].posX * 64 + 192 + graphtotalmovex, piecetable[movepiece].posY * 64 + graphtotalmovey, Soldier, TRUE);
+					DrawGraphF(piecetable[piecenumber].posX * 64 + 192 + graphtotalmovex, piecetable[piecenumber].posY * 64 + graphtotalmovey, Soldier, TRUE);
 					break;
 				case 2:
 					//–‚“±Žm‚Ì¶¬
-					DrawGraphF(piecetable[movepiece].posX * 64 + 192 + graphtotalmovex, piecetable[movepiece].posY * 64 + graphtotalmovey, Sorcerer, TRUE);
+					DrawGraphF(piecetable[piecenumber].posX * 64 + 192 + graphtotalmovex, piecetable[piecenumber].posY * 64 + graphtotalmovey, Sorcerer, TRUE);
 					break;
 				case 3:
 					//’³•ñˆõ‚Ì¶¬
-					DrawGraphF(piecetable[movepiece].posX * 64 + 192 + graphtotalmovex, piecetable[movepiece].posY * 64 + graphtotalmovey, Espionage, TRUE);
+					DrawGraphF(piecetable[piecenumber].posX * 64 + 192 + graphtotalmovex, piecetable[piecenumber].posY * 64 + graphtotalmovey, Espionage, TRUE);
 					break;
 
 				case 4:
 					//‹RŽm‚Ì¶¬
-					DrawGraphF(piecetable[movepiece].posX * 64 + 192 + graphtotalmovex, piecetable[movepiece].posY * 64 + graphtotalmovey, Knight, TRUE);
+					DrawGraphF(piecetable[piecenumber].posX * 64 + 192 + graphtotalmovex, piecetable[piecenumber].posY * 64 + graphtotalmovey, Knight, TRUE);
 					break;
 
 				case 5:
 					//‰¤‚Ì¶¬
-					DrawGraphF(piecetable[movepiece].posX * 64 + 192 + graphtotalmovex, piecetable[movepiece].posY * 64 + graphtotalmovey, King, TRUE);
+					DrawGraphF(piecetable[piecenumber].posX * 64 + 192 + graphtotalmovex, piecetable[piecenumber].posY * 64 + graphtotalmovey, King, TRUE);
 					break;
 
 				case 6:
 					//“G‰¤‚Ì¶¬
-					DrawRotaGraph(piecetable[movepiece].posX * 64 + 224 + graphtotalmovex, piecetable[movepiece].posY * 64 + 32 + graphtotalmovey, 1.0f, PI, EKing, TRUE);
+					DrawRotaGraph(piecetable[piecenumber].posX * 64 + 224 + graphtotalmovex, piecetable[piecenumber].posY * 64 + 32 + graphtotalmovey, 1.0f, PI, EKing, TRUE);
 					break;
 
 				case 7:
 					//“G•ºŽm‚Ì¶¬
-					DrawGraphF(piecetable[movepiece].posX * 64 + 192, piecetable[movepiece].posY * 64, Soldier, TRUE);
+					DrawGraphF(piecetable[piecenumber].posX * 64 + 192, piecetable[piecenumber].posY * 64, Soldier, TRUE);
 					break;
 				}
 			}

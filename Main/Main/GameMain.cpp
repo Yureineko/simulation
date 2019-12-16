@@ -596,8 +596,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			if (connecttime == 60)
 			{
 				connecttime = 0;
-				//scene = NAMESELECT;
-				scene = SELECT;
+				scene =SELECT;
 			}
 			break;
 			//キャラセレクト画面
@@ -675,7 +674,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 					{
 						if (420 <= clickpos.posX&&clickpos.posX <= 692 && 330 <= clickpos.posY&&clickpos.posY <= 400)
 						{
-							scene = SELECT;
+							scene = CONNECT;
 						}
 						else if (138 <= clickpos.posX&&clickpos.posX <= 410 && 330 <= clickpos.posY&&clickpos.posY <= 400)
 						{
@@ -882,8 +881,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 						//選んだマスを取得
 						movePos = HitPos(clickpos.posX, clickpos.posY);
 						////データ送る用保存
-						SendData[2] = (6 - piecetable[movepiece].posX);
-						SendData[3] = (6 - piecetable[movepiece].posY);
+						SendData[MOVEBEFOREPOSX] = (6 - piecetable[movepiece].posX);
+						SendData[MOVEBEFOREPOSY] = (6 - piecetable[movepiece].posY);
 						//そのマスが範囲内
 						//クリックした場所と駒の位置があっていれば
 						if (clickpos.posX >= POPUP_X && clickpos.posX <= POPUP_X + 64 * 7 && CanMoveMap[movePos.y][movePos.x] == 1)
@@ -927,6 +926,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 								else if (movey < 0)
 									movey++;
 							}
+							SendData[LATEMOVEPOSX] = 6 - latemovepos.posX;
+							SendData[LATEMOVEPOSY] = 6 - latemovepos.posY;
 							clickflag = true;
 							moveflag = false;
 
@@ -1016,7 +1017,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			
 
 			//デバッグ用ターンの引き渡し
-			turn = true;
+			//turn = true;
 
 			 //データ受け取り
 			 //通信確認用
@@ -1350,57 +1351,60 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			if (movingflag == true)
 			{
 				int piecetype = 0;
+				int piecenumber;
 				if (movepiece != -1)
 				{
 					piecetype = piecetable[movepiece].type;
+					piecenumber = movepiece;
 				}
 				else
 				{
 					piecetype = piecetable[Enemovepiece].type;
+					piecenumber = Enemovepiece;
 				}
 				//下敷きの描画(敵なら赤、味方なら青)
-				if (piecetable[movepiece].MeorEne == true)
+				if (piecetable[piecenumber].MeorEne == true)
 				{
-					DrawGraphF(piecetable[movepiece].posX * 64 + 192 + graphtotalmovex, piecetable[movepiece].posY * 64 + graphtotalmovey, BB, TRUE);
+					DrawGraphF(piecetable[piecenumber].posX * 64 + 192 + graphtotalmovex, piecetable[piecenumber].posY * 64 + graphtotalmovey, BB, TRUE);
 				}
 				else
 				{
-					DrawGraphF(piecetable[movepiece].posX * 64 + 192 + graphtotalmovex, piecetable[movepiece].posY * 64 + graphtotalmovey, RB, TRUE);
+					DrawGraphF(piecetable[piecenumber].posX * 64 + 192 + graphtotalmovex, piecetable[piecenumber].posY * 64 + graphtotalmovey, RB, TRUE);
 				}
 				//駒の描画
 				switch (piecetype)
 				{
 				case 1:
 					//兵士の生成
-					DrawGraphF(piecetable[movepiece].posX * 64 + 192 + graphtotalmovex, piecetable[movepiece].posY * 64 + graphtotalmovey, Soldier, TRUE);
+					DrawGraphF(piecetable[piecenumber].posX * 64 + 192 + graphtotalmovex, piecetable[piecenumber].posY * 64 + graphtotalmovey, Soldier, TRUE);
 					break;
 				case 2:
 					//魔導士の生成
-					DrawGraphF(piecetable[movepiece].posX * 64 + 192 + graphtotalmovex, piecetable[movepiece].posY * 64 + graphtotalmovey, Sorcerer, TRUE);
+					DrawGraphF(piecetable[piecenumber].posX * 64 + 192 + graphtotalmovex, piecetable[piecenumber].posY * 64 + graphtotalmovey, Sorcerer, TRUE);
 					break;
 				case 3:
 					//諜報員の生成
-					DrawGraphF(piecetable[movepiece].posX * 64 + 192 + graphtotalmovex, piecetable[movepiece].posY * 64 + graphtotalmovey, Espionage, TRUE);
+					DrawGraphF(piecetable[piecenumber].posX * 64 + 192 + graphtotalmovex, piecetable[piecenumber].posY * 64 + graphtotalmovey, Espionage, TRUE);
 					break;
 
 				case 4:
 					//騎士の生成
-					DrawGraphF(piecetable[movepiece].posX * 64 + 192 + graphtotalmovex, piecetable[movepiece].posY * 64 + graphtotalmovey, Knight, TRUE);
+					DrawGraphF(piecetable[piecenumber].posX * 64 + 192 + graphtotalmovex, piecetable[piecenumber].posY * 64 + graphtotalmovey, Knight, TRUE);
 					break;
 
 				case 5:
 					//王の生成
-					DrawGraphF(piecetable[movepiece].posX * 64 + 192 + graphtotalmovex, piecetable[movepiece].posY * 64 + graphtotalmovey, King, TRUE);
+					DrawGraphF(piecetable[piecenumber].posX * 64 + 192 + graphtotalmovex, piecetable[piecenumber].posY * 64 + graphtotalmovey, King, TRUE);
 					break;
 
 				case 6:
 					//敵王の生成
-					DrawRotaGraph(piecetable[movepiece].posX * 64 + 224 + graphtotalmovex, piecetable[movepiece].posY * 64 + 32 + graphtotalmovey, 1.0f, PI, EKing, TRUE);
+					DrawRotaGraph(piecetable[piecenumber].posX * 64 + 224 + graphtotalmovex, piecetable[piecenumber].posY * 64 + 32 + graphtotalmovey, 1.0f, PI, EKing, TRUE);
 					break;
 
 				case 7:
 					//敵兵士の生成
-					DrawGraphF(piecetable[movepiece].posX * 64 + 192, piecetable[movepiece].posY * 64, Soldier, TRUE);
+					DrawGraphF(piecetable[piecenumber].posX * 64 + 192, piecetable[piecenumber].posY * 64, Soldier, TRUE);
 					break;
 				}
 			}

@@ -117,6 +117,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	int YTurn = LoadGraph("image\\YOUR TURN.png");//ターンプレイヤーをわかりやすくするための画像
 	int ETurn = LoadGraph("image\\ENEMY TURN.png");//ターンプレイヤーをわかりやすくするための画像
 	int Window = LoadGraph("image\\avg2.png");//ウィンドウ
+	int NameWindow = LoadGraph("image\\syber1.png");//名前のウィンドウ
 
 	//駒が通行できない壁
 	//int wall;//切り取った壁
@@ -499,8 +500,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 						SendData[ISCONNECT] = 1;
 						NetWorkSendUDP(NetUDPHandle, Ip, 30, SendData, sizeof(SendData));
 						//デバッグなう
-						scene = CONNECT;
-						//scene = NAMESELECT;
+						//scene = CONNECT;
+						scene = NAMESELECT;
 						//scene = SELECT;
 						//scene = GAME;
 					}
@@ -628,7 +629,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 					{
 						if (420 <= clickpos.posX&&clickpos.posX <= 692 && 330 <= clickpos.posY&&clickpos.posY <= 400)
 						{
-							scene = CONNECT;
+							//scene = CONNECT;
+							scene = SELECT;
 						}
 						else if (138 <= clickpos.posX&&clickpos.posX <= 410 && 330 <= clickpos.posY&&clickpos.posY <= 400)
 						{
@@ -721,16 +723,19 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 						{
 							charaselect = 1;
 							clickflag = true;
+							scene = GAME;//デバッグ用
 						}
 						if (clickpos.posX <= 416 && 183 < clickpos.posY&&clickpos.posY <= 316)
 						{
 							charaselect = 2;
 							clickflag = true;
+							scene = GAME;//デバッグ用
 						}
 						if (clickpos.posX <= 416 && clickpos.posY > 316)
 						{
 							charaselect = 3;
 							clickflag = true;
+							scene = GAME;//デバッグ用
 						}
 					}
 				}
@@ -1073,7 +1078,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 							}
 						}
 						if (latemove != -1)
-						{//駒同士が重なったときの処理
+						{
+							//駒同士が重なったときの処理
 							if (piecetable[movepiece].MeorEne != piecetable[latemove].MeorEne || piecetable[latemove].type == 0)
 							{
 								piecetable[movepiece].posX = latemovepos.posX;
@@ -1205,32 +1211,37 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 		
 			//背景の画像表示	
 			LoadGraphScreen(0, 0, "image\\BackGround.png", TRUE);
-			DrawGraph(0, 0, t_charaB, TRUE);//プレイヤー1の背景の描画
-			DrawGraph(640, 0, t_charaB2, TRUE);//プレイヤー2の背景の描画
+			DrawExtendGraphF(0, 0, 194, 30, NameWindow, TRUE);
+			DrawExtendGraphF(640, 0, 832, 30, NameWindow, TRUE);
+			DrawGraph(0, 30, t_charaB, TRUE);//プレイヤー1の背景の描画
+			DrawGraph(640, 30, t_charaB2, TRUE);//プレイヤー2の背景の描画
+
+			DrawString(45, 7, NAME, GetColor(255, 255, 255));
+			DrawString(45, 647, ENAME, GetColor(255, 255, 255));
 
 			if (charaselect == 1)
 			{
-				DrawGraph(0, 0, t_chara, TRUE);//プレイヤー1の描画
+				DrawGraph(0, 30, t_chara, TRUE);//プレイヤー1の描画
 			}
 			else if (charaselect == 2)
 			{
-				DrawGraph(0, 0, t_chara2, TRUE);//プレイヤー1の描画
+				DrawGraph(0, 30, t_chara2, TRUE);//プレイヤー1の描画
 			}
 			else if (charaselect == 3)
 			{
-				DrawGraph(0, 0, t_chara3, TRUE);//プレイヤー1の描画
+				DrawGraph(0, 30, t_chara3, TRUE);//プレイヤー1の描画
 			}
 			if (enemychara == 1)
 			{
-				DrawGraph(640, 0, t_chara, TRUE);//プレイヤー2の描画
+				DrawGraph(640, 30, t_chara, TRUE);//プレイヤー2の描画
 			}
 			else if (enemychara == 2)
 			{
-				DrawGraph(640, 0, t_chara2, TRUE);//プレイヤー2の描画
+				DrawGraph(640, 30, t_chara2, TRUE);//プレイヤー2の描画
 			}
 			else if (enemychara == 3)
 			{
-				DrawGraph(640, 0, t_chara3, TRUE);//プレイヤー2の描画
+				DrawGraph(640, 30, t_chara3, TRUE);//プレイヤー2の描画
 			}
 
 			//ターンプレイヤーをわかりやすくするための画像表示
@@ -1541,8 +1552,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 					SetFontSize(40);
 
-					DrawGraph(0, 0, t_charaB, TRUE);//プレイヤー1の背景の描画
-					DrawGraph(640, 0, t_charaB2, TRUE);//プレイヤー2の背景の描画
+					DrawGraph(0, 30, t_charaB, TRUE);//プレイヤー1の背景の描画
+					DrawGraph(640, 30, t_charaB2, TRUE);//プレイヤー2の背景の描画
 					//DrawExtendGraphF(194, 398, 416, 448, textbox, TRUE);//テキストボックスの描画
 					//DrawExtendGraphF(417, 398, 639, 448, textbox, TRUE);//テキストボックスの描画
 					DrawExtendGraphF(194, 398, 639, 448, textbox, TRUE);//テキストボックスの描画
@@ -1555,37 +1566,37 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 					if (charaselect == 1)
 					{
 						t_chara = LoadGraph("image\\キャラクター1\\キャラクター1勝利透過.png");
-						DrawGraph(0, 0, t_chara, TRUE);//プレイヤー1の描画
+						DrawGraph(0, 30, t_chara, TRUE);//プレイヤー1の描画
 						skillredflag = true;
 					}
 					else if (charaselect == 2)
 					{
 						t_chara2 = LoadGraph("image\\キャラクター2\\キャラクター2勝利.png");
-						DrawGraph(0, 0, t_chara2, TRUE);//プレイヤー1の描画
+						DrawGraph(0, 30, t_chara2, TRUE);//プレイヤー1の描画
 						skillredflag = true;
 					}
 					else if (charaselect == 3)
 					{
 						t_chara3 = LoadGraph("image\\キャラクター3\\キャラクター3勝利.png");
-						DrawGraph(0, 0, t_chara3, TRUE);//プレイヤー1の描画
+						DrawGraph(0, 30, t_chara3, TRUE);//プレイヤー1の描画
 						skillredflag = true;
 					}
 					if (enemychara == 1)
 					{
 						t_chara = LoadGraph("image\\キャラクター1\\キャラクター1敗北透過.png");
-						DrawGraph(640, 0, t_chara, TRUE);//プレイヤー2の描画
+						DrawGraph(640, 30, t_chara, TRUE);//プレイヤー2の描画
 						skillredflag = true;
 					}
 					else if (enemychara == 2)
 					{
 						t_chara2 = LoadGraph("image\\キャラクター2\\キャラクター2敗北.png");
-						DrawGraph(640, 0, t_chara2, TRUE);//プレイヤー2の描画
+						DrawGraph(640, 30, t_chara2, TRUE);//プレイヤー2の描画
 						skillredflag = true;
 					}
 					else if (enemychara == 3)
 					{
 						t_chara3 = LoadGraph("image\\キャラクター3\\キャラクター3敗北.png");
-						DrawGraph(640, 0, t_chara3, TRUE);//プレイヤー2の描画
+						DrawGraph(640, 30, t_chara3, TRUE);//プレイヤー2の描画
 						skillredflag = true;
 					}
 					
@@ -1627,8 +1638,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 					SetFontSize(40);
 
-					DrawGraph(0, 0, t_charaB, TRUE);//プレイヤー1の背景の描画
-					DrawGraph(640, 0, t_charaB2, TRUE);//プレイヤー2の背景の描画
+					DrawGraph(0, 30, t_charaB, TRUE);//プレイヤー1の背景の描画
+					DrawGraph(640, 30, t_charaB2, TRUE);//プレイヤー2の背景の描画
 					//DrawExtendGraphF(194, 398, 416, 448, textbox, TRUE);//テキストボックスの描画
 					//DrawExtendGraphF(417, 398, 639, 448, textbox, TRUE);//テキストボックスの描画
 					DrawExtendGraphF(194, 398, 639, 448, textbox, TRUE);//テキストボックスの描画
@@ -1641,37 +1652,37 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 					if (charaselect == 1)
 					{
 						t_chara = LoadGraph("image\\キャラクター1\\キャラクター1敗北透過.png");
-						DrawGraph(0, 0, t_chara, TRUE);//プレイヤー1の描画
+						DrawGraph(0, 30, t_chara, TRUE);//プレイヤー1の描画
 						skillredflag = true;
 					}
 					else if (charaselect == 2)
 					{
 						t_chara2 = LoadGraph("image\\キャラクター2\\キャラクター2敗北.png");
-						DrawGraph(0, 0, t_chara2, TRUE);//プレイヤー1の描画
+						DrawGraph(0, 30, t_chara2, TRUE);//プレイヤー1の描画
 						skillredflag = true;
 					}
 					else if (charaselect == 3)
 					{
 						t_chara3 = LoadGraph("image\\キャラクター3\\キャラクター3敗北.png");
-						DrawGraph(0, 0, t_chara3, TRUE);//プレイヤー1の描画
+						DrawGraph(0, 30, t_chara3, TRUE);//プレイヤー1の描画
 						skillredflag = true;
 					}
 					if (enemychara == 1)
 					{
 						t_chara = LoadGraph("image\\キャラクター1\\キャラクター1勝利透過.png");
-						DrawGraph(640, 0, t_chara, TRUE);//プレイヤー2の描画
+						DrawGraph(640, 30, t_chara, TRUE);//プレイヤー2の描画
 						skillredflag = true;
 					}
 					else if (enemychara == 2)
 					{
 						t_chara2 = LoadGraph("image\\キャラクター2\\キャラクター2勝利.png");
-						DrawGraph(640, 0, t_chara2, TRUE);//プレイヤー2の描画
+						DrawGraph(640, 30, t_chara2, TRUE);//プレイヤー2の描画
 						skillredflag = true;
 					}
 					else if (enemychara == 3)
 					{
 						t_chara3 = LoadGraph("image\\キャラクター3\\キャラクター3勝利.png");
-						DrawGraph(640, 0, t_chara3, TRUE);//プレイヤー2の描画
+						DrawGraph(640, 30, t_chara3, TRUE);//プレイヤー2の描画
 						skillredflag = true;
 					}
 

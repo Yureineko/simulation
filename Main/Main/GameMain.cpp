@@ -363,6 +363,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			//ここで駒の移動距離やクラスの初期化を行う
 			Piece piecetable[28];
 
+			skill Allskill[49];
+
 			//MainMapから値を取得し、その位置でその役職の情報を得る
 			for (int i = 0, count = 0; i < 7; i++)
 			{
@@ -500,8 +502,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 						SendData[ISCONNECT] = 1;
 						NetWorkSendUDP(NetUDPHandle, Ip, 30, SendData, sizeof(SendData));
 						//デバッグなう
-						//scene = CONNECT;
-						scene = NAMESELECT;
+						scene = CONNECT;
+
+						//ここデバッグ用
+						//scene = NAMESELECT;
 						//scene = SELECT;
 						//scene = GAME;
 					}
@@ -935,7 +939,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 				{
 					if (Skillflag == false)
 					{
-						wallPos = HitPos(clickpos.posX, clickpos.posY);
+						POS skillPos = HitPos(clickpos.posX, clickpos.posY);
 						//スキルのボタンをクリック
 						if (30 <= clickpos.posX&&clickpos.posX <= 165 && 350 <= clickpos.posY && 400 >= clickpos.posY)
 						{
@@ -951,7 +955,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 									Skillflag = true;
 									clickflag = true;
 
-									//
+									//能力を発動させるところを選択する
+									ZeroCheck(Allskill[i], Allskill);
 
 								}
 							}
@@ -963,11 +968,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 					//処理自体は各プレイヤー事態に持たせている。
 					else
 					{
+						//選んだマスの取得
+						wallPos=HitPos(clickpos.posX, clickpos.posY);
+						//データを送る用保存　スキル
 
-					}				
-			}					
+					}
+				
+			}
+						
+					
 
-			}//ここまでが自分のターン
+			}//ここまでがゲームの処理
 
 
 			
@@ -1197,14 +1208,25 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 					graphmovey = 0;
 					graphtotalmovex = 0;
 					graphtotalmovey = 0;
-				}				
-			}			
-	
+				}
+				
+			}
+
+			
+	    //手番のパス
 		//Zキーを押すと手番を自分に戻す。
 		if (CheckHitKey(KEY_INPUT_Z))
 		{
-			turn = false;
+			if (turn == true)
+			{
+				turn = false;
+			}	
+			else
+			{
+				turn = true;
+			}
 		}
+		
 
 	
 		cr = GetColor(0, 255, 0);//緑色を取得
@@ -1367,20 +1389,23 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 					break;
 				}
 			}
-			//緑の範囲描画
+			//範囲の描画　移動
 			for (int i = 0; i < 7; i++)
 			{
 				for (int j = 0; j < 7; j++)
 				{
+					//緑の範囲描画　駒の移動範囲
 					if (CanMoveMap[i][j] == 1)
 					{
 						DrawGraphF(j * 64 + 192, i * 64, GreenFilter, TRUE);
-					}
-					if (SkillMap[i][j] == 1)
-					{
-						DrawGraphF(j * 64 + 192, i * 64, RedFilter, TRUE);
-					}
+					}				
 				}
+			}
+
+			//赤の範囲描画　スキル選択
+			if (SkillMap[i][j] == 1)
+			{
+				DrawGraphF(j * 64 + 192, i * 64, RedFilter, TRUE);
 			}
 
 			//アニメーション描画
@@ -1418,7 +1443,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 							if (MainMap[x][y] == 0)
 							{
 								//赤い範囲を描画する
-								DrawGraphF(y * 64 + 192, x * 64, RedFilter, TRUE);
+								//DrawGraphF(y * 64 + 192, x * 64, RedFilter, TRUE);
+
 							}
 						}
 					}
@@ -1442,7 +1468,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 							{
 
 								//赤い範囲を描画する
-								DrawGraphF(y * 64 + 192, x * 64, RedFilter, TRUE);
+								//DrawGraphF(y * 64 + 192, x * 64, RedFilter, TRUE);
 
 							}
 						}
@@ -1789,18 +1815,21 @@ POS HitPos(int PosX, int PosY)
 //能力ボタンを押したとき0の場所を赤くするだけ
 void ZeroCheck(skill Zero, skill AllZero[])
 {
+	//AllZeroがMapの全域,ZeroがMapの中にある0の数字
 	//Mapの全域を検索(敵味方関係なし)
 	for (int i = 0; i < 49; i++)
 	{
 		if (AllZero[i].posx == Zero.posx&&AllZero[i].posy == Zero.posy&&AllZero[i].type == 0)
 		{
-			SkillMap[Zero.posy][Zero.posx] = 1;//赤色範囲描画
+			SkillMap[Zero.posy][Zero.posx] = 0;//赤色範囲描画
+			
 		}
-		else//
+		else//Map上の0以外は描画しない
 		{
 			break;
 		}
 	}
+
 }
 
 

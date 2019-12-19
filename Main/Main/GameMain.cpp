@@ -162,7 +162,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	//能力使用時保存配列
 	//[0][]に自軍の情報を、[1][]に敵軍の情報を入れる
 	//[][0] = スキル発動のX位置情報、[][1] = スキル発動のY位置情報
-	//[][2] = スキルの種類情報(1には地雷を入れてます)
+	//[][2] = スキルの種類情報(1には地雷を入れてます)(0には横表示の壁、2には縦表示の壁を入れる予定)
 	int abilityinfo[2][3] = { {0}, {0} };
 
 	//壁と地雷の能力ボタン
@@ -209,9 +209,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	POS movePos = {0,0}; //動く先のポジション
 	POS wallPos = { 0,0 };//壁を表示出来る場所
 
-	bool Skillflag = false;//表示するスキルの場所
 
-	int Nopiece = -1;//
+	int Nopiece = -1;//駒のない空間の場所0を保存しておく用
 
 	int movepiece = -1;  //動かす駒のナンバーを保存しておく用
 	int Enemovepiece = -1; //敵の動かす駒のナンバーを保存しておく用
@@ -220,6 +219,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	bool moveflag = false;//動かす駒を選ぶのか、動いてほしい場所を選ぶのか
 
 	bool movingflag = false;
+
+	bool Skillflag = false;//表示するスキルの場所
+
+
 	int graphmovex = 0;
 	int graphmovey = 0;
 	int graphtotalmovex = 0;
@@ -239,11 +242,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 	int sc = LoadGraph("image\\BackGround.png");
 
-	//音声int変換関数
-	//int bgm = LoadSoundMem("音楽名");
-
-	//ゲームメインの音楽再生
-	int  Mainbgm = LoadSoundMem("sound\\");
 
 	//駒が動いた場合の効果音
 	int  Movebgm = LoadSoundMem("sound\\nc184661.mp3");
@@ -255,11 +253,35 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	PlayMovieToGraph(MovieGraphHandle);
 
 
-	//test用サウンド
+	//サウンド
+	//SE
 	int se=LoadSoundMem("sound\\test.mp3");
-	
-	
-	bool turn;//ターン変数....0:自分のターン　1:相手のターン
+	int ButtonSe = LoadSoundMem("sound\\ボタン.mp3");//ボタンの決定音読み込み
+
+	//BGM
+	int TitleSound = LoadSoundMem("sound\\タイトル.mp3");//タイトルBGM読み込み
+	int GameMainSound = LoadSoundMem("sound\\ボード.mp3");//ゲームメインBGM読み込み
+	int WinsPlayer1 = LoadSoundMem("sound\\星羅勝利.mp3");//プレイヤー1の勝利時BGM読み込み
+	int WinsPlayer2 = LoadSoundMem("sound\\火燐勝利.mp3");//プレイヤー2の勝利時BGM読み込み
+	int WinsPlayer3 = LoadSoundMem("sound\\氷華勝利.mp3");//プレイヤー3の勝利時BGM読み込み
+	int LoseBgm = LoadSoundMem("sound\\共通敗北.mp3");//敗北時BGM読み込み
+
+	int Titlebgm=0;
+	int Gamemainbgm=0;
+	int WinP1=0;
+	int WinP2=0;
+	int WinP3=0;
+	int Losebgm=0;
+
+
+	int bgmcount = 0;//
+	int maincount = 0;
+	int WinP1C = 0;
+	int WinP2C = 0;
+	int WinP3C = 0;
+	int LosebgmC = 0;
+
+	bool turn;//ターン変数....ture:自分のターン　false:相手のターン
 
 	int movepointX;//駒の移動の変数(MainMapと照らし合わせて使用する。)
 	int mx, my;//マウスの位置
@@ -336,6 +358,23 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			lose_flag = false;//負けた時のフラグ
 			turn = true;//先行後攻のフラグ
 			time = false;
+			Titlebgm = 1;
+
+			if (Titlebgm == 1)
+			{
+				//TitleBgm再生
+				if (bgmcount % 6300 == 0)
+				{
+					PlaySoundMem(TitleSound, DX_PLAYTYPE_BACK);
+				}
+				bgmcount++;
+
+			}
+			else
+			{
+				break;
+			}
+			
 
 			//マウスの状態を確認する　TITLE
 			if (GetMouseInput() & MOUSE_INPUT_LEFT)
@@ -344,7 +383,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 				if (saveclickflag == false)
 				{
 					saveclickflag = true;
-					GetMousePoint(&clickpos.posX, &clickpos.posY);
+					GetMousePoint(&clickpos.posX, &clickpos.posY);				
 				}
 			}
 			else
@@ -362,21 +401,40 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			//ここで駒の移動距離やクラスの初期化を行う
 			Piece piecetable[28];
 
-			skill Allskill[49];
+			skill Allskill[49];//スキルが発動できる場所のMap全域
 
 			//MainMapから値を取得し、その位置でその役職の情報を得る
 			for (int i = 0, count = 0; i < 7; i++)
 			{
 				for (int j = 0; j < 7; j++)
-				{
+				{   
+					//0の時(何もない空間の場合)
+					if (MainMap[i][j] == 0)
+					{
+
+						Allskill[count].posx = j;//ここには0を探して入れておく
+						Allskill[count].posy = i;//
+
+						//マップナンバーから0を特定する。
+						Allskill[count].type = MainMap[i][j];
+
+
+						//恐らくこの下に生成処理
+
+
+						
+					}
 					//0じゃない(そこに駒がある)場合
 					if (MainMap[i][j] >= 1 && MainMap[i][j] <= 6)
 					{
 						//posX,posYにそれぞれ値を入れる
 						piecetable[count].posX = j;
 						piecetable[count].posY = i;
+
 						//マップナンバーから役職を特定する
 						piecetable[count].type = MainMap[i][j];
+						
+						//自軍,敵軍判定
 						//半分より上なら敵駒、下なら自陣の駒という風に設定する
 						if (i < 4)
 						{
@@ -390,7 +448,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 							piecetable[count].MeorEne = true;
 
 						}
-						//移動
+						//移動量
 						//役職をもとに移動設定を入れていく(クラス化予定あり)
 						//兵士
 						if (MainMap[i][j] == 1)
@@ -492,14 +550,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			DrawString(375, 315, "終わる", GetColor(255, 255, 255));
 
 			
+			
 			if (saveclickflag == true)
 			{
 				if (clickflag == false)
 				{
+					//始めるボタンをクリックしたら
 					if (300 <= clickpos.posX&&clickpos.posX <= 500 && 200 <= clickpos.posY&&clickpos.posY <= 250)
 					{
 						SendData[ISCONNECT] = 1;
 						NetWorkSendUDP(NetUDPHandle, Ip, 30, SendData, sizeof(SendData));
+						PlaySoundMem(ButtonSe, DX_PLAYTYPE_BACK);
 						//デバッグなう
 						scene = CONNECT;
 
@@ -507,10 +568,20 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 						//scene = NAMESELECT;
 						//scene = SELECT;
 						//scene = GAME;
+						
+						Titlebgm = 0;
+						if (Titlebgm == 0)
+						{
+							StopSoundMem(TitleSound);
+							Gamemainbgm = 2;
+						}
+						
 					}
+					//終わるボタンをクリックしたら
 					else if (300 <= clickpos.posX&&clickpos.posX <= 500 && 300 <= clickpos.posY&&clickpos.posY <= 350)
 					{
 						gameend_flag = true;
+						PlaySoundMem(ButtonSe, DX_PLAYTYPE_BACK);
 					}
 				}
 			}
@@ -556,7 +627,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 				scene =SELECT;
 			}
 			break;
-			//キャラセレクト画面
+			
 
 		case NAMESELECT:
 			//仮置き
@@ -642,7 +713,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 				}
 			}
 			break;
-			
+
+			//キャラセレクト画面
 		case SELECT:
 			//初期化
 			GetMousePoint(&Mx, &My);//カーソルの現在位置を取得
@@ -724,16 +796,19 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 						{
 							charaselect = 1;
 							clickflag = true;
+							PlaySoundMem(ButtonSe, DX_PLAYTYPE_BACK);
 						}
 						if (clickpos.posX <= 416 && 183 < clickpos.posY&&clickpos.posY <= 316)
 						{
 							charaselect = 2;
 							clickflag = true;
+							PlaySoundMem(ButtonSe, DX_PLAYTYPE_BACK);
 						}
 						if (clickpos.posX <= 416 && clickpos.posY > 316)
 						{
 							charaselect = 3;
 							clickflag = true;
+							PlaySoundMem(ButtonSe, DX_PLAYTYPE_BACK);
 						}
 					}
 				}
@@ -783,6 +858,24 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			break;
 
 		case GAME:
+
+			//Titlebgm = 0;
+			Gamemainbgm = 2;
+
+			if (Gamemainbgm == 2)
+			{
+				if (maincount % 6300 == 0)
+				{
+					PlaySoundMem(GameMainSound, DX_PLAYTYPE_BACK);
+				}
+				maincount++;
+			}
+			else
+			{
+				break;
+			}
+			
+
 			//ここでゲームのメイン部分構築
 			//マウスの状態を確認する GAME　駒の選択用
 			if (GetMouseInput() & MOUSE_INPUT_LEFT)
@@ -829,6 +922,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 								//移動できる範囲を緑色で指定する
 								//マスに触れる所
 								CheckMoveRange(piecetable[i], piecetable);
+								PlaySoundMem(ButtonSe, DX_PLAYTYPE_BACK);
 							}
 						}
 					}
@@ -872,7 +966,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 									}
 								}
 
-								//for終わらせるための減少増加
+								//for終わらせるための減少増加　アニメーション
 								if (movex > 0)
 									movex--;
 								else if (movex < 0)
@@ -899,12 +993,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 							}
 							movingflag = true;
 						}
-						//駒の場所とあっていなければ
+						//駒の場所とあっていなければ駒の選択キャンセル
 						else
 						{
 							clickflag = true;
 							moveflag = false;
-
+							turn = true;
 							//緑範囲を消す
 							for (int i = 0; i < 7; i++)
 							{
@@ -921,7 +1015,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 				{
 					clickflag = false;
 				}
-
+				//現在のマウスの場所を取る
 				GetMousePoint(&mx, &my);
 
 
@@ -938,24 +1032,25 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 						if (30 <= clickpos.posX&&clickpos.posX <= 165 && 350 <= clickpos.posY && 400 >= clickpos.posY)
 						{
 							//Map全域の0検索
-							for (int i = 0; i < 49; i++)
-							{
-								//駒が無い所があった時
-								if (piecetable[i].type == 0)
-								{
-									//0の場所をいったん保存させる
+							for (int i = 0; i <= 49; i++)
+							{	//駒が無い所があった時
+									if (MainMap[i] == 0)
+									{
+										//0の場所をいったん保存させる
+										Nopiece = i;
+										//0の場所を選択させる。
+										Skillflag = true;
+										clickflag = true;
 
-									//0の場所を選択させる。
-									Skillflag = true;
-									clickflag = true;
-
-									//能力を発動させるところを選択する
-									ZeroCheck(Allskill[i], Allskill);
-
-								}
+										//能力を発動させるところを選択する
+										ZeroCheck(Allskill[i], Allskill);
+										//PlaySoundMem(se, DX_PLAYTYPE_BACK);
+									}
+								
+								
 							}
 							PlaySoundMem(se, DX_PLAYTYPE_BACK);
-
+							//ここまでは入っている。
 						}
 				}
 					//赤い範囲を選択し、その場所に壁又は地雷を生成
@@ -965,9 +1060,21 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 						//選んだマスの取得
 						wallPos=HitPos(clickpos.posX, clickpos.posY);
 						//データを送る用保存　スキル
+						
+					/*	if (clickpos.posX >= POPUP_X && clickpos.posX <= POPUP_X + 64 * 7 && SkillMap[wallPos.y][wallPos.x] == 0)
+						{
+
+						}*/
 
 					}
-				
+					//赤い選択範囲終了
+					for (int i = 0; i < 7; i++)
+					{
+						for (int j = 0; j < 7; j++)
+						{
+							SkillMap[i][j] = 0;
+						}
+					}
 			}
 						
 					
@@ -1386,15 +1493,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 					if (CanMoveMap[i][j] == 1)
 					{
 						DrawGraphF(j * 64 + 192, i * 64, GreenFilter, TRUE);
-					}				
+					}		
+					//赤の範囲描画　スキル選択
+					if (SkillMap[i][j] == 1)
+					{
+						DrawGraphF(j * 64 + 192, i * 64, RedFilter, TRUE);
+					}
 				}
 			}
 
-			//赤の範囲描画　スキル選択
-			if (SkillMap[i][j] == 1)
-			{
-				DrawGraphF(j * 64 + 192, i * 64, RedFilter, TRUE);
-			}
+			
 
 			//アニメーション描画
 			Ani_Explosion.Update();
@@ -1570,6 +1678,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 					SetFontSize(40);
 
+					Gamemainbgm = 0;
+					if (Gamemainbgm == 0)
+					{
+						StopSoundMem(GameMainSound);
+					}
+
 					DrawGraph(0, 0, t_charaB, TRUE);//プレイヤー1の背景の描画
 					DrawGraph(640, 0, t_charaB2, TRUE);//プレイヤー2の背景の描画
 					//DrawExtendGraphF(194, 398, 416, 448, textbox, TRUE);//テキストボックスの描画
@@ -1586,18 +1700,79 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 						t_chara = LoadGraph("image\\キャラクター1\\キャラクター1勝利透過.png");
 						DrawGraph(0, 0, t_chara, TRUE);//プレイヤー1の描画
 						skillredflag = true;
+
+						
+						WinP1 = 1;
+
+						if (WinP1 == 1)
+						{
+							//敗北Bgm再生
+							if (WinP1C % 6300 == 0)
+							{
+								PlaySoundMem(WinsPlayer1, DX_PLAYTYPE_BACK);
+							}
+							WinP1C++;
+
+						}
+						else
+						{
+							break;
+						}
 					}
 					else if (charaselect == 2)
 					{
 						t_chara2 = LoadGraph("image\\キャラクター2\\キャラクター2勝利.png");
 						DrawGraph(0, 0, t_chara2, TRUE);//プレイヤー1の描画
 						skillredflag = true;
+						Gamemainbgm = 0;
+						if (Gamemainbgm == 0)
+						{
+							StopSoundMem(GameMainSound);
+						}
+						WinP2 = 1;
+
+						if (WinP2 == 1)
+						{
+							//Player2勝利Bgm再生
+							if (WinP2C % 6300 == 0)
+							{
+								PlaySoundMem(WinsPlayer2, DX_PLAYTYPE_BACK);
+							}
+							WinP2C++;
+
+						}
+						else
+						{
+							break;
+						}
 					}
 					else if (charaselect == 3)
 					{
 						t_chara3 = LoadGraph("image\\キャラクター3\\キャラクター3勝利.png");
 						DrawGraph(0, 0, t_chara3, TRUE);//プレイヤー1の描画
-						skillredflag = true;
+						Gamemainbgm = 0;
+						if (Gamemainbgm == 0)
+						{
+							StopSoundMem(GameMainSound);
+						}skillredflag = true;
+
+
+						WinP3 = 1;
+
+						if (WinP3 == 1)
+						{
+							//勝利Bgm再生
+							if (WinP3C % 6300 == 0)
+							{
+								PlaySoundMem(WinsPlayer3, DX_PLAYTYPE_BACK);
+							}
+							WinP3C++;
+
+						}
+						else
+						{
+							break;
+						}
 					}
 					if (enemychara == 1)
 					{
@@ -1632,10 +1807,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 								gameend_flag = true;
 								clickflag = true;
 							}*/
+							//終了ボタンをクリックしてwindowを消す
 							if (194 <= clickpos.posX && clickpos.posX <= 639 && 398 <= clickpos.posY && clickpos.posY <= 448)
 							{
 								gameend_flag = true;
 								clickflag = true;
+								PlaySoundMem(ButtonSe, DX_PLAYTYPE_BACK);
 							}
 						}
 						else
@@ -1666,6 +1843,28 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 					/*DrawString(200, 403, "タイトルへ", GetColor(255, 0, 0));*/
 					/*DrawString(490, 403, "終了", GetColor(255, 0, 0));*/
 					DrawString(365, 403, "終了", GetColor(255, 0, 0));
+
+					Gamemainbgm = 0;
+					if (Gamemainbgm == 0)
+					{
+						StopSoundMem(GameMainSound);
+					}
+
+					Losebgm = 1;
+					if (Losebgm == 1)
+					{
+						//敗北Bgm再生
+						if (LosebgmC % 6300 == 0)
+						{
+							PlaySoundMem(LoseBgm, DX_PLAYTYPE_BACK);
+						}
+						LosebgmC++;
+
+					}
+					else
+					{
+						break;
+					}
 
 					if (charaselect == 1)
 					{
@@ -1809,17 +2008,26 @@ void ZeroCheck(skill Zero, skill AllZero[])
 {
 	//AllZeroがMapの全域,ZeroがMapの中にある0の数字
 	//Mapの全域を検索(敵味方関係なし)
-	for (int i = 0; i < 49; i++)
+	for (int i = 0; i < 7; i++)
 	{
-		if (AllZero[i].posx == Zero.posx&&AllZero[i].posy == Zero.posy&&AllZero[i].type == 0)
+		for (int j = 0; j < 7; j++)
 		{
-			SkillMap[Zero.posy][Zero.posx] = 0;//赤色範囲描画
-			
+			if (AllZero[i].posx == Zero.posx&&AllZero[i].posy == Zero.posy&&AllZero[i].type == 0)
+			{
+				POS Pos;
+				Pos.x;
+				Pos.y;
+
+				//return Pos;
+				SkillMap[Zero.posy][Zero.posx] = 1;//赤色範囲描画
+
+			}
+			else//Map上の0以外は描画しない
+			{
+				break;
+			}
 		}
-		else//Map上の0以外は描画しない
-		{
-			break;
-		}
+		
 	}
 
 }

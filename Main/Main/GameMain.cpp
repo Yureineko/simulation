@@ -53,13 +53,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	//駒の種類は最大5種類
 	int MainMap[7][7] =
 	{
-		{ 2,3,4,6,4,3,2 },
-		{ 1,1,1,1,1,1,1 },
-		{ 0,0,0,0,0,0,0 },
-		{ 0,0,0,0,0,0,0 },
-		{ 0,0,0,0,0,0,0 },
-		{ 1,1,1,1,1,1,1 },
-		{ 2,3,4,5,4,3,2 },
+		{ 8, 9,10, 6,10, 9, 8},
+		{ 7, 7, 7, 7, 7, 7, 7},
+		/*{ 2 ,3, 4, 6, 4, 3, 2},
+		{ 1, 1, 1, 1, 1, 1, 1},*/
+		{ 0, 0, 0, 0, 0, 0, 0},
+		{ 0, 0, 0, 0, 0, 0, 0},
+		{ 0, 0, 0, 0, 0, 0, 0},
+		{ 1, 1, 1, 1, 1, 1, 1},
+		{ 2, 3, 4, 5, 4, 3, 2},
 	};
 	//1.兵士(歩)
 	//2.魔導士(角)
@@ -112,6 +114,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	int Knight =LoadGraph("image\\ユニット\\Knight(64).png");//ここに騎士の画像
 	int King =LoadGraph("image\\ユニット\\King(64).png");//ここに王の画像
 	int EKing = LoadGraph("image\\ユニット\\King(64).png");//ここに王の画像
+	int ESoldier = LoadGraph("image\\ユニット\\ESoldier(64).png");//ここに兵士の画像
 	int BB = LoadGraph("image\\BB.png");//自軍下敷き
 	int RB = LoadGraph("image\\RB.png");//敵軍下敷き
 	int YTurn = LoadGraph("image\\YOUR TURN.png");//ターンプレイヤーをわかりやすくするための画像
@@ -371,7 +374,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 				for (int j = 0; j < 7; j++)
 				{
 					//0じゃない(そこに駒がある)場合
-					if (MainMap[i][j] >= 1 && MainMap[i][j] <= 6)
+					if (MainMap[i][j] >= 1 && MainMap[i][j] <= 10)
 					{
 						//posX,posYにそれぞれ値を入れる
 						piecetable[count].posX = j;
@@ -383,7 +386,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 						{
 							//敵軍
 							piecetable[count].MeorEne = false;
-
 						}
 						else
 						{
@@ -466,7 +468,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 							piecetable[count].diaru = 1;
 							piecetable[count].diard = 1;
 						}
-						//自陣王
+						//敵陣王
 						if (MainMap[i][j] == 6)
 						{
 							piecetable[count].movelimit = 0;
@@ -478,6 +480,66 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 							piecetable[count].diald = 1;
 							piecetable[count].diaru = 1;
 							piecetable[count].diard = 1;
+						}
+						//敵兵士
+						if (MainMap[i][j] == 7)
+						{
+							piecetable[count].movelimit = 0;
+							piecetable[count].moveleft = 0;
+							piecetable[count].moveright = 0;
+							piecetable[count].movefront = 0;
+							piecetable[count].moveback = 1;
+							piecetable[count].dialu = 0;
+							piecetable[count].diald = 0;
+							piecetable[count].diaru = 0;
+							piecetable[count].diard = 0;
+						}
+						//敵魔導士
+						if (MainMap[i][j] == 8)
+						{
+							piecetable[count].movelimit = 0;
+							piecetable[count].moveleft = 0;
+							piecetable[count].moveright = 0;
+							piecetable[count].movefront = 0;
+							piecetable[count].moveback = 0;
+							piecetable[count].dialu = 3;
+							piecetable[count].diald = 3;
+							piecetable[count].diaru = 3;
+							piecetable[count].diard = 3;
+						}
+						//敵諜報員
+						if (MainMap[i][j] == 9)
+						{
+							piecetable[count].movelimit = 8;
+							piecetable[count].spicialmoverange[0][0] = -2; piecetable[count].spicialmoverange[0][1] = 1;
+							piecetable[count].spicialmoverange[1][0] = -2; piecetable[count].spicialmoverange[1][1] = -1;
+							piecetable[count].spicialmoverange[2][0] = -1; piecetable[count].spicialmoverange[2][1] = 2;
+							piecetable[count].spicialmoverange[3][0] = -1; piecetable[count].spicialmoverange[3][1] = -2;
+							piecetable[count].spicialmoverange[4][0] = 1;  piecetable[count].spicialmoverange[4][1] = 2;
+							piecetable[count].spicialmoverange[5][0] = 1;  piecetable[count].spicialmoverange[5][1] = -2;
+							piecetable[count].spicialmoverange[6][0] = 2;  piecetable[count].spicialmoverange[6][1] = 1;
+							piecetable[count].spicialmoverange[7][0] = 2;  piecetable[count].spicialmoverange[7][1] = -1;
+							piecetable[count].moveleft = 0;
+							piecetable[count].moveright = 0;
+							piecetable[count].movefront = 0;
+							piecetable[count].moveback = 0;
+							piecetable[count].dialu = 0;
+							piecetable[count].diald = 0;
+							piecetable[count].diaru = 0;
+							piecetable[count].diard = 0;
+						}
+						//敵騎士
+						if (MainMap[i][j] == 10)
+						{
+							piecetable[count].movelimit = 0;
+							piecetable[count].moveleft = 3;
+							piecetable[count].moveright = 3;
+							piecetable[count].movefront = 3;
+							piecetable[count].moveback = 3;
+							piecetable[count].dialu = 0;
+							piecetable[count].diald = 0;
+							piecetable[count].diaru = 0;
+							piecetable[count].diard = 0;
 						}
 						count++;
 					}
@@ -502,10 +564,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 						SendData[ISCONNECT] = 1;
 						NetWorkSendUDP(NetUDPHandle, Ip, 30, SendData, sizeof(SendData));
 						//デバッグなう
-						scene = CONNECT;
+						//scene = CONNECT;
 
 						//ここデバッグ用
-						//scene = NAMESELECT;
+						//scene = CONNECT;
+						scene = NAMESELECT;
 						//scene = SELECT;
 						//scene = GAME;
 					}
@@ -727,7 +790,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 						{
 							charaselect = 1;
 							clickflag = true;
-							scene = GAME;//デバッグ用
+							//scene = GAME;//デバッグ用
 						}
 						if (clickpos.posX <= 416 && 183 < clickpos.posY&&clickpos.posY <= 316)
 						{
@@ -739,7 +802,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 						{
 							charaselect = 3;
 							clickflag = true;
-							scene = GAME;//デバッグ用
+							//scene = GAME;//デバッグ用
 						}
 					}
 				}
@@ -853,7 +916,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 							//データ送る用保存
 							SendData[MOVEBEFOREPOSX] = 6 - piecetable[movepiece].posX;
 							SendData[MOVEBEFOREPOSY] = 6 - piecetable[movepiece].posY;
-							latemovepos.posX = movePos.x; 
+							latemovepos.posX = movePos.x;
 							latemovepos.posY = movePos.y;
 							//地雷チェック
 							//移動方向を保存(x方向に-2,xに-1yに-1等々)
@@ -963,20 +1026,20 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 							PlaySoundMem(se, DX_PLAYTYPE_BACK);
 
 						}
-				}
+					}
 					//赤い範囲を選択し、その場所に壁又は地雷を生成
 					//処理自体は各プレイヤー事態に持たせている。
 					else
 					{
 						//選んだマスの取得
-						wallPos=HitPos(clickpos.posX, clickpos.posY);
+						wallPos = HitPos(clickpos.posX, clickpos.posY);
 						//データを送る用保存　スキル
 
 					}
-				
-			}
-						
-					
+
+				}
+
+
 
 			}//ここまでがゲームの処理
 
@@ -1215,16 +1278,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			
 	    //手番のパス
 		//Zキーを押すと手番を自分に戻す。
-		if (CheckHitKey(KEY_INPUT_Z))
+			if (CheckHitKey(KEY_INPUT_Z) && turn == false)
 		{
-			if (turn == true)
+			/*if (turn == true)
 			{
 				turn = false;
 			}	
 			else
 			{
 				turn = true;
-			}
+			}*/
+			turn = true;
 		}
 		
 
@@ -1238,8 +1302,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			DrawGraph(0, 30, t_charaB, TRUE);//プレイヤー1の背景の描画
 			DrawGraph(640, 30, t_charaB2, TRUE);//プレイヤー2の背景の描画
 
-			DrawString(45, 7, NAME, GetColor(255, 255, 255));
-			DrawString(45, 647, ENAME, GetColor(255, 255, 255));
+			//DrawString(45, 7, NAME, GetColor(255, 255, 255));
+			//DrawString(45, 647, ENAME, GetColor(255, 255, 255));
 
 			if (charaselect == 1)
 			{
@@ -1322,11 +1386,24 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 						break;
 					case 7:
 						//敵兵士の生成
-						DrawGraphF(piecetable[i].posX * 64 + 192, piecetable[i].posY * 64, Soldier, TRUE);
+						DrawRotaGraph(piecetable[i].posX * 64 + 224, piecetable[i].posY * 64 + 32, 1.0f, PI, Soldier, TRUE);
+						break;
+
+					case 8:
+						//魔導士の生成
+						DrawRotaGraph(piecetable[i].posX * 64 + 224, piecetable[i].posY * 64 + 32, 1.0f, PI, Sorcerer, TRUE);
+						break;
+					case 9:
+						//諜報員の生成
+						DrawRotaGraph(piecetable[i].posX * 64 + 224, piecetable[i].posY * 64 + 32, 1.0f, PI, Espionage, TRUE);
+						break;
+
+					case 10:
+						//騎士の生成
+						DrawRotaGraph(piecetable[i].posX * 64 + 224, piecetable[i].posY * 64 + 32, 1.0f, PI, Knight, TRUE);
 						break;
 					}
 				}
-
 			}
 			//動いている駒の描画おいている駒に負けたくないため
 			if (movingflag == true)
@@ -1385,7 +1462,21 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 				case 7:
 					//敵兵士の生成
-					DrawGraphF(piecetable[piecenumber].posX * 64 + 192, piecetable[piecenumber].posY * 64, Soldier, TRUE);
+					DrawGraphF(piecetable[piecenumber].posX * 64 + 192 + graphtotalmovex, piecetable[piecenumber].posY * 64 + graphtotalmovey, Soldier, TRUE);
+					break;
+
+				case 8:
+					//魔導士の生成
+					DrawRotaGraph(piecetable[piecenumber].posX * 64 + 224 + graphtotalmovex, piecetable[piecenumber].posY * 64 + 32 + graphtotalmovey, 1.0f, PI, Sorcerer, TRUE);
+					break;
+				case 9:
+					//諜報員の生成
+					DrawRotaGraph(piecetable[piecenumber].posX * 64 + 224 + graphtotalmovex, piecetable[piecenumber].posY * 64 + 32 + graphtotalmovey, 1.0f, PI, Espionage, TRUE);
+					break;
+
+				case 10:
+					//騎士の生成
+					DrawRotaGraph(piecetable[piecenumber].posX * 64 + 224 + graphtotalmovex, piecetable[piecenumber].posY * 64 + 32 + graphtotalmovey, 1.0f, PI, Knight, TRUE);
 					break;
 				}
 			}
@@ -1402,11 +1493,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 				}
 			}
 
-			//赤の範囲描画　スキル選択
-			if (SkillMap[i][j] == 1)
-			{
-				DrawGraphF(j * 64 + 192, i * 64, RedFilter, TRUE);
-			}
+			////赤の範囲描画　スキル選択
+			//if (SkillMap[i][j] == 1)
+			//{
+			//	DrawGraphF(j * 64 + 192, i * 64, RedFilter, TRUE);
+			//}
 
 			//アニメーション描画
 			Ani_Explosion.Update();

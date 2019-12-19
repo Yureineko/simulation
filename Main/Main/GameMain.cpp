@@ -53,8 +53,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	//‹î‚Ìí—Ş‚ÍÅ‘å5í—Ş
 	int MainMap[7][7] =
 	{
-		{ 2,3,4,6,4,3,2 },
-		{ 1,1,1,1,1,1,1 },
+		{ 8,9,10,6,10,9,8 },
+		{ 7,7,7,7,7,7,7 },
 		{ 0,0,0,0,0,0,0 },
 		{ 0,0,0,0,0,0,0 },
 		{ 0,0,0,0,0,0,0 },
@@ -67,7 +67,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	//4.‹Rm(”òÔ)
 	//5.‰¤
 	//6.‘Šè‚Ì‰¤
-	//7.•Ç
+	//7.“G•º
+	//8.“GŠp –‚“±m
+	//9.“G’³•ñˆõ
+	//10.“G‹Rm
 
 	SORCERER*sorcerer;//–‚“±m‚Ì–{‘Ì
 	enum VEC Sor_vec;//–‚“±m‚ÌˆÚ“®•ûŒü
@@ -301,6 +304,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	unsigned int cr;//•Ó‚è”ÍˆÍ‚Ì•`‰æ‚Ì
 
 
+	bool EnemyPiece;//“G‚Ì‹î‚ğ•`‰æ‚·‚éƒXƒCƒbƒ`
+
 	//---------ƒ}ƒEƒX‘€ì‚Ì•Ï”--------
 	 //GetMousePoint(&Mx,&My);//ƒ}ƒEƒX‚ÌŒ»İˆÊ’uæ“¾
 
@@ -426,7 +431,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 						
 					}
 					//0‚¶‚á‚È‚¢(‚»‚±‚É‹î‚ª‚ ‚é)ê‡
-					if (MainMap[i][j] >= 1 && MainMap[i][j] <= 6)
+					if (MainMap[i][j] >= 1 && MainMap[i][j] <= 10)
 					{
 						//posX,posY‚É‚»‚ê‚¼‚ê’l‚ğ“ü‚ê‚é
 						piecetable[count].posX = j;
@@ -550,7 +555,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			DrawString(375, 215, "n‚ß‚é", GetColor(255, 255, 255));
 			DrawString(375, 315, "I‚í‚é", GetColor(255, 255, 255));
 
-			//
+			//ƒNƒŠƒbƒN‚µ‚½‚Æ‚«
 			if (saveclickflag == true)
 			{
 				if (clickflag == false)
@@ -562,19 +567,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 						NetWorkSendUDP(NetUDPHandle, Ip, 30, SendData, sizeof(SendData));
 						PlaySoundMem(ButtonSe, DX_PLAYTYPE_BACK);
 						//ƒfƒoƒbƒO‚È‚¤
-						scene = CONNECT;
+						//scene = CONNECT;
 
 						//‚±‚±ƒfƒoƒbƒO—p
 						//scene = NAMESELECT;
 						//scene = SELECT;
-						//scene = GAME;
+						scene = GAME;
 						
-						Titlebgm = 0;
-						if (Titlebgm == 0)
-						{
-							StopSoundMem(TitleSound);
-							Gamemainbgm = 2;
-						}
+						//BGM~‚ß‚é
+						
 						
 					}
 					//I‚í‚éƒ{ƒ^ƒ“‚ğƒNƒŠƒbƒN‚µ‚½‚ç
@@ -859,9 +860,18 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 			break;
 
+			//ƒQ[ƒ€ƒV[ƒ“
 		case GAME:
 
-			//Titlebgm = 0;
+			//Title‚Å—¬‚ê‚Ä‚¢‚éBGM‚ğ~‚ß‚é
+			Titlebgm = 0;
+			if (Titlebgm == 0)
+			{
+				StopSoundMem(TitleSound);
+				Gamemainbgm = 2;
+			}
+
+			//ƒQ[ƒ€ƒƒCƒ“‚ÌBGM‚ğ—¬‚·B
 			Gamemainbgm = 2;
 
 			if (Gamemainbgm == 2)
@@ -1382,6 +1392,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			DrawExtendGraphF(30, 350, 165, 400, Skillbotton, TRUE);//”\—Í”­“®ƒ{ƒ^ƒ“‚Ì•`‰æ
 			//‹î‚Ì•`‰æ‚Ğ‚Æ‚µ‚«‚è
 			//ã2s‚Æ‰º2s
+
+			EnemyPiece = false;//‚±‚ê‚ªtrue‚È‚ç“G‹î‚ğ•`‰æ
 			for (int i = 0; i < 28; i++)
 			{
 				if (i != movepiece && i != Enemovepiece || movingflag == false)
@@ -1395,6 +1407,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 						else
 						{
 							DrawGraphF(piecetable[i].posX * 64 + 192, piecetable[i].posY * 64, RB, TRUE);
+							EnemyPiece = true;
 						}
 					}
 					switch (piecetable[i].type)
@@ -1425,9 +1438,31 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 						break;
 					case 7:
 						//“G•ºm‚Ì¶¬
-						DrawGraphF(piecetable[i].posX * 64 + 192, piecetable[i].posY * 64, Soldier, TRUE);
+						DrawRotaGraph(piecetable[i].posX * 64 + 224, piecetable[i].posY * 64 + 32, 1.0f, PI, Soldier, TRUE);
+						break;
+
+					case 8:
+						DrawRotaGraph(piecetable[i].posX * 64 + 224, piecetable[i].posY * 64 + 32, 1.0f, PI, Sorcerer, TRUE);
+						break;
+
+					case 9:
+						DrawRotaGraph(piecetable[i].posX * 64 + 224, piecetable[i].posY * 64 + 32, 1.0f, PI, Espionage, TRUE);
+						break;
+
+					case 10:
+						DrawRotaGraph(piecetable[i].posX * 64 + 224, piecetable[i].posY * 64 + 32, 1.0f, PI, Knight, TRUE);
 						break;
 					}
+					//if (Enemovepiece == true)
+					//{
+					//	switch (piecetable[i].type)
+					//	{
+					//	
+
+					//	case 8:
+					//		//
+					//	}
+					//}
 				}
 
 			}

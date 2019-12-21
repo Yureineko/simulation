@@ -150,8 +150,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	int Enter = 0;
 
 	//キャラの名前
-	char NAME[13];//自分の名前
-	char ENAME[13];//相手の名前
+	char NAME[13] = {0};//自分の名前
+	char ENAME[13] = {0};//相手の名前
 
 	//ボタン管理座標用
 	Pos clickpos;     //クリック位置保存用
@@ -254,7 +254,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	MovieGraphHandle=LoadGraph("image\\nc157304.mp4");
 	PlayMovieToGraph(MovieGraphHandle);
 
-
 	//test用サウンド
 	int se=LoadSoundMem("sound\\test.mp3");
 	
@@ -303,8 +302,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 	fclose(fp);
 
-	char RecvData[10] = {0};
-	char SendData[10] = {0};
+	char RecvData[256] = {0};
+	char SendData[256] = {0};
 	int Data = 0;
 	int UserNum = -1;
 	int connecttime = 0;
@@ -598,7 +597,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 				connecttime = 0;
 				scene =SELECT;
 			}
+			scene = NAMESELECT;
 			break;
+			
 			//キャラセレクト画面
 
 		case NAMESELECT:
@@ -674,7 +675,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 					{
 						if (420 <= clickpos.posX&&clickpos.posX <= 692 && 330 <= clickpos.posY&&clickpos.posY <= 400)
 						{
-							scene = CONNECT;
+							scene = SELECT;
 						}
 						else if (138 <= clickpos.posX&&clickpos.posX <= 410 && 330 <= clickpos.posY&&clickpos.posY <= 400)
 						{
@@ -684,6 +685,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 					}
 				}
 			}
+
+			SendData[SELECTCHARA] = charaselect;
+			for (int i = 0; i < 13; i++)
+				SendData[PLAYERNAME + i] = NAME[i];
+			//NetWorkSendUDP(NetUDPHandle, Ip, UserNum, SendData, sizeof(SendData));
+
 			break;
 			
 		case SELECT:
@@ -880,9 +887,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 					{
 						//選んだマスを取得
 						movePos = HitPos(clickpos.posX, clickpos.posY);
-						////データ送る用保存
-						SendData[MOVEBEFOREPOSX] = (6 - piecetable[movepiece].posX);
-						SendData[MOVEBEFOREPOSY] = (6 - piecetable[movepiece].posY);
 						//そのマスが範囲内
 						//クリックした場所と駒の位置があっていれば
 						if (clickpos.posX >= POPUP_X && clickpos.posX <= POPUP_X + 64 * 7 && CanMoveMap[movePos.y][movePos.x] == 1)

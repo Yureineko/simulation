@@ -625,8 +625,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			if (connecttime == 60)
 			{
 				connecttime = 0;
-				//scene = NAMESELECT;
-				scene = SELECT;
+				scene = NAMESELECT;
+				//scene = SELECT;
 			}
 			break;
 			
@@ -716,10 +716,21 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 				}
 			}
 
-			SendData[SELECTCHARA] = charaselect;
-			for (int i = 0; i < 13; i++)
-				SendData[PLAYERNAME + i] = NAME[i];
-			//NetWorkSendUDP(NetUDPHandle, Ip, UserNum, SendData, sizeof(SendData));
+			//通信確認用
+			if (UserNum != -1)
+			{
+				SendData[ISCONNECT] = 2;
+				for (int i = 0; i < 13; i++)
+					SendData[PLAYERNAME + i] = NAME[i];
+				NetWorkSendUDP(NetUDPHandle, Ip, UserNum, SendData, sizeof(SendData));
+				for (int i = 0; i < 256; i++)
+					SendData[i] = 0;
+			}
+
+			if (CheckNetWorkRecvUDP(NetUDPHandle) == TRUE)
+			{
+				NetWorkRecvUDP(NetUDPHandle, &Ip, &UserNum, RecvData, sizeof(RecvData), FALSE);
+			}
 
 			break;
 
@@ -851,6 +862,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 						else
 							turn = false;
 						scene = GAME;
+					}
+					if (RecvData[PLAYERNAME] != 0)
+					{
+						for (int i = 0; i < 13; i++)
+							ENAME[i] = RecvData[PLAYERNAME + i];
 					}
 					connecttime = 0;
 				}

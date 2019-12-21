@@ -87,10 +87,12 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>C:\Users\GA3\Desktop\森田\シミュレーション\Main\Main\DxLib_VC\dxlib;C:\Users\GA3\Desktop\新しいフォルダー\Main\Main\DxLib_VC\dxlib;C:\Users\yurei\Source\Repos\simulation\Main\Main\DxLib_VC\dxlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\GA3\Desktop\新しいフォルダー\Main\Main\DxLib_VC\dxlib;C:\Users\yurei\Source\Repos\simulation\Main\Main\DxLib_VC\dxlib;C:\Users\GA3\Source\Repos\simulation\Main\Main\DxLib_VC\dxlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>C:\Users\GA3\Desktop\森田\シミュレーション\Main\Main\DxLib_VC\dxlib;C:\Users\GA3\Desktop\新しいフォルダー\Main\Main\DxLib_VC\dxlib;C:\Users\yurei\Source\Repos\simulation\Main\Main\DxLib_VC\dxlib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Users\GA3\Desktop\新しいフォルダー\Main\Main\DxLib_VC\dxlib;C:\Users\yurei\Source\Repos\simulation\Main\Main\DxLib_VC\dxlib;C:\Users\GA3\Source\Repos\simulation\Main\Main\DxLib_VC\dxlib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

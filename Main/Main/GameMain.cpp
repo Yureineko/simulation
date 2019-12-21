@@ -571,7 +571,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 						//ここデバッグ用
 						//scene = NAMESELECT;
-						scene = SELECT;
+						scene = CONNECT;
 						//scene = GAME;
 						
 						//BGM止める
@@ -625,8 +625,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			if (connecttime == 60)
 			{
 				connecttime = 0;
-				scene = NAMESELECT;
-				//scene = SELECT;
+				//scene = NAMESELECT;
+				scene = SELECT;
 			}
 			break;
 			
@@ -662,7 +662,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 				DrawExtendGraphF(138, 80, 692, 150, textbox, TRUE);//テキストボックスの描画
 				DrawExtendGraphF(138, 200, 692, 270, textbox, TRUE);//テキストボックスの描画
 				DrawString(280, 105, "名前を入力してください(6文字まで)", GetColor(255, 255, 255));
-				KeyInputString(350, 225, 12, NAME, true);
+				KeyInputString(350, 225, NAMEMAX - 1, NAME, true);
 				if (CheckHitKey(KEY_INPUT_RETURN)==0)
 				{
 					if (Enter > 0)
@@ -720,7 +720,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			if (UserNum != -1)
 			{
 				SendData[ISCONNECT] = 2;
-				for (int i = 0; i < 13; i++)
+				for (int i = 0; i < NAMEMAX; i++)
 					SendData[PLAYERNAME + i] = NAME[i];
 				NetWorkSendUDP(NetUDPHandle, Ip, UserNum, SendData, sizeof(SendData));
 				for (int i = 0; i < 256; i++)
@@ -817,21 +817,21 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 							charaselect = 1;
 							clickflag = true;
 							PlaySoundMem(ButtonSe, DX_PLAYTYPE_BACK);
-							scene = GAME;
+							//scene = GAME;
 						}
 						if (clickpos.posX <= 416 && 183 < clickpos.posY&&clickpos.posY <= 316)
 						{
 							charaselect = 2;
 							clickflag = true;
 							PlaySoundMem(ButtonSe, DX_PLAYTYPE_BACK);
-							scene = GAME;
+							//scene = GAME;
 						}
 						if (clickpos.posX <= 416 && clickpos.posY > 316)
 						{
 							charaselect = 3;
 							clickflag = true;
 							PlaySoundMem(ButtonSe, DX_PLAYTYPE_BACK);
-							scene = GAME;
+							//scene = GAME;
 						}
 					}
 				}
@@ -846,6 +846,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			{
 				SendData[ISCONNECT] = 1;
 				SendData[SELECTCHARA] = charaselect;
+				for (int i = 0; i < NAMEMAX; i++)
+					SendData[PLAYERNAME + i] = NAME[i];
 				NetWorkSendUDP(NetUDPHandle, Ip, UserNum, SendData, sizeof(SendData));
 			}
 
@@ -865,7 +867,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 					}
 					if (RecvData[PLAYERNAME] != 0)
 					{
-						for (int i = 0; i < 13; i++)
+						for (int i = 0; i < NAMEMAX; i++)
 							ENAME[i] = RecvData[PLAYERNAME + i];
 					}
 					connecttime = 0;
@@ -1286,7 +1288,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 					}
 					//敵が動かした場合
-					else if (Enemovepiece)
+					else if (Enemovepiece != -1)
 					{
 						if (latemove != -1 && (piecetable[Enemovepiece].MeorEne != piecetable[latemove].MeorEne || piecetable[latemove].type == 0))
 						{

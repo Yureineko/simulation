@@ -364,14 +364,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			lose_flag = false;//負けた時のフラグ
 			turn = true;//先行後攻のフラグ
 			time = false;
-			Titlebgm = 1;
+			Titlebgm = 1;//BGMを再生させるフラグ
 
 			if (Titlebgm == 1)
 			{
 				//TitleBgm再生
 				if (bgmcount % 6300 == 0)
 				{
-					PlaySoundMem(TitleSound, DX_PLAYTYPE_BACK);
+					PlaySoundMem(TitleSound, DX_PLAYTYPE_LOOP);
 				}
 				bgmcount++;
 
@@ -878,7 +878,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			{
 				if (maincount % 6300 == 0)
 				{
-					PlaySoundMem(GameMainSound, DX_PLAYTYPE_BACK);
+					PlaySoundMem(GameMainSound, DX_PLAYTYPE_LOOP);
 				}
 				maincount++;
 			}
@@ -1748,7 +1748,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 							//敗北Bgm再生
 							if (WinP1C % 6300 == 0)
 							{
-								PlaySoundMem(WinsPlayer1, DX_PLAYTYPE_BACK);
+								PlaySoundMem(WinsPlayer1, DX_PLAYTYPE_LOOP);
 							}
 							WinP1C++;
 
@@ -1763,11 +1763,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 						t_chara2 = LoadGraph("image\\キャラクター2\\キャラクター2勝利.png");
 						DrawGraph(0, 30, t_chara2, TRUE);//プレイヤー1の描画
 						skillredflag = true;
-						Gamemainbgm = 0;
-						if (Gamemainbgm == 0)
-						{
-							StopSoundMem(GameMainSound);
-						}
+						
+
 						WinP2 = 1;
 
 						if (WinP2 == 1)
@@ -1775,7 +1772,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 							//Player2勝利Bgm再生
 							if (WinP2C % 6300 == 0)
 							{
-								PlaySoundMem(WinsPlayer2, DX_PLAYTYPE_BACK);
+								PlaySoundMem(WinsPlayer2, DX_PLAYTYPE_LOOP);
 							}
 							WinP2C++;
 
@@ -1789,11 +1786,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 					{
 						t_chara3 = LoadGraph("image\\キャラクター3\\キャラクター3勝利.png");
 						DrawGraph(0, 0, t_chara3, TRUE);//プレイヤー1の描画
-						Gamemainbgm = 0;
-						if (Gamemainbgm == 0)
-						{
-							StopSoundMem(GameMainSound);
-						}skillredflag = true;
+						skillredflag = true;
 
 
 						WinP3 = 1;
@@ -1803,7 +1796,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 							//勝利Bgm再生
 							if (WinP3C % 6300 == 0)
 							{
-								PlaySoundMem(WinsPlayer3, DX_PLAYTYPE_BACK);
+								PlaySoundMem(WinsPlayer3, DX_PLAYTYPE_LOOP);
 							}
 							WinP3C++;
 
@@ -1895,7 +1888,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 						//敗北Bgm再生
 						if (LosebgmC % 6300 == 0)
 						{
-							PlaySoundMem(LoseBgm, DX_PLAYTYPE_BACK);
+							PlaySoundMem(LoseBgm, DX_PLAYTYPE_LOOP);
 						}
 						LosebgmC++;
 

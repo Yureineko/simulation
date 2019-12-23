@@ -20,7 +20,9 @@
 #define CLDOWN_Y 380//下　点
 
 //駒動かすアニメーションの早さ定義(値を小さくすれば早くなりますがなるべく64を割り切れる数字でお願いします)
-#define MOVESPEED 8;
+#define MOVESPEED 8
+
+#define NAMEMAX 13
 
 #define PI	3.1415926535897932384626433832795f
 
@@ -71,7 +73,7 @@ enum Scenes
 //送るデータ一覧
 enum SendDataTag
 {
-	ISCONNECT, SELECTCHARA, TURNFAST, MOVEBEFOREPOSX, MOVEBEFOREPOSY, LATEMOVEPOSX, LATEMOVEPOSY,
+	ISCONNECT, SELECTCHARA, TURNFAST, MOVEBEFOREPOSX, MOVEBEFOREPOSY, LATEMOVEPOSX, LATEMOVEPOSY,PLAYERNAME,
 };
 
 //グローバル変数定義-------------------------------------

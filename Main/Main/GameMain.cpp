@@ -154,8 +154,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	int Enter = 0;
 
 	//キャラの名前
-	char NAME[13];//自分の名前
-	char ENAME[13];//相手の名前
+	char NAME[13] = {0};//自分の名前
+	char ENAME[13] = {0};//相手の名前
 
 	//ボタン管理座標用
 	Pos clickpos;     //クリック位置保存用
@@ -331,8 +331,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 	fclose(fp);
 
-	char RecvData[10] = {0};
-	char SendData[10] = {0};
+	char RecvData[256] = {0};
+	char SendData[256] = {0};
 	int Data = 0;
 	int UserNum = -1;
 	int connecttime = 0;
@@ -571,8 +571,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 						//ここデバッグ用
 						//scene = NAMESELECT;
-						//scene = SELECT;
-						scene = GAME;
+						scene = CONNECT;
+						//scene = GAME;
 						
 						//BGM止める
 						
@@ -662,7 +662,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 				DrawExtendGraphF(138, 80, 692, 150, textbox, TRUE);//テキストボックスの描画
 				DrawExtendGraphF(138, 200, 692, 270, textbox, TRUE);//テキストボックスの描画
 				DrawString(280, 105, "名前を入力してください(6文字まで)", GetColor(255, 255, 255));
-				KeyInputString(350, 225, 12, NAME, true);
+				KeyInputString(350, 225, NAMEMAX - 1, NAME, true);
 				if (CheckHitKey(KEY_INPUT_RETURN)==0)
 				{
 					if (Enter > 0)
@@ -715,6 +715,23 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 					}
 				}
 			}
+
+			//通信確認用
+			if (UserNum != -1)
+			{
+				SendData[ISCONNECT] = 2;
+				for (int i = 0; i < NAMEMAX; i++)
+					SendData[PLAYERNAME + i] = NAME[i];
+				NetWorkSendUDP(NetUDPHandle, Ip, UserNum, SendData, sizeof(SendData));
+				for (int i = 0; i < 256; i++)
+					SendData[i] = 0;
+			}
+
+			if (CheckNetWorkRecvUDP(NetUDPHandle) == TRUE)
+			{
+				NetWorkRecvUDP(NetUDPHandle, &Ip, &UserNum, RecvData, sizeof(RecvData), FALSE);
+			}
+
 			break;
 
 			//キャラセレクト画面
@@ -800,18 +817,21 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 							charaselect = 1;
 							clickflag = true;
 							PlaySoundMem(ButtonSe, DX_PLAYTYPE_BACK);
+							//scene = GAME;
 						}
 						if (clickpos.posX <= 416 && 183 < clickpos.posY&&clickpos.posY <= 316)
 						{
 							charaselect = 2;
 							clickflag = true;
 							PlaySoundMem(ButtonSe, DX_PLAYTYPE_BACK);
+							//scene = GAME;
 						}
 						if (clickpos.posX <= 416 && clickpos.posY > 316)
 						{
 							charaselect = 3;
 							clickflag = true;
 							PlaySoundMem(ButtonSe, DX_PLAYTYPE_BACK);
+							//scene = GAME;
 						}
 					}
 				}
@@ -826,6 +846,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			{
 				SendData[ISCONNECT] = 1;
 				SendData[SELECTCHARA] = charaselect;
+				for (int i = 0; i < NAMEMAX; i++)
+					SendData[PLAYERNAME + i] = NAME[i];
 				NetWorkSendUDP(NetUDPHandle, Ip, UserNum, SendData, sizeof(SendData));
 			}
 
@@ -842,6 +864,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 						else
 							turn = false;
 						scene = GAME;
+					}
+					if (RecvData[PLAYERNAME] != 0)
+					{
+						for (int i = 0; i < NAMEMAX; i++)
+							ENAME[i] = RecvData[PLAYERNAME + i];
 					}
 					connecttime = 0;
 				}
@@ -943,9 +970,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 					{
 						//選んだマスを取得
 						movePos = HitPos(clickpos.posX, clickpos.posY);
-						////データ送る用保存
-						SendData[MOVEBEFOREPOSX] = (6 - piecetable[movepiece].posX);
-						SendData[MOVEBEFOREPOSY] = (6 - piecetable[movepiece].posY);
 						//そのマスが範囲内
 						//クリックした場所と駒の位置があっていれば
 						if (clickpos.posX >= POPUP_X && clickpos.posX <= POPUP_X + 64 * 7 && CanMoveMap[movePos.y][movePos.x] == 1)
@@ -1264,7 +1288,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 					}
 					//敵が動かした場合
-					else if (Enemovepiece)
+					else if (Enemovepiece != -1)
 					{
 						if (latemove != -1 && (piecetable[Enemovepiece].MeorEne != piecetable[latemove].MeorEne || piecetable[latemove].type == 0))
 						{
@@ -1330,14 +1354,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 		//Zキーを押すと手番を自分に戻す。
 		if (CheckHitKey(KEY_INPUT_Z))
 		{
-			if (turn == true)
+			/*if (turn == true)
 			{
 				turn = false;
 			}	
 			else
 			{
 				turn = true;
-			}
+			}*/
+			if (turn == false)
+				turn = true;
 		}
 		
 
@@ -1389,7 +1415,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 				DrawExtendGraphF(662, 260, 812, 330, ETurn, TRUE);
 			}
 			
-			DrawExtendGraphF(30, 350, 165, 400, Skillbotton, TRUE);//能力発動ボタンの描画
+			//DrawExtendGraphF(30, 350, 165, 400, Skillbotton, TRUE);//能力発動ボタンの描画
 			//駒の描画ひとしきり
 			//上2行と下2行
 
@@ -1715,19 +1741,26 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 					}
 					time = true;
 
-					SetFontSize(40);
-
 					Gamemainbgm = 0;
 					if (Gamemainbgm == 0)
 					{
 						StopSoundMem(GameMainSound);
 					}
 
-					DrawGraph(0, 0, t_charaB, TRUE);//プレイヤー1の背景の描画
-					DrawGraph(640, 0, t_charaB2, TRUE);//プレイヤー2の背景の描画
+					DrawExtendGraphF(0, 0, 194, 30, NameWindow, TRUE);
+					DrawExtendGraphF(640, 0, 832, 30, NameWindow, TRUE);
+					DrawGraph(0, 30, t_charaB, TRUE);//プレイヤー1の背景の描画
+					DrawGraph(640, 30, t_charaB2, TRUE);//プレイヤー2の背景の描画
+
+					SetFontSize(16);
+
+					DrawString(45, 7, NAME, GetColor(255, 255, 255));
+					DrawString(45, 647, ENAME, GetColor(255, 255, 255));
 					//DrawExtendGraphF(194, 398, 416, 448, textbox, TRUE);//テキストボックスの描画
 					//DrawExtendGraphF(417, 398, 639, 448, textbox, TRUE);//テキストボックスの描画
 					DrawExtendGraphF(194, 398, 639, 448, textbox, TRUE);//テキストボックスの描画
+
+					SetFontSize(40);
 
 					DrawString(340, 50, "YOU WIN", GetColor(255, 0, 0));
 					/*DrawString(200, 403, "タイトルへ", GetColor(255, 0, 0));*/
@@ -1785,8 +1818,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 					else if (charaselect == 3)
 					{
 						t_chara3 = LoadGraph("image\\キャラクター3\\キャラクター3勝利.png");
-						DrawGraph(0, 0, t_chara3, TRUE);//プレイヤー1の描画
-						skillredflag = true;
+						DrawGraph(0, 30, t_chara3, TRUE);//プレイヤー1の描画
+						Gamemainbgm = 0;
+						if (Gamemainbgm == 0)
+						{
+							StopSoundMem(GameMainSound);
+						}skillredflag = true;
 
 
 						WinP3 = 1;
@@ -1863,10 +1900,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 					}
 					time = true;
 
-					SetFontSize(40);
-
+					DrawExtendGraphF(0, 0, 194, 30, NameWindow, TRUE);
+					DrawExtendGraphF(640, 0, 832, 30, NameWindow, TRUE);
 					DrawGraph(0, 30, t_charaB, TRUE);//プレイヤー1の背景の描画
 					DrawGraph(640, 30, t_charaB2, TRUE);//プレイヤー2の背景の描画
+
+					SetFontSize(16);
+
+					DrawString(45, 7, NAME, GetColor(255, 255, 255));
+					DrawString(45, 647, ENAME, GetColor(255, 255, 255));
 					//DrawExtendGraphF(194, 398, 416, 448, textbox, TRUE);//テキストボックスの描画
 					//DrawExtendGraphF(417, 398, 639, 448, textbox, TRUE);//テキストボックスの描画
 					DrawExtendGraphF(194, 398, 639, 448, textbox, TRUE);//テキストボックスの描画

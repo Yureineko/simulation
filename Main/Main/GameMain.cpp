@@ -53,13 +53,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	//‹î‚ÌŽí—Þ‚ÍÅ‘å5Ží—Þ
 	int MainMap[7][7] =
 	{
-		{ 8,9,10,6,10,9,8 },
-		{ 7,7,7,7,7,7,7 },
-		{ 0,0,0,0,0,0,0 },
-		{ 0,0,0,0,0,0,0 },
-		{ 0,0,0,0,0,0,0 },
-		{ 1,1,1,1,1,1,1 },
-		{ 2,3,4,5,4,3,2 },
+		{ 8, 9,10, 6,10, 9, 8},
+		{ 7, 7, 7, 7, 7, 7, 7},
+		/*{ 2 ,3, 4, 6, 4, 3, 2},
+		{ 1, 1, 1, 1, 1, 1, 1},*/
+		{ 0, 0, 0, 0, 0, 0, 0},
+		{ 0, 0, 0, 0, 0, 0, 0},
+		{ 0, 0, 0, 0, 0, 0, 0},
+		{ 1, 1, 1, 1, 1, 1, 1},
+		{ 2, 3, 4, 5, 4, 3, 2},
 	};
 	//1.•ºŽm(•à)
 	//2.–‚“±Žm(Šp)
@@ -115,6 +117,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	int Knight =LoadGraph("image\\ƒ†ƒjƒbƒg\\Knight(64).png");//‚±‚±‚É‹RŽm‚Ì‰æ‘œ
 	int King =LoadGraph("image\\ƒ†ƒjƒbƒg\\King(64).png");//‚±‚±‚É‰¤‚Ì‰æ‘œ
 	int EKing = LoadGraph("image\\ƒ†ƒjƒbƒg\\King(64).png");//‚±‚±‚É‰¤‚Ì‰æ‘œ
+	int ESoldier = LoadGraph("image\\ƒ†ƒjƒbƒg\\ESoldier(64).png");//‚±‚±‚É•ºŽm‚Ì‰æ‘œ
 	int BB = LoadGraph("image\\BB.png");//Ž©ŒR‰º•~‚«
 	int RB = LoadGraph("image\\RB.png");//“GŒR‰º•~‚«
 	int YTurn = LoadGraph("image\\YOUR TURN.png");//ƒ^[ƒ“ƒvƒŒƒCƒ„[‚ð‚í‚©‚è‚â‚·‚­‚·‚é‚½‚ß‚Ì‰æ‘œ
@@ -448,7 +451,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 						{
 							//“GŒR
 							piecetable[count].MeorEne = false;
-
 						}
 						else
 						{
@@ -531,7 +533,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 							piecetable[count].diaru = 1;
 							piecetable[count].diard = 1;
 						}
-						//Ž©w‰¤
+						//“Gw‰¤
 						if (MainMap[i][j] == 6)
 						{
 							piecetable[count].movelimit = 0;
@@ -543,6 +545,66 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 							piecetable[count].diald = 1;
 							piecetable[count].diaru = 1;
 							piecetable[count].diard = 1;
+						}
+						//“G•ºŽm
+						if (MainMap[i][j] == 7)
+						{
+							piecetable[count].movelimit = 0;
+							piecetable[count].moveleft = 0;
+							piecetable[count].moveright = 0;
+							piecetable[count].movefront = 0;
+							piecetable[count].moveback = 1;
+							piecetable[count].dialu = 0;
+							piecetable[count].diald = 0;
+							piecetable[count].diaru = 0;
+							piecetable[count].diard = 0;
+						}
+						//“G–‚“±Žm
+						if (MainMap[i][j] == 8)
+						{
+							piecetable[count].movelimit = 0;
+							piecetable[count].moveleft = 0;
+							piecetable[count].moveright = 0;
+							piecetable[count].movefront = 0;
+							piecetable[count].moveback = 0;
+							piecetable[count].dialu = 3;
+							piecetable[count].diald = 3;
+							piecetable[count].diaru = 3;
+							piecetable[count].diard = 3;
+						}
+						//“G’³•ñˆõ
+						if (MainMap[i][j] == 9)
+						{
+							piecetable[count].movelimit = 8;
+							piecetable[count].spicialmoverange[0][0] = -2; piecetable[count].spicialmoverange[0][1] = 1;
+							piecetable[count].spicialmoverange[1][0] = -2; piecetable[count].spicialmoverange[1][1] = -1;
+							piecetable[count].spicialmoverange[2][0] = -1; piecetable[count].spicialmoverange[2][1] = 2;
+							piecetable[count].spicialmoverange[3][0] = -1; piecetable[count].spicialmoverange[3][1] = -2;
+							piecetable[count].spicialmoverange[4][0] = 1;  piecetable[count].spicialmoverange[4][1] = 2;
+							piecetable[count].spicialmoverange[5][0] = 1;  piecetable[count].spicialmoverange[5][1] = -2;
+							piecetable[count].spicialmoverange[6][0] = 2;  piecetable[count].spicialmoverange[6][1] = 1;
+							piecetable[count].spicialmoverange[7][0] = 2;  piecetable[count].spicialmoverange[7][1] = -1;
+							piecetable[count].moveleft = 0;
+							piecetable[count].moveright = 0;
+							piecetable[count].movefront = 0;
+							piecetable[count].moveback = 0;
+							piecetable[count].dialu = 0;
+							piecetable[count].diald = 0;
+							piecetable[count].diaru = 0;
+							piecetable[count].diard = 0;
+						}
+						//“G‹RŽm
+						if (MainMap[i][j] == 10)
+						{
+							piecetable[count].movelimit = 0;
+							piecetable[count].moveleft = 3;
+							piecetable[count].moveright = 3;
+							piecetable[count].movefront = 3;
+							piecetable[count].moveback = 3;
+							piecetable[count].dialu = 0;
+							piecetable[count].diald = 0;
+							piecetable[count].diaru = 0;
+							piecetable[count].diard = 0;
 						}
 						count++;
 					}
@@ -572,9 +634,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 						//scene = CONNECT;
 
 						//‚±‚±ƒfƒoƒbƒO—p
-						//scene = NAMESELECT;
-						scene = CONNECT;
-						//scene = GAME;
+						//scene = CONNECT;
+						scene = NAMESELECT;
+						//scene = SELECT;
+						scene = GAME;
 						
 						//BGMŽ~‚ß‚é
 						
@@ -979,7 +1042,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 							//ƒf[ƒ^‘—‚é—p•Û‘¶
 							SendData[MOVEBEFOREPOSX] = 6 - piecetable[movepiece].posX;
 							SendData[MOVEBEFOREPOSY] = 6 - piecetable[movepiece].posY;
-							latemovepos.posX = movePos.x; 
+							latemovepos.posX = movePos.x;
 							latemovepos.posY = movePos.y;
 							//’n—‹ƒ`ƒFƒbƒN
 							//ˆÚ“®•ûŒü‚ð•Û‘¶(x•ûŒü‚É-2,x‚É-1y‚É-1“™X)
@@ -1090,13 +1153,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 							PlaySoundMem(se, DX_PLAYTYPE_BACK);
 							//‚±‚±‚Ü‚Å‚Í“ü‚Á‚Ä‚¢‚éB
 						}
-				}
+					}
 					//Ô‚¢”ÍˆÍ‚ð‘I‘ð‚µA‚»‚ÌêŠ‚É•Ç–”‚Í’n—‹‚ð¶¬
 					//ˆ—Ž©‘Ì‚ÍŠeƒvƒŒƒCƒ„[Ž–‘Ô‚ÉŽ‚½‚¹‚Ä‚¢‚éB
 					else
 					{
 						//‘I‚ñ‚¾ƒ}ƒX‚ÌŽæ“¾
-						wallPos=HitPos(clickpos.posX, clickpos.posY);
+						wallPos = HitPos(clickpos.posX, clickpos.posY);
 						//ƒf[ƒ^‚ð‘—‚é—p•Û‘¶@ƒXƒLƒ‹
 						
 					/*	if (clickpos.posX >= POPUP_X && clickpos.posX <= POPUP_X + 64 * 7 && SkillMap[wallPos.y][wallPos.x] == 0)
@@ -1354,7 +1417,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			
 	    //Žè”Ô‚ÌƒpƒX
 		//ZƒL[‚ð‰Ÿ‚·‚ÆŽè”Ô‚ðŽ©•ª‚É–ß‚·B
-		if (CheckHitKey(KEY_INPUT_Z))
+			if (CheckHitKey(KEY_INPUT_Z) && turn == false)
 		{
 			/*if (turn == true)
 			{
@@ -1379,8 +1442,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			DrawGraph(0, 30, t_charaB, TRUE);//ƒvƒŒƒCƒ„[1‚Ì”wŒi‚Ì•`‰æ
 			DrawGraph(640, 30, t_charaB2, TRUE);//ƒvƒŒƒCƒ„[2‚Ì”wŒi‚Ì•`‰æ
 
-			DrawString(45, 7, NAME, GetColor(255, 255, 255));
-			DrawString(45, 647, ENAME, GetColor(255, 255, 255));
+			//DrawString(45, 7, NAME, GetColor(255, 255, 255));
+			//DrawString(45, 647, ENAME, GetColor(255, 255, 255));
 
 			if (charaselect == 1)
 			{
@@ -1473,7 +1536,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 						//“G–‚“±Žm‚Ì¶¬
 						DrawRotaGraph(piecetable[i].posX * 64 + 224, piecetable[i].posY * 64 + 32, 1.0f, PI, Sorcerer, TRUE);
 						break;
-
 					case 9:
 						//“G’³•ñˆõ‚Ì¶¬
 						DrawRotaGraph(piecetable[i].posX * 64 + 224, piecetable[i].posY * 64 + 32, 1.0f, PI, Espionage, TRUE);
@@ -1495,7 +1557,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 					//	}
 					//}
 				}
-
 			}
 			//“®‚¢‚Ä‚¢‚é‹î‚Ì•`‰æ‚¨‚¢‚Ä‚¢‚é‹î‚É•‰‚¯‚½‚­‚È‚¢‚½‚ß
 			if (movingflag == true)
@@ -1554,7 +1615,21 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 				case 7:
 					//“G•ºŽm‚Ì¶¬
-					DrawGraphF(piecetable[piecenumber].posX * 64 + 192, piecetable[piecenumber].posY * 64, Soldier, TRUE);
+					DrawGraphF(piecetable[piecenumber].posX * 64 + 192 + graphtotalmovex, piecetable[piecenumber].posY * 64 + graphtotalmovey, Soldier, TRUE);
+					break;
+
+				case 8:
+					//–‚“±Žm‚Ì¶¬
+					DrawRotaGraph(piecetable[piecenumber].posX * 64 + 224 + graphtotalmovex, piecetable[piecenumber].posY * 64 + 32 + graphtotalmovey, 1.0f, PI, Sorcerer, TRUE);
+					break;
+				case 9:
+					//’³•ñˆõ‚Ì¶¬
+					DrawRotaGraph(piecetable[piecenumber].posX * 64 + 224 + graphtotalmovex, piecetable[piecenumber].posY * 64 + 32 + graphtotalmovey, 1.0f, PI, Espionage, TRUE);
+					break;
+
+				case 10:
+					//‹RŽm‚Ì¶¬
+					DrawRotaGraph(piecetable[piecenumber].posX * 64 + 224 + graphtotalmovex, piecetable[piecenumber].posY * 64 + 32 + graphtotalmovey, 1.0f, PI, Knight, TRUE);
 					break;
 				}
 			}

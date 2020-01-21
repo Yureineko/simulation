@@ -2107,7 +2107,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 //クリックする領域の判定
 bool HitClick(int Cx,int Cy,int x1,int y1)//ここで64*64のマス判定
 {
-	if (Cx < x1 + 64 && x1 < Cx + 64 && Cy < y1 + 64 && y1 < Cy + 64)
+	if (Cx < x1 + 64 && x1 < Cx && Cy < y1 + 64 && y1 < Cy + 64)
 	{
 		return TRUE;
 	}

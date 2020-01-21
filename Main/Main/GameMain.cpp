@@ -9,7 +9,7 @@ bool CheckButton(Pos pushclick, Pos outclick, Pos button, int sizex, int sizey);
 
 POS HitPos(int PosX, int PosY);//位置を取得
 
-void ZeroCheck(skill Zero, skill AllZero[]);//位置を取得
+//void ZeroCheck(skill Zero, skill AllZero[]);//位置を取得
 
 void CheckMoveRange(Piece piece, Piece AllPiece[]);
 
@@ -421,11 +421,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 					if (MainMap[i][j] == 0)
 					{
 
-						Allskill[count].posx = j;//ここには0を探して入れておく
-						Allskill[count].posy = i;//
+						Allskill[count].skillposx = j;//ここには0を探して入れておく
+						Allskill[count].skillposy = i;//
 
+						//とりあえずskillMapの描画をON
+						SkillMap[i][j] = 1;
 						//マップナンバーから0を特定する。
-						Allskill[count].type = MainMap[i][j];
+						//そもそも0に役職はないのでは.....？
 
 
 						//恐らくこの下に生成処理
@@ -1142,7 +1144,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 										clickflag = true;
 
 										//能力を発動させるところを選択する
-										ZeroCheck(Allskill[i], Allskill);
+										//ZeroCheck(Allskill[i], Allskill);
 										//PlaySoundMem(se, DX_PLAYTYPE_BACK);
 									}
 								
@@ -1531,16 +1533,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 						break;
 
 					case 8:
-						//魔導士の生成
+						//敵魔導士の生成
 						DrawRotaGraph(piecetable[i].posX * 64 + 224, piecetable[i].posY * 64 + 32, 1.0f, PI, Sorcerer, TRUE);
 						break;
 					case 9:
-						//諜報員の生成
+						//敵諜報員の生成
 						DrawRotaGraph(piecetable[i].posX * 64 + 224, piecetable[i].posY * 64 + 32, 1.0f, PI, Espionage, TRUE);
 						break;
 
 					case 10:
-						//騎士の生成
+						//敵騎士の生成
 						DrawRotaGraph(piecetable[i].posX * 64 + 224, piecetable[i].posY * 64 + 32, 1.0f, PI, Knight, TRUE);
 						break;
 					}
@@ -1686,7 +1688,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 							if (MainMap[x][y] == 0)
 							{
 								//赤い範囲を描画する
-								//DrawGraphF(y * 64 + 192, x * 64, RedFilter, TRUE);
+								DrawGraphF(y * 64 + 192, x * 64, RedFilter, TRUE);
 
 							}
 						}
@@ -1818,7 +1820,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 						WaitTimer(500);
 					}
 					time = true;
-
+					//ゲームメインのBGMを止める
 					Gamemainbgm = 0;
 					if (Gamemainbgm == 0)
 					{
@@ -2155,35 +2157,39 @@ POS HitPos(int PosX, int PosY)
 	return nullpos;
 }
 
-//能力ボタンを押したとき0の場所を赤くするだけ
-void ZeroCheck(skill Zero, skill AllZero[])
+
+
+//スキル選択領域判定
+void CheckSkillRange(skill Range,skill AllRange[])
 {
-	//AllZeroがMapの全域,ZeroがMapの中にある0の数字
-	//Mapの全域を検索(敵味方関係なし)
-	for (int i = 0; i < 7; i++)
-	{
-		for (int j = 0; j < 7; j++)
+//Map内の0の部分を判定
+	bool breakflag = false;
+
+		for (int j = 0; j < 49; j++)
 		{
-			if (AllZero[i].posx == Zero.posx&&AllZero[i].posy == Zero.posy&&AllZero[i].type == 0)
+			if (AllRange[j].skillposy ==0&&AllRange[j].skillposx ==0)
 			{
-				POS Pos;
-				Pos.x;
-				Pos.y;
-
-				//return Pos;
-				SkillMap[Zero.posy][Zero.posx] = 1;//赤色範囲描画
-
+				SkillMap[Range.skillposy][Range.skillposx] = 1;
+				breakflag = true;
 			}
-			else//Map上の0以外は描画しない
+			else
+			{
+				breakflag = true;
+			}
+
+
+			if (breakflag == true)
 			{
 				break;
 			}
+			else
+			{
+				SkillMap[Range.skillposy][Range.skillposx] = 1;
+			}
 		}
-		
-	}
+	
 
 }
-
 
 //行動範囲領域判定
 void CheckMoveRange(Piece piece, Piece AllPiece[])

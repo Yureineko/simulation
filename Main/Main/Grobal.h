@@ -9,15 +9,17 @@
 
 //MainMapの範囲
 #define POPUP_X 192//左↑の点
-#define POPUP_Y 0//右↑
-#define POPDOWN_X 64//
-#define POPDOWN_Y 64
+#define POPUP_Y 0//右↑の点
+#define POPDOWN_X 64//左↓の点
+#define POPDOWN_Y 64//右↓の点
 
 //左側のキャラの能力ボタンの範囲
 #define CLUP_X 40//左　点
 #define CLUP_Y 280//上　点
 #define CLDOWN_X 150//右　点
 #define CLDOWN_Y 380//下　点
+
+
 
 //駒動かすアニメーションの早さ定義(値を小さくすれば早くなりますがなるべく64を割り切れる数字でお願いします)
 #define MOVESPEED 8
@@ -42,26 +44,27 @@ typedef struct PieceInfo
 	int posX;
 	int posY;
 	bool MeorEne;
-	int movelimit;
-	int movefront;
-	int moveback;
-	int moveleft;
-	int moveright;
-	int dialu;
-	int diald;
-	int diaru;
-	int diard;
-	int spicialmoverange[8][2];
+	int movelimit;//移動値の限界
+	int movefront;//前の移動
+	int moveback;//後の移動
+	int moveleft;//左の移動
+	int moveright;//右の移動
+	int dialu;//左上の移動
+	int diald;//左下の移動
+	int diaru;//右上の移動
+	int diard;//右下の移動
+	int spicialmoverange[8][2];//諜報員の移動場所
 }Piece;
 
 //スキル設定
 typedef struct Skill
 {
-	int type;
-	int posx;
-	int posy;
-	bool MeorEne;
+	//Mapの全域の0の部分を調べる
+	int skillposx;
+	int skillposy;
 	
+	//0の部分検索用
+	int zeroskill;
 
 }skill;
 

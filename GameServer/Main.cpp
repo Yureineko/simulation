@@ -31,7 +31,7 @@ struct Player
 	int scenenumber;
 	//先攻後攻保存用
 	bool turnfast;
-	char RecvData[10];
+	char RecvData[256];
 };
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
@@ -61,7 +61,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		user[i].NoConetime = 0;
 		user[i].scenenumber = 0;
 		user[i].turnfast = true;
-		for (int j = 0; j < 10; j++)
+		for (int j = 0; j < 256; j++)
 		{
 			user[i].RecvData[j] = 0;
 		}
@@ -84,7 +84,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				//受信処理
 				if (CheckNetWorkRecvUDP(user[i].NetUDPHandle) == TRUE)
 				{
-					char data[10] = { 0 };
+					char data[256] = { 0 };
 					user[i].NoConetime = 0;
 					NetWorkRecvUDP(user[i].NetUDPHandle, &user[i].IpAddress, NULL, data, sizeof(data), FALSE);
 
@@ -112,7 +112,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 					user[i].NoConetime++;
 					if (user[i].pairflg == true)
 					{
-						for (int j = 0; j < 10; j++)
+						for (int j = 0; j < 256; j++)
 							user[user[i].enemynumber].RecvData[j] = 0;
 					}
 
@@ -132,7 +132,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 							user[i].enemynumber = -1;
 						}
 						user[i].NoConetime = 0;
-						for (int j = 0; j < 10; j++)
+						for (int j = 0; j < 256; j++)
 						{
 							user[i].RecvData[j] = 0;
 						}
@@ -156,7 +156,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				if (user[i].connectnow == false)
 				{
 					//空データを受け取る
-					char data[10] = { 0 };
+					char data[256] = { 0 };
 					NetWorkRecvUDP(NetUDPHandleConnect, &user[i].IpAddress, NULL, data, sizeof(data), FALSE);
 					//データの送信
 					NetWorkSendUDP(user[i].NetUDPHandle, user[i].IpAddress, 99, data, sizeof(data));

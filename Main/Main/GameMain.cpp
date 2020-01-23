@@ -9,7 +9,7 @@ bool CheckButton(Pos pushclick, Pos outclick, Pos button, int sizex, int sizey);
 
 POS HitPos(int PosX, int PosY);//位置を取得
 
-//void ZeroCheck(skill Zero, skill AllZero[]);//位置を取得
+void ZeroCheck(skill Zero, skill AllZero[]);//0の位置を取得
 
 void CheckMoveRange(Piece piece, Piece AllPiece[]);
 
@@ -639,10 +639,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 						//scene = CONNECT;
 
 						//ここデバッグ用
-						//scene = CONNECT;
-						scene = NAMESELECT;
+						scene = CONNECT;
+						//scene = NAMESELECT;
 						//scene = SELECT;
-						scene = GAME;
+						//scene = GAME;
 						
 						//BGM止める
 						
@@ -1124,7 +1124,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 				//現在のマウスの場所を取る
 				GetMousePoint(&mx, &my);
 
-
+//-------------ここまで駒のコントロール-------
 				//30, 350, 165, 400,
 
 				//スキルのボタンをクリックすると地雷、又は壁を生成する場所を表示する。
@@ -1133,6 +1133,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 				{
 					if (Skillflag == false)
 					{
+						//ここに一旦クリックしたところを保存する。
 						POS skillPos = HitPos(clickpos.posX, clickpos.posY);
 						//スキルのボタンをクリック
 						if (30 <= clickpos.posX&&clickpos.posX <= 165 && 350 <= clickpos.posY && 400 >= clickpos.posY)
@@ -1149,14 +1150,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 										clickflag = true;
 
 										//能力を発動させるところを選択する
-										//ZeroCheck(Allskill[i], Allskill);
-										//PlaySoundMem(se, DX_PLAYTYPE_BACK);
+										//(Allskill[i], Allskill);
+										PlaySoundMem(se, DX_PLAYTYPE_BACK);
 									}
 								
 								
 							}
 							PlaySoundMem(se, DX_PLAYTYPE_BACK);
-							//ここまでは入っている。
+							//ここは入っている。
 						}
 					}
 					//赤い範囲を選択し、その場所に壁又は地雷を生成
@@ -1167,10 +1168,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 						wallPos = HitPos(clickpos.posX, clickpos.posY);
 						//データを送る用保存　スキル
 						
-					/*	if (clickpos.posX >= POPUP_X && clickpos.posX <= POPUP_X + 64 * 7 && SkillMap[wallPos.y][wallPos.x] == 0)
-						{
-
-						}*/
 
 					}
 					//赤い選択範囲終了
@@ -1178,7 +1175,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 					{
 						for (int j = 0; j < 7; j++)
 						{
-							SkillMap[i][j] = 0;
+							CanMoveMap[i][j] = 0;
 						}
 					}
 			}
@@ -1551,16 +1548,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 						DrawRotaGraph(piecetable[i].posX * 64 + 224, piecetable[i].posY * 64 + 32, 1.0f, PI, Knight, TRUE);
 						break;
 					}
-					//if (Enemovepiece == true)
-					//{
-					//	switch (piecetable[i].type)
-					//	{
-					//	
-
-					//	case 8:
-					//		//
-					//	}
-					//}
+					
 				}
 			}
 			//動いている駒の描画おいている駒に負けたくないため
@@ -1649,7 +1637,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 						DrawGraphF(j * 64 + 192, i * 64, GreenFilter, TRUE);
 					}		
 					//赤の範囲描画　スキル選択
-					if (SkillMap[i][j] == 1)
+					if (CanMoveMap[i][j] == 2)
 					{
 						DrawGraphF(j * 64 + 192, i * 64, RedFilter, TRUE);
 					}

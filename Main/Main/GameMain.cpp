@@ -95,7 +95,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	//画像int変換関数
 	//int img = LoadGraph("画像名");
 	
-	int title = LoadGraph("image\\タイトル画面(仮候補).png");//タイトル画面読み込み
+	int title = LoadGraph("image\\タイトル画面(仮候補).png");//タイトル画面読み込み 背景
+
+	int titleBATTLE = LoadGraph("image\\BATTLE ao.png");//タイトル　BATTLE
+	int titleOF = LoadGraph("image\\OF aka.png");//タイトル　OF
+	int titleWARGAMES = LoadGraph("image\\WARGAMES ki.png");//タイトル WARGAMES
+
 	int textbox = LoadGraph("image\\hakkou1.png");//テキストボックスの表示
 	int t_charaB;//仮背景(プレイヤー1)の表示	
 	int t_charaB2;//仮背景(プレイヤー2)の表示
@@ -612,14 +617,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			}
 
 		SetFontSize(40);
-			DrawExtendGraphF(-50, -50, 882, 498, title, TRUE);//タイトルの描画
+			DrawExtendGraphF(-50, -50, 882, 498, title, TRUE);//タイトル画面の背景の描画
 			DrawExtendGraphF(300, 200, 500, 250, textbox, TRUE);//テキストボックスの描画
 			DrawExtendGraphF(300, 300, 500, 350, textbox, TRUE);//テキストボックスの描画
-			DrawString(200, 125, "BATTLE", GetColor(0, 162, 232));
-			DrawString(326, 125, "・", GetColor(0, 0, 0));
-			DrawString(367, 125, "OF", GetColor(237, 28, 36));
-			DrawString(409, 125, "・", GetColor(0, 0, 0));
-			DrawString(450, 125, "WARGAMES", GetColor(255, 242, 0));
+		
+			//タイトル部分
+			DrawGraphF(165, 125, titleBATTLE, TRUE);//タイトル描画　BATTLE
+			DrawGraphF(367, 125,titleOF, TRUE);//タイトル描画　OF
+			DrawGraphF(450, 125, titleWARGAMES, TRUE);//タイトル描画　WARGAMES
+
+		
+
 			SetFontSize(16);
 			DrawString(375, 215, "始める", GetColor(255, 255, 255));
 			DrawString(375, 315, "終わる", GetColor(255, 255, 255));
@@ -1127,6 +1135,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 //-------------ここまで駒のコントロール-------
 				//30, 350, 165, 400,
 
+//---------------ここからスキルの内容--------------
 				//スキルのボタンをクリックすると地雷、又は壁を生成する場所を表示する。
 				//クリックしたとき
 				if (clickflag == false && saveclickflag == true)
@@ -1482,7 +1491,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 				DrawExtendGraphF(662, 260, 812, 330, ETurn, TRUE);
 			}
 			
-			//DrawExtendGraphF(30, 350, 165, 400, Skillbotton, TRUE);//能力発動ボタンの描画
+			DrawExtendGraphF(30, 350, 165, 400, Skillbotton, TRUE);//能力発動ボタンの描画
 			//駒の描画ひとしきり
 			//上2行と下2行
 

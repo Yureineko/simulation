@@ -611,11 +611,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 				}
 			}
 
-			SetFontSize(16);
+		SetFontSize(40);
 			DrawExtendGraphF(-50, -50, 882, 498, title, TRUE);//タイトルの描画
 			DrawExtendGraphF(300, 200, 500, 250, textbox, TRUE);//テキストボックスの描画
 			DrawExtendGraphF(300, 300, 500, 350, textbox, TRUE);//テキストボックスの描画
-			DrawString(250, 165, "BATTLE・OF・WARGAMES", GetColor(255, 255, 255));
+			DrawString(200, 125, "BATTLE", GetColor(0, 162, 232));
+			DrawString(326, 125, "・", GetColor(0, 0, 0));
+			DrawString(367, 125, "OF", GetColor(237, 28, 36));
+			DrawString(409, 125, "・", GetColor(0, 0, 0));
+			DrawString(450, 125, "WARGAMES", GetColor(255, 242, 0));
+			SetFontSize(16);
 			DrawString(375, 215, "始める", GetColor(255, 255, 255));
 			DrawString(375, 315, "終わる", GetColor(255, 255, 255));
 

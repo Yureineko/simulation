@@ -639,10 +639,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 						//scene = CONNECT;
 
 						//ここデバッグ用
-						//scene = CONNECT;
-						scene = NAMESELECT;
+						scene = CONNECT;
+						//scene = NAMESELECT;
 						//scene = SELECT;
-						scene = GAME;
+						//scene = GAME;
 						
 						//BGM止める
 						

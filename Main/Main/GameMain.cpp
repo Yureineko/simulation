@@ -634,10 +634,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 						//scene = CONNECT;
 
 						//ここデバッグ用
-						//scene = CONNECT;
-						scene = NAMESELECT;
+						scene = CONNECT;
+						//scene = NAMESELECT;
 						//scene = SELECT;
-						scene = GAME;
+						//scene = GAME;
 						
 						//BGM止める
 						
@@ -1646,7 +1646,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 					//赤の範囲描画　スキル選択
 					if (SkillMap[i][j] == 1)
 					{
-						DrawGraphF(j * 64 + 192, i * 64, RedFilter, TRUE);
+						//DrawGraphF(j * 64 + 192, i * 64, RedFilter, TRUE);
 					}
 				}
 			}
@@ -1688,7 +1688,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 							if (MainMap[x][y] == 0)
 							{
 								//赤い範囲を描画する
-								DrawGraphF(y * 64 + 192, x * 64, RedFilter, TRUE);
+								//DrawGraphF(y * 64 + 192, x * 64, RedFilter, TRUE);
 
 							}
 						}
@@ -1836,16 +1836,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 					DrawString(45, 7, NAME, GetColor(255, 255, 255));
 					DrawString(45, 647, ENAME, GetColor(255, 255, 255));
-					//DrawExtendGraphF(194, 398, 416, 448, textbox, TRUE);//テキストボックスの描画
-					//DrawExtendGraphF(417, 398, 639, 448, textbox, TRUE);//テキストボックスの描画
-					DrawExtendGraphF(194, 398, 639, 448, textbox, TRUE);//テキストボックスの描画
+					DrawExtendGraphF(194, 398, 416, 448, textbox, TRUE);//テキストボックスの描画
+					DrawExtendGraphF(417, 398, 639, 448, textbox, TRUE);//テキストボックスの描画
+					//DrawExtendGraphF(194, 398, 639, 448, textbox, TRUE);//テキストボックスの描画
 
 					SetFontSize(40);
 
 					DrawString(340, 50, "YOU WIN", GetColor(255, 0, 0));
-					/*DrawString(200, 403, "タイトルへ", GetColor(255, 0, 0));*/
-					/*DrawString(490, 403, "終了", GetColor(255, 0, 0));*/
-					DrawString(365, 403, "終了", GetColor(255, 0, 0));
+					DrawString(200, 403, "タイトルへ", GetColor(255, 0, 0));
+					DrawString(490, 403, "終了", GetColor(255, 0, 0));
+					//DrawString(365, 403, "終了", GetColor(255, 0, 0));
 
 					if (charaselect == 1)
 					{
@@ -1946,23 +1946,25 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 					{
 						if (clickflag == false)
 						{
-							/*if (194 <= clickpos.posX && clickpos.posX <= 416 && 398 <= clickpos.posY && clickpos.posY <= 448)
+							if (194 <= clickpos.posX && clickpos.posX <= 416 && 398 <= clickpos.posY && clickpos.posY <= 448)
 							{
 								scene = TITLE;
 								clickflag = true;
+								PlaySoundMem(ButtonSe, DX_PLAYTYPE_BACK);
 							}
 							else if (417 <= clickpos.posX && clickpos.posX <= 639 && 398 <= clickpos.posY && clickpos.posY <= 448)
 							{
 								gameend_flag = true;
 								clickflag = true;
-							}*/
+								PlaySoundMem(ButtonSe, DX_PLAYTYPE_BACK);
+							}
 							//終了ボタンをクリックしてwindowを消す
-							if (194 <= clickpos.posX && clickpos.posX <= 639 && 398 <= clickpos.posY && clickpos.posY <= 448)
+							/*if (194 <= clickpos.posX && clickpos.posX <= 639 && 398 <= clickpos.posY && clickpos.posY <= 448)
 							{
 								gameend_flag = true;
 								clickflag = true;
 								PlaySoundMem(ButtonSe, DX_PLAYTYPE_BACK);
-							}
+							}*/
 						}
 						else
 						{
@@ -1989,14 +1991,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 					DrawString(45, 7, NAME, GetColor(255, 255, 255));
 					DrawString(45, 647, ENAME, GetColor(255, 255, 255));
-					//DrawExtendGraphF(194, 398, 416, 448, textbox, TRUE);//テキストボックスの描画
-					//DrawExtendGraphF(417, 398, 639, 448, textbox, TRUE);//テキストボックスの描画
-					DrawExtendGraphF(194, 398, 639, 448, textbox, TRUE);//テキストボックスの描画
+					DrawExtendGraphF(194, 398, 416, 448, textbox, TRUE);//テキストボックスの描画
+					DrawExtendGraphF(417, 398, 639, 448, textbox, TRUE);//テキストボックスの描画
+					//DrawExtendGraphF(194, 398, 639, 448, textbox, TRUE);//テキストボックスの描画
 
 					DrawString(340, 50, "YOU LOSE", GetColor(255, 0, 0));
-					/*DrawString(200, 403, "タイトルへ", GetColor(255, 0, 0));*/
-					/*DrawString(490, 403, "終了", GetColor(255, 0, 0));*/
-					DrawString(365, 403, "終了", GetColor(255, 0, 0));
+					DrawString(200, 403, "タイトルへ", GetColor(255, 0, 0));
+					DrawString(490, 403, "終了", GetColor(255, 0, 0));
+					//DrawString(365, 403, "終了", GetColor(255, 0, 0));
 
 					Gamemainbgm = 0;
 					if (Gamemainbgm == 0)
@@ -2061,21 +2063,23 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 					{
 						if (clickflag == false)
 						{
-							/*if (194 <= clickpos.posX && clickpos.posX <= 416 && 398 <= clickpos.posY && clickpos.posY <= 448)
+							if (194 <= clickpos.posX && clickpos.posX <= 416 && 398 <= clickpos.posY && clickpos.posY <= 448)
 							{
-							scene = TITLE;
-							clickflag = true;
+								scene = TITLE;
+								clickflag = true;
+								PlaySoundMem(ButtonSe, DX_PLAYTYPE_BACK);
 							}
 							else if (417 <= clickpos.posX && clickpos.posX <= 639 && 398 <= clickpos.posY && clickpos.posY <= 448)
 							{
-							gameend_flag = true;
-							clickflag = true;
-							}*/
-							if (194 <= clickpos.posX && clickpos.posX <= 639 && 398 <= clickpos.posY && clickpos.posY <= 448)
+								gameend_flag = true;
+								clickflag = true;
+								PlaySoundMem(ButtonSe, DX_PLAYTYPE_BACK);
+							}
+							/*if (194 <= clickpos.posX && clickpos.posX <= 639 && 398 <= clickpos.posY && clickpos.posY <= 448)
 							{
 								gameend_flag = true;
 								clickflag = true;
-							}
+							}*/
 						}
 						else
 						{

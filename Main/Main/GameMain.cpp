@@ -278,6 +278,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	int WinsPlayer3 = LoadSoundMem("sound\\氷華勝利.mp3");//プレイヤー3の勝利時BGM読み込み
 	int LoseBgm = LoadSoundMem("sound\\共通敗北.mp3");//敗北時BGM読み込み
 
+	//BGM音量調整
+	ChangeVolumeSoundMem(130, TitleSound);
+	ChangeVolumeSoundMem(150, GameMainSound);
+	ChangeVolumeSoundMem(160, WinsPlayer1);
+	ChangeVolumeSoundMem(165, WinsPlayer2);
+	ChangeVolumeSoundMem(135, WinsPlayer3);
+	ChangeVolumeSoundMem(205, LoseBgm);
+
 	int Titlebgm=0;
 	int Gamemainbgm=0;
 	int WinP1=0;
@@ -647,10 +655,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 						//scene = CONNECT;
 
 						//ここデバッグ用
-						scene = CONNECT;
+						//scene = CONNECT;
 						//scene = NAMESELECT;
 						//scene = SELECT;
-						//scene = GAME;
+						scene = GAME;
 						
 						//BGM止める
 						
@@ -1447,7 +1455,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 		cr = GetColor(0, 255, 0);//緑色を取得
 		
 			//背景の画像表示	
-			LoadGraphScreen(0, 0, "image\\BackGround.png", TRUE);
+			LoadGraphScreen(192, 0, "image\\BackGround.png", TRUE);
 			DrawExtendGraphF(0, 0, 194, 30, NameWindow, TRUE);
 			DrawExtendGraphF(640, 0, 832, 30, NameWindow, TRUE);
 			DrawGraph(0, 30, t_charaB, TRUE);//プレイヤー1の背景の描画
@@ -1491,7 +1499,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 				DrawExtendGraphF(662, 260, 812, 330, ETurn, TRUE);
 			}
 			
-			DrawExtendGraphF(30, 350, 165, 400, Skillbotton, TRUE);//能力発動ボタンの描画
+			//DrawExtendGraphF(30, 350, 165, 400, Skillbotton, TRUE);//能力発動ボタンの描画
 			//駒の描画ひとしきり
 			//上2行と下2行
 
@@ -1996,6 +2004,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 					DrawExtendGraphF(194, 398, 416, 448, textbox, TRUE);//テキストボックスの描画
 					DrawExtendGraphF(417, 398, 639, 448, textbox, TRUE);//テキストボックスの描画
 					//DrawExtendGraphF(194, 398, 639, 448, textbox, TRUE);//テキストボックスの描画
+
+					SetFontSize(40);
 
 					DrawString(340, 50, "YOU LOSE", GetColor(255, 0, 0));
 					DrawString(200, 403, "タイトルへ", GetColor(255, 0, 0));

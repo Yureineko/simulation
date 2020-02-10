@@ -264,8 +264,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	MovieGraphHandle=LoadGraph("image\\nc157304.mp4");
 	PlayMovieToGraph(MovieGraphHandle);*/
 
+	//アニメーション登録
 	int winmove=LoadGraph("move\\勝ちあにめ.ogv");//勝利時の動画のハンドル
 	int losemove=LoadGraph("move\\負け仮.ogv");//敗北時の動画のハンドル
+
+	
 
 	//サウンド
 	//SE
@@ -386,6 +389,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			turn = true;//先行後攻のフラグ
 			time = false;
 			Titlebgm = 1;//BGMを再生させるフラグ
+
+
 
 			if (Titlebgm == 1)
 			{
@@ -1805,9 +1810,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 				win_flag = true;
 				
-				winmove = LoadGraph("move\\勝ちアニメ.ogg");//勝利時の動画読み込み
-
-				losemove = LoadGraph("move\\負け仮.ogv");//敗北時の動画読み込み
 
 				//マウスの状態を確認する
 				if (GetMouseInput() & MOUSE_INPUT_LEFT)
@@ -1837,7 +1839,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 						WaitTimer(500);
 					}
 					time = true;
-
+					PlayMovieToGraph(winmove);
+					
 					//WinMoveflag = true;//勝利映像フラグON
 
 					//ゲームメインのBGMを止める
@@ -1979,6 +1982,19 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 								scene = TITLE;
 								clickflag = true;
 								PlaySoundMem(ButtonSe, DX_PLAYTYPE_BACK);
+								StopSoundMem(LoseBgm);//敗北BGMを止める
+
+								StopSoundMem(WinsPlayer1);//敗北BGMを止める
+								StopSoundMem(WinsPlayer2);//敗北BGMを止める
+								StopSoundMem(WinsPlayer3);//敗北BGMを止める
+
+								Titlebgm = 0;
+
+								if (Titlebgm == 0)
+								{
+									Titlebgm = 1;//タイトルBGMを再度、再生
+								}
+								
 							}
 							else if (417 <= clickpos.posX && clickpos.posX <= 639 && 398 <= clickpos.posY && clickpos.posY <= 448)
 							{
@@ -2004,7 +2020,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 					}
 					time = true;
 
-
+					PlayMovieToGraph(losemove);//
 					
 
 					DrawExtendGraphF(0, 0, 194, 30, NameWindow, TRUE);
@@ -2108,13 +2124,20 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 								StopSoundMem(WinsPlayer1);//敗北BGMを止める
 								StopSoundMem(WinsPlayer2);//敗北BGMを止める
 								StopSoundMem(WinsPlayer3);//敗北BGMを止める
-								Titlebgm = 1;//タイトルBGMを再度、再生
+
+								Titlebgm = 0;
+								if (Titlebgm == 0)
+								{
+									Titlebgm = 1;//タイトルBGMを再度、再生
+								}
+				
 							}
 							else if (417 <= clickpos.posX && clickpos.posX <= 639 && 398 <= clickpos.posY && clickpos.posY <= 448)
 							{
 								gameend_flag = true;
 								clickflag = true;
 								PlaySoundMem(ButtonSe, DX_PLAYTYPE_BACK);
+
 							}
 							
 						}

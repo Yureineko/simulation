@@ -102,11 +102,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	int titleWARGAMES = LoadGraph("image\\WARGAMES ki.png");//タイトル WARGAMES
 
 	int textbox = LoadGraph("image\\hakkou1.png");//テキストボックスの表示
-	int t_charaB;//仮背景(プレイヤー1)の表示	
-	int t_charaB2;//仮背景(プレイヤー2)の表示
-	int t_chara,t_charawin,t_charalose,t_charaskill;//仮キャラクター(プレイヤー1)の表示　1体目
-	int t_chara2, t_chara2win, t_chara2lose, t_chara2skill;//仮キャラクター(プレイヤー2)の表示　2体目
-	int t_chara3, t_chara3win, t_chara3lose, t_chara3skill;//仮キャラクター(プレイヤー3)の表示　3体目
+	int t_charaB;//背景(プレイヤー1)の表示	
+	int t_charaB2;//背景(プレイヤー2)の表示
+	int t_chara,t_charawin,t_charalose,t_charaskill;//キャラクター(プレイヤー1)の表示　1体目
+	int t_chara2, t_chara2win, t_chara2lose, t_chara2skill;//キャラクター(プレイヤー2)の表示　2体目
+	int t_chara3, t_chara3win, t_chara3lose, t_chara3skill;//キャラクター(プレイヤー3)の表示　3体目
 
 
 
@@ -259,11 +259,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 	int  Movebgm = LoadSoundMem("sound\\nc184661.mp3");
 
 	//アニメーション登録サンプル
-	int MovieGraphHandle;
+	/*int MovieGraphHandle;
 
 	MovieGraphHandle=LoadGraph("image\\nc157304.mp4");
-	PlayMovieToGraph(MovieGraphHandle);
+	PlayMovieToGraph(MovieGraphHandle);*/
 
+	int winmove=LoadGraph("move\\勝ちあにめ.ogv");//勝利時の動画のハンドル
+	int losemove=LoadGraph("move\\負け仮.ogv");//敗北時の動画のハンドル
 
 	//サウンド
 	//SE
@@ -321,6 +323,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 
 	bool EnemyPiece;//敵の駒を描画するスイッチ
+
+
+	
 
 	//---------マウス操作の変数--------
 	 //GetMousePoint(&Mx,&My);//マウスの現在位置取得
@@ -651,17 +656,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 						SendData[ISCONNECT] = 1;
 						//NetWorkSendUDP(NetUDPHandle, Ip, 30, SendData, sizeof(SendData));
 						PlaySoundMem(ButtonSe, DX_PLAYTYPE_BACK);
-						//デバッグなう
-						//scene = CONNECT;
-
+						
 						//ここデバッグ用
 						//scene = CONNECT;
 						scene = NAMESELECT;
 						//scene = SELECT;
 						//scene = GAME;
-						
-						//BGM止める
-						
+						//scene = GAMEEND;
 						
 					}
 					//終わるボタンをクリックしたら
@@ -717,59 +718,61 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			break;
 			
 
-		case NAMESELECT:
-			//仮置き
-			//マウスの状態を確認する　TITLE
-			if (GetMouseInput() & MOUSE_INPUT_LEFT)
-			{
-				//左クリックが押されたとき、押した場所を確認する
-				if (saveclickflag == false)
-				{
-					saveclickflag = true;
-					GetMousePoint(&clickpos.posX, &clickpos.posY);
-				}
-			}
-			else
-			{
-				//左クリックが離されたとき、離した場所を確認する
-				if (saveclickflag == true)
-				{
-					saveclickflag = false;
-					GetMousePoint(&outclickpos.posX, &outclickpos.posY);
-				}
-			}//ここまでクリックの処理
-			
-			if (NameSelect == false)
-			{
-				saveclickflag = false;
-				clickflag = false;
-				Enter = 0;
-				DrawExtendGraphF(-10, -25, 847, 488, Window, TRUE);//ウィンドウの描画
-				DrawExtendGraphF(138, 80, 692, 150, textbox, TRUE);//テキストボックスの描画
-				DrawExtendGraphF(138, 200, 692, 270, textbox, TRUE);//テキストボックスの描画
-				DrawString(280, 105, "名前を入力してください(6文字まで)", GetColor(255, 255, 255));
-				KeyInputString(350, 225, NAMEMAX - 1, NAME, true);
-				if (CheckHitKey(KEY_INPUT_RETURN)==0)
-				{
-					if (Enter > 0)
-					{
-						Enter = -1;
-					}
-					else
-					{
-						Enter = 0;
-					}
-				}
-				else
-				{
-					Enter++;
-				}
-				if (Enter == 1)
-				{
-					NameSelect = true;
-					NameSelect2 = true;
-				}
-			}
+		//case NAMESELECT:
+		//	//仮置き
+		//	//マウスの状態を確認する　TITLE
+		//	if (GetMouseInput() & MOUSE_INPUT_LEFT)
+		//	{
+		//		//左クリックが押されたとき、押した場所を確認する
+		//		if (saveclickflag == false)
+		//		{
+		//			saveclickflag = true;
+		//			GetMousePoint(&clickpos.posX, &clickpos.posY);
+		//		}
+		//	}
+		//	else
+		//	{
+		//		//左クリックが離されたとき、離した場所を確認する
+		//		if (saveclickflag == true)
+		//		{
+		//			saveclickflag = false;
+		//			GetMousePoint(&outclickpos.posX, &outclickpos.posY);
+		//		}
+		//	}//ここまでクリックの処理
+		//	
+		//	if (NameSelect == false)
+		//	{
+		//		saveclickflag = false;
+		//		clickflag = false;
+		//		Enter = 0;
+		//		DrawExtendGraphF(-10, -25, 847, 488, Window, TRUE);//ウィンドウの描画
+		//		DrawExtendGraphF(138, 80, 692, 150, textbox, TRUE);//テキストボックスの描画
+		//		DrawExtendGraphF(138, 200, 692, 270, textbox, TRUE);//テキストボックスの描画
+		//		DrawString(280, 105, "名前を入力してください(6文字まで)", GetColor(255, 255, 255));
+		//		KeyInputString(350, 225, NAMEMAX - 1, NAME, true);
+		//		if (CheckHitKey(KEY_INPUT_RETURN)==0)
+		//		{
+		//			if (Enter > 0)
+		//			{
+		//				Enter = -1;
+		//			}
+		//			else
+		//			{
+		//				Enter = 0;
+		//			}
+		//		}
+		//		else
+		//		{
+		//			Enter++;
+		//		}
+		//		if (Enter == 1)
+		//		{
+		//			NameSelect = true;
+		//			NameSelect2 = true;
+		//		}
+		//	}
+
+		//	ClearDrawScreen();
 
 			ClearDrawScreen();
 
@@ -819,7 +822,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			//	NetWorkRecvUDP(NetUDPHandle, &Ip, &UserNum, RecvData, sizeof(RecvData), FALSE);
 			//}
 
-			break;
+		//	break;
 
 			//キャラセレクト画面
 		case SELECT:
@@ -1170,6 +1173,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 										//能力を発動させるところを選択する
 										//(Allskill[i], Allskill);
 										PlaySoundMem(se, DX_PLAYTYPE_BACK);
+
+										//CanMoveMap[i][j] = 2;
 									}
 								
 								
@@ -1825,14 +1830,18 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			WaitTimer(10);
 			}*/
 
-			//文字列表示
-			//DrawString(x, y, 表示する文字列(*char), 表示する際の文字の色(GetColor(r,g,b)));
-
-			//画像表示
-			//DrawGraph(x, y, img画像(int型), TRUE);
-
 			
 			case GAMEEND:
+
+				//勝ち共通の画像読み込み
+
+
+				win_flag = true;
+				
+				winmove = LoadGraph("move\\勝ちアニメ.ogg");//勝利時の動画読み込み
+
+				losemove = LoadGraph("move\\負け仮.ogv");//敗北時の動画読み込み
+
 				//マウスの状態を確認する
 				if (GetMouseInput() & MOUSE_INPUT_LEFT)
 				{
@@ -1861,6 +1870,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 						WaitTimer(500);
 					}
 					time = true;
+
+					//WinMoveflag = true;//勝利映像フラグON
+
 					//ゲームメインのBGMを止める
 					Gamemainbgm = 0;
 					if (Gamemainbgm == 0)
@@ -1868,6 +1880,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 						StopSoundMem(GameMainSound);
 					}
 
+					
+
+					//ゲームメインのBGMをSTOP
+
+					//勝利画面共通
 					DrawExtendGraphF(0, 0, 194, 30, NameWindow, TRUE);
 					DrawExtendGraphF(640, 0, 832, 30, NameWindow, TRUE);
 					DrawGraph(0, 30, t_charaB, TRUE);//プレイヤー1の背景の描画
@@ -1883,11 +1900,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 					SetFontSize(40);
 
-					DrawString(340, 50, "YOU WIN", GetColor(255, 0, 0));
+
+					
+
+					DrawString(340, 50, "VICTRY", GetColor(255, 0, 0));
 					DrawString(200, 403, "タイトルへ", GetColor(255, 0, 0));
 					DrawString(490, 403, "終了", GetColor(255, 0, 0));
-					//DrawString(365, 403, "終了", GetColor(255, 0, 0));
 
+					//キャラごとに変更
 					if (charaselect == 1)
 					{
 						t_chara = LoadGraph("image\\キャラクター1\\キャラクター1勝利透過.png");
@@ -1899,7 +1919,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 						if (WinP1 == 1)
 						{
-							//敗北Bgm再生
+							//Player1勝利Bgm再生
 							if (WinP1C % 6300 == 0)
 							{
 								PlaySoundMem(WinsPlayer1, DX_PLAYTYPE_LOOP);
@@ -1951,7 +1971,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 						if (WinP3 == 1)
 						{
-							//勝利Bgm再生
+							//Player3勝利Bgm再生
 							if (WinP3C % 6300 == 0)
 							{
 								PlaySoundMem(WinsPlayer3, DX_PLAYTYPE_LOOP);
@@ -1999,13 +2019,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 								clickflag = true;
 								PlaySoundMem(ButtonSe, DX_PLAYTYPE_BACK);
 							}
-							//終了ボタンをクリックしてwindowを消す
-							/*if (194 <= clickpos.posX && clickpos.posX <= 639 && 398 <= clickpos.posY && clickpos.posY <= 448)
-							{
-								gameend_flag = true;
-								clickflag = true;
-								PlaySoundMem(ButtonSe, DX_PLAYTYPE_BACK);
-							}*/
+							
 						}
 						else
 						{
@@ -2023,6 +2037,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 					}
 					time = true;
 
+
+					
+
 					DrawExtendGraphF(0, 0, 194, 30, NameWindow, TRUE);
 					DrawExtendGraphF(640, 0, 832, 30, NameWindow, TRUE);
 					DrawGraph(0, 30, t_charaB, TRUE);//プレイヤー1の背景の描画
@@ -2034,21 +2051,28 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 					DrawString(45, 647, ENAME, GetColor(255, 255, 255));
 					DrawExtendGraphF(194, 398, 416, 448, textbox, TRUE);//テキストボックスの描画
 					DrawExtendGraphF(417, 398, 639, 448, textbox, TRUE);//テキストボックスの描画
-					//DrawExtendGraphF(194, 398, 639, 448, textbox, TRUE);//テキストボックスの描画
+
+					
+
+
+
+					DrawExtendGraphF(194, 398, 639, 448, textbox, TRUE);//テキストボックスの描画
 
 					SetFontSize(40);
 
 					DrawString(340, 50, "YOU LOSE", GetColor(255, 0, 0));
 					DrawString(200, 403, "タイトルへ", GetColor(255, 0, 0));
 					DrawString(490, 403, "終了", GetColor(255, 0, 0));
-					//DrawString(365, 403, "終了", GetColor(255, 0, 0));
 
+					//ゲームメインのbgmを止める
 					Gamemainbgm = 0;
 					if (Gamemainbgm == 0)
 					{
 						StopSoundMem(GameMainSound);
 					}
 
+
+					//敗北BGM再生変数
 					Losebgm = 1;
 					if (Losebgm == 1)
 					{
@@ -2064,7 +2088,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 					{
 						break;
 					}
-
+					
+					//キャラごとの敗北演出
 					if (charaselect == 1)
 					{
 						t_chara = LoadGraph("image\\キャラクター1\\キャラクター1敗北透過.png");
@@ -2111,6 +2136,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 								scene = TITLE;
 								clickflag = true;
 								PlaySoundMem(ButtonSe, DX_PLAYTYPE_BACK);
+								StopSoundMem(LoseBgm);//敗北BGMを止める
+
+								StopSoundMem(WinsPlayer1);//敗北BGMを止める
+								StopSoundMem(WinsPlayer2);//敗北BGMを止める
+								StopSoundMem(WinsPlayer3);//敗北BGMを止める
+								Titlebgm = 1;//タイトルBGMを再度、再生
 							}
 							else if (417 <= clickpos.posX && clickpos.posX <= 639 && 398 <= clickpos.posY && clickpos.posY <= 448)
 							{
@@ -2118,11 +2149,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 								clickflag = true;
 								PlaySoundMem(ButtonSe, DX_PLAYTYPE_BACK);
 							}
-							/*if (194 <= clickpos.posX && clickpos.posX <= 639 && 398 <= clickpos.posY && clickpos.posY <= 448)
-							{
-								gameend_flag = true;
-								clickflag = true;
-							}*/
+							
 						}
 						else
 						{

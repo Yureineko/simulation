@@ -655,10 +655,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 						//scene = CONNECT;
 
 						//ここデバッグ用
-						//scene = CONNECT;
+						scene = CONNECT;
 						//scene = NAMESELECT;
 						//scene = SELECT;
-						scene = GAME;
+						//scene = GAME;
 						
 						//BGM止める
 						
@@ -1458,36 +1458,70 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			LoadGraphScreen(192, 0, "image\\BackGround.png", TRUE);
 			DrawExtendGraphF(0, 0, 194, 30, NameWindow, TRUE);
 			DrawExtendGraphF(640, 0, 832, 30, NameWindow, TRUE);
-			DrawGraph(0, 30, t_charaB, TRUE);//プレイヤー1の背景の描画
-			DrawGraph(640, 30, t_charaB2, TRUE);//プレイヤー2の背景の描画
 
+			//名前を表示させないとき
+			DrawGraph(0, 0, t_charaB, TRUE);//プレイヤー1の背景の描画
+			DrawGraph(640, 0, t_charaB2, TRUE);//プレイヤー2の背景の描画
+
+			//名前を表示させるとき
+			//DrawGraph(0, 30, t_charaB, TRUE);//プレイヤー1の背景の描画
+			//DrawGraph(640, 30, t_charaB2, TRUE);//プレイヤー2の背景の描画
+
+			//名前
 			//DrawString(45, 7, NAME, GetColor(255, 255, 255));
 			//DrawString(45, 647, ENAME, GetColor(255, 255, 255));
 
+			//名前を表示させないとき
 			if (charaselect == 1)
 			{
-				DrawGraph(0, 30, t_chara, TRUE);//プレイヤー1の描画
+				DrawGraph(0, 0, t_chara, TRUE);//プレイヤー1の描画
 			}
 			else if (charaselect == 2)
 			{
-				DrawGraph(0, 30, t_chara2, TRUE);//プレイヤー1の描画
+				DrawGraph(0, 0, t_chara2, TRUE);//プレイヤー1の描画
 			}
 			else if (charaselect == 3)
 			{
-				DrawGraph(0, 30, t_chara3, TRUE);//プレイヤー1の描画
+				DrawGraph(0, 0, t_chara3, TRUE);//プレイヤー1の描画
 			}
 			if (enemychara == 1)
 			{
-				DrawGraph(640, 30, t_chara, TRUE);//プレイヤー2の描画
+				DrawGraph(640, 0, t_chara, TRUE);//プレイヤー2の描画
 			}
 			else if (enemychara == 2)
 			{
-				DrawGraph(640, 30, t_chara2, TRUE);//プレイヤー2の描画
+				DrawGraph(640, 0, t_chara2, TRUE);//プレイヤー2の描画
 			}
 			else if (enemychara == 3)
 			{
-				DrawGraph(640, 30, t_chara3, TRUE);//プレイヤー2の描画
+				DrawGraph(640, 0, t_chara3, TRUE);//プレイヤー2の描画
 			}
+
+			//名前を表示させるとき
+			//if (charaselect == 1)
+			//{
+			//	DrawGraph(0, 30, t_chara, TRUE);//プレイヤー1の描画
+			//}
+			//else if (charaselect == 2)
+			//{
+			//	DrawGraph(0, 30, t_chara2, TRUE);//プレイヤー1の描画
+			//}
+			//else if (charaselect == 3)
+			//{
+			//	DrawGraph(0, 30, t_chara3, TRUE);//プレイヤー1の描画
+			//}
+			//if (enemychara == 1)
+			//{
+			//	DrawGraph(640, 30, t_chara, TRUE);//プレイヤー2の描画
+			//}
+			//else if (enemychara == 2)
+			//{
+			//	DrawGraph(640, 30, t_chara2, TRUE);//プレイヤー2の描画
+			//}
+			//else if (enemychara == 3)
+			//{
+			//	DrawGraph(640, 30, t_chara3, TRUE);//プレイヤー2の描画
+			//}
 
 			//ターンプレイヤーをわかりやすくするための画像表示
 			if (turn == true)
@@ -1721,15 +1755,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 						{
 							if (MainMap[x][y] == 0)
 							{
-
 								//赤い範囲を描画する
 								//DrawGraphF(y * 64 + 192, x * 64, RedFilter, TRUE);
-
 							}
 						}
 					}
-
-
 				}
 			}
 			//待機中に再度ボタンをクリックすると能力発動可能状態に戻る

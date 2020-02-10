@@ -659,12 +659,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 					if (300 <= clickpos.posX&&clickpos.posX <= 500 && 200 <= clickpos.posY&&clickpos.posY <= 250)
 					{
 						SendData[ISCONNECT] = 1;
-						NetWorkSendUDP(NetUDPHandle, Ip, 30, SendData, sizeof(SendData));
+						//NetWorkSendUDP(NetUDPHandle, Ip, 30, SendData, sizeof(SendData));
 						PlaySoundMem(ButtonSe, DX_PLAYTYPE_BACK);
 						
 						//ここデバッグ用
-						scene = CONNECT;
-						//scene = NAMESELECT;
+						//scene = CONNECT;
+						scene = NAMESELECT;
 						//scene = SELECT;
 						//scene = GAME;
 						//scene = GAMEEND;
@@ -779,50 +779,53 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 
 		//	ClearDrawScreen();
 
-		//	if (NameSelect2 == true)
-		//	{
-		//		DrawExtendGraphF(-10, -25, 847, 488, Window, TRUE);//ウィンドウの描画
-		//		DrawExtendGraphF(138, 80, 692, 280, textbox, TRUE);//テキストボックスの描画
-		//		DrawExtendGraphF(138, 330, 410, 400, textbox, TRUE);//テキストボックスの描画
-		//		DrawExtendGraphF(420, 330, 692, 400, textbox, TRUE);//テキストボックスの描画
-		//		DrawString(345, 135, "あなたの名前は", GetColor(255, 255, 255));
-		//		DrawString(350, 175, NAME, GetColor(255, 255, 255));
-		//		DrawString(330, 215, "でよろしいですか？", GetColor(255, 255, 255));
-		//		DrawString(243, 355, "いいえ", GetColor(255, 255, 255));
-		//		DrawString(540, 355, "はい", GetColor(255, 255, 255));
-		//		if (saveclickflag == true)
-		//		{
-		//			if (clickflag == false)
-		//			{
-		//				if (420 <= clickpos.posX&&clickpos.posX <= 692 && 330 <= clickpos.posY&&clickpos.posY <= 400)
-		//				{
-		//					//scene = CONNECT;
-		//					scene = SELECT;
-		//				}
-		//				else if (138 <= clickpos.posX&&clickpos.posX <= 410 && 330 <= clickpos.posY&&clickpos.posY <= 400)
-		//				{
-		//					NameSelect = false;
-		//					NameSelect2 = false;
-		//				}
-		//			}
-		//		}
-		//	}
+			ClearDrawScreen();
 
-		//	//通信確認用
-		//	if (UserNum != -1)
-		//	{
-		//		SendData[ISCONNECT] = 2;
-		//		for (int i = 0; i < NAMEMAX; i++)
-		//			SendData[PLAYERNAME + i] = NAME[i];
-		//		NetWorkSendUDP(NetUDPHandle, Ip, UserNum, SendData, sizeof(SendData));
-		//		for (int i = 0; i < 256; i++)
-		//			SendData[i] = 0;
-		//	}
+			if (NameSelect2 == true)
+			{
+				DrawExtendGraphF(-10, -25, 847, 488, Window, TRUE);//ウィンドウの描画
+				DrawExtendGraphF(138, 80, 692, 280, textbox, TRUE);//テキストボックスの描画
+				DrawExtendGraphF(138, 330, 410, 400, textbox, TRUE);//テキストボックスの描画
+				DrawExtendGraphF(420, 330, 692, 400, textbox, TRUE);//テキストボックスの描画
+				DrawString(345, 135, "あなたの名前は", GetColor(255, 255, 255));
+				DrawString(350, 175, NAME, GetColor(255, 255, 255));
+				DrawString(330, 215, "でよろしいですか？", GetColor(255, 255, 255));
+				DrawString(243, 355, "いいえ", GetColor(255, 255, 255));
+				DrawString(540, 355, "はい", GetColor(255, 255, 255));
+				if (saveclickflag == true)
+				{
+					if (clickflag == false)
+					{
+						if (420 <= clickpos.posX&&clickpos.posX <= 692 && 330 <= clickpos.posY&&clickpos.posY <= 400)
+						{
+							NetWorkSendUDP(NetUDPHandle, Ip, 30, SendData, sizeof(SendData));
+							//scene = CONNECT;
+							scene = SELECT;
+						}
+						else if (138 <= clickpos.posX&&clickpos.posX <= 410 && 330 <= clickpos.posY&&clickpos.posY <= 400)
+						{
+							NameSelect = false;
+							NameSelect2 = false;
+						}
+					}
+				}
+			}
 
-		//	if (CheckNetWorkRecvUDP(NetUDPHandle) == TRUE)
-		//	{
-		//		NetWorkRecvUDP(NetUDPHandle, &Ip, &UserNum, RecvData, sizeof(RecvData), FALSE);
-		//	}
+			////通信確認用
+			//if (UserNum != -1)
+			//{
+			//	SendData[ISCONNECT] = 2;
+			//	for (int i = 0; i < NAMEMAX; i++)
+			//		SendData[PLAYERNAME + i] = NAME[i];
+			//	NetWorkSendUDP(NetUDPHandle, Ip, UserNum, SendData, sizeof(SendData));
+			//	for (int i = 0; i < 256; i++)
+			//		SendData[i] = 0;
+			//}
+
+			//if (CheckNetWorkRecvUDP(NetUDPHandle) == TRUE)
+			//{
+			//	NetWorkRecvUDP(NetUDPHandle, &Ip, &UserNum, RecvData, sizeof(RecvData), FALSE);
+			//}
 
 		//	break;
 
@@ -923,7 +926,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 							charaselect = 3;
 							clickflag = true;
 							PlaySoundMem(ButtonSe, DX_PLAYTYPE_BACK);
-							//scene = GAME;
+							scene = GAME;
 						}
 					}
 				}
@@ -1466,12 +1469,46 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 			LoadGraphScreen(192, 0, "image\\BackGround.png", TRUE);
 			DrawExtendGraphF(0, 0, 194, 30, NameWindow, TRUE);
 			DrawExtendGraphF(640, 0, 832, 30, NameWindow, TRUE);
+
+			////名前を表示させないとき
+			//DrawGraph(0, 0, t_charaB, TRUE);//プレイヤー1の背景の描画
+			//DrawGraph(640, 0, t_charaB2, TRUE);//プレイヤー2の背景の描画
+
+			//名前を表示させるとき
 			DrawGraph(0, 30, t_charaB, TRUE);//プレイヤー1の背景の描画
 			DrawGraph(640, 30, t_charaB2, TRUE);//プレイヤー2の背景の描画
 
-			//DrawString(45, 7, NAME, GetColor(255, 255, 255));
-			//DrawString(45, 647, ENAME, GetColor(255, 255, 255));
+			//名前
+			DrawString(45, 7, NAME, GetColor(255, 255, 255));
+			DrawString(45, 647, ENAME, GetColor(255, 255, 255));
 
+			//名前を表示させないとき
+			//if (charaselect == 1)
+			//{
+			//	DrawGraph(0, 0, t_chara, TRUE);//プレイヤー1の描画
+			//}
+			//else if (charaselect == 2)
+			//{
+			//	DrawGraph(0, 0, t_chara2, TRUE);//プレイヤー1の描画
+			//}
+			//else if (charaselect == 3)
+			//{
+			//	DrawGraph(0, 0, t_chara3, TRUE);//プレイヤー1の描画
+			//}
+			//if (enemychara == 1)
+			//{
+			//	DrawGraph(640, 0, t_chara, TRUE);//プレイヤー2の描画
+			//}
+			//else if (enemychara == 2)
+			//{
+			//	DrawGraph(640, 0, t_chara2, TRUE);//プレイヤー2の描画
+			//}
+			//else if (enemychara == 3)
+			//{
+			//	DrawGraph(640, 0, t_chara3, TRUE);//プレイヤー2の描画
+			//}
+
+			//名前を表示させるとき
 			if (charaselect == 1)
 			{
 				DrawGraph(0, 30, t_chara, TRUE);//プレイヤー1の描画
@@ -1729,15 +1766,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine
 						{
 							if (MainMap[x][y] == 0)
 							{
-
 								//赤い範囲を描画する
 								//DrawGraphF(y * 64 + 192, x * 64, RedFilter, TRUE);
-
 							}
 						}
 					}
-
-
 				}
 			}
 			//待機中に再度ボタンをクリックすると能力発動可能状態に戻る
